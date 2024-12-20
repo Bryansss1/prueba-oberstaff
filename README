@@ -1,0 +1,60 @@
+# Prueba Tecnica oberStaff
+
+Se ha desarrollado una aplicación backend utilizando tecnologías modernas y siguiendo principios de buenas prácticas de desarrollo con el objetivo de crear una solución escalable, mantenible y fácil de entender para cualquier desarrollador del equipo.
+
+## Tecnologías Utilizadas
+
+    Node.js y Express.js: Como base para el servidor web y la creación de rutas y controladores.
+    MongoDB y Mongoose: Para el almacenamiento de datos y la interacción con la base de datos a través de un ORM (Object Relational Mapper).
+    Zod: Para la validación de datos de entrada en los endpoints, asegurando la integridad y consistencia de los datos.
+    JSON Web Tokens (JWT): Para la autenticación de usuarios y la gestión de sesiones de manera segura.
+    Encriptación: Para proteger las claves sensibles almacenadas en la base de datos.
+    Estructura modular: Organizando el código en módulos para mejorar la modularidad y la mantenibilidad.
+    Programación funcional: Adoptado como enfoque principal para facilitar la comprensión y el mantenimiento del código.
+    Seeders: Para poblar la base de datos con datos iniciales.
+    Yarn: Como gestor de paquetes para administrar las dependencias del proyecto.
+
+## Arquitectura y Estructura
+
+    Estructura modular: El proyecto se divide en módulos bien definidos, cada uno con responsabilidades específicas.
+    Capas: Se ha seguido una arquitectura en capas (controladores, servicios, modelos) para separar las responsabilidades y mejorar la testabilidad.
+    Validación: Se utiliza Zod para validar todos los datos de entrada, asegurando la integridad y consistencia de los datos.
+    Seguridad: Se emplean JWT para la autenticación y se encriptan las claves sensibles en la base de datos.
+
+Proceso de Instalación y Ejecución
+
+    Instalación de dependencias:
+    Bash
+
+yarn install
+
+## Configuración de variables de entorno:
+
+    Crear un archivo .env basado en env.template y configurar las siguientes variables:
+        DATABASE_URL: URL de conexión a la base de datos MongoDB.
+        PORT: Puerto de escucha del servidor.
+        VERSION: Versión de la API.
+        SECRET_KEY: Clave secreta para firmar los tokens JWT.
+
+Ejecución en desarrollo:
+Bash
+
+yarn run dev
+
+Ejecución en producción:
+Bash
+
+    yarn run start
+
+## Beneficios de la Solución
+
+    Escalabilidad: La arquitectura modular y el uso de tecnologías escalables como Node.js y MongoDB permiten un fácil escalamiento del proyecto.
+    Mantenibilidad: El código bien estructurado y la utilización de buenas prácticas facilitan el mantenimiento y la adición de nuevas funcionalidades.
+    Seguridad: La encriptación de claves y el uso de JWT garantizan la seguridad de los datos y de las sesiones de usuario.
+    Legibilidad: El código es claro y conciso, facilitando su comprensión para cualquier desarrollador.
+
+## Consideraciones Adicionales
+
+    Por temas de tiempo quedaron pendientes algunas cosas como
+    Pruebas: esta pendiente implementar pruebas unitarias y de integración para garantizar la calidad del código.
+    Documentación: esta pendiente la documentacion con swagger la API y el código para facilitar su uso y mantenimiento a largo plazo.

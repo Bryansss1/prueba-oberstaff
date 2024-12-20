@@ -2,5 +2,5 @@
   "watch": ["src"],
   "ext": "ts, json, js, cjs, mjs, cts, mts",
   "ignore": ["node_modules"],
-  "exec": "pnpm build && node dist/index.js"
+  "exec": "pnpm build && node dist/src/index.js"
 }
