@@ -191,7 +191,7 @@ JSON
 
 Descripción: Actualiza un proyecto existente.
 
-Método: PUT
+Método: PATCH
 
 Parámetros de ruta:
 
@@ -217,7 +217,7 @@ JSON
 }
 }
 
-/api/v1/projects/ para obtener una lista de todos los proyectos:
+GET /api/v1/projects/ para obtener una lista de todos los proyectos:
 
 Respuesta:
 JSON
@@ -246,3 +246,134 @@ JSON
 }
 
 ## Endpoints modulo TASKS
+
+Endpoints
+/api/v1/tasks/create
+
+Descripción: Crea una nueva tarea asociada a un proyecto.
+
+Método: POST
+
+Cuerpo de la solicitud:
+JSON
+
+{
+"description": "Descripción de la tarea (requerido)",
+"name": "Nombre de la tarea (requerido)",
+"projectId": "ID del proyecto (requerido)",
+"status": "PENDING" // Opciones: PENDING, IN_PROGRESS, COMPLETED, CANCELLED (opcional, por defecto: PENDING)
+"userId": "ID del usuario asignado a la tarea (opcional)"
+}
+
+    description: Descripción detallada de la tarea (obligatorio).
+    name: Nombre de la tarea (obligatorio).
+    projectId: ID del proyecto al que pertenece la tarea (obligatorio).
+    status: Estado actual de la tarea (opcional, por defecto: "PENDING").
+    userId: ID del usuario asignado a la tarea (opcional).
+
+Respuesta:
+JSON
+
+{
+"status": 201,
+"data": {
+"description": "Descripción de la tarea",
+"name": "nombre de la tarea testeto",
+"status": "PENDING",
+"projectId": "6764b107e60a6f3592eb5819",
+"userId": "6764b104e60a6f3592eb580f",
+"createdAt": "2024-12-20T00:24:01.254Z",
+"\_id": "6764b9458db198b73ab36847"
+}
+}
+
+    status: 201 indica que la tarea se ha creado correctamente.
+    data: Objeto que contiene los detalles de la tarea creada:
+        description: Descripción de la tarea.
+        name: Nombre de la tarea.
+        projectId: ID del proyecto al que pertenece la tarea.
+        status: Estado actual de la tarea.
+        userId: ID del usuario asignado a la tarea (si se proporcionó).
+        createdAt: Fecha y hora de creación de la tarea.
+        _id: ID único de la tarea.
+
+PATCH /api/v1/tasks/update/:id
+
+Descripción: Actualiza una tarea existente.
+
+Método: PATCH
+
+Parámetros de ruta:
+
+    id: ID de la tarea a actualizar (requerido).
+
+Cuerpo de la solicitud:
+JSON
+
+{
+"description": "Nueva descripción de la tarea (opcional)",
+"name": "Nuevo nombre de la tarea (opcional)",
+"status": "Nuevo estado de la tarea (opcional)",
+"userId": "Nuevo ID de usuario asignado a la tarea (opcional)"
+}
+
+Respuesta:
+JSON
+
+{
+"status": 200,
+"data": {
+"message": "Tarea actualizada exitosamente"
+}
+}
+
+    status: 200 indica que la tarea se ha actualizado correctamente.
+
+DELETE /api/v1/tasks/delete/:id
+
+Descripción: Elimina una tarea existente.
+
+Método: DELETE
+
+Parámetros de ruta:
+
+    id: ID de la tarea a eliminar (requerido).
+
+Respuesta:
+JSON
+
+{
+"status": 200,
+"data": {
+"message": "Tarea eliminada exitosamente"
+}
+}
+
+Endpoint:
+
+GET /api/v1/tasks?status=PENDING&projectId=123&userId=456
+
+Explicación de los parámetros de consulta:
+
+    status: Filtra las tareas por su estado (PENDING, IN_PROGRESS, COMPLETED, CANCELLED).
+    projectId: Filtra las tareas que pertenecen a un proyecto específico.
+    userId: Filtra las tareas asignadas a un usuario específico.
+
+Respuesta:
+JSON
+
+{
+"status": 200,
+"data": [
+{
+"id": "6764b9458db198b73ab36847",
+"description": "Tarea pendiente del proyecto A",
+"name": "Tarea 1",
+"projectId": "123",
+"status": "PENDING",
+"userId": "456",
+"createdAt": "2024-12-20T00:24:01.254Z"
+},
+// ... otras tareas que cumplan con los filtros ...
+]
+}
