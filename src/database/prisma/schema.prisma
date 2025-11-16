@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client"
+  output   = "generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model bingo {
+  id                         Int                @id @default(autoincrement())
+  number_of_participants     Int                @default(0)
+  cardboard_by_code          Int
+  created_at                 DateTime           @default(now())
+  updated_at                 DateTime           @default(now())
+  deleted_at                 DateTime?
+  is_started                 Boolean            @default(false)
+  min_number_of_participants Int?
+  winners                    Json?
+  bingo_prizes               Json?
+  numbers_played             Json?
+  bingo_cardboards           bingo_cardboards[]
+}
+
+model bingo_cardboards {
+  id              Int           @id @default(autoincrement())
+  code_id         Int
+  bingo_id        Int
+  is_winner       Boolean       @default(false)
+  user_id         Int
+  bingo_data_json Json
+  created_at      DateTime      @default(now())
+  updated_at      DateTime
+  deleted_at      DateTime?
+  prize_id        Int?
+  bingo           bingo         @relation(fields: [bingo_id], references: [id])
+  codes           codes         @relation(fields: [code_id], references: [id])
+  bingo_prizes    bingo_prizes? @relation(fields: [prize_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users           users         @relation(fields: [user_id], references: [id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model bingo_prizes {
+  id               Int             @id @default(autoincrement())
+  created_at       DateTime           @default(now()) @db.Timestamptz(6)
+  prize            String?
+  status           status?            @default(ACTIVO)
+  prize_image      String?
+  quantity         Int?
+  description      String?
+  bingo_cardboards bingo_cardboards[]
+}
+
+model codes {
+  id               Int                @id @default(autoincrement())
+  code             String             @unique
+  origin           OriginCodes        @default(DISPONIBLE)
+  used_for         UsedCodeFor        @default(DISPONIBLE)
+  user_id          Int
+  is_used          Boolean            @default(false)
+  cost             Float?             @default(1.0)
+  created_at       DateTime           @default(now())
+  updated_at       DateTime
+  deleted_at       DateTime?
+  used_date        DateTime?          @db.Timestamp(6)
+  bingo_cardboards bingo_cardboards[]
+  users            users              @relation(fields: [user_id], references: [id])
+}
+
+model live_sessions {
+  id         Int        @id @default(autoincrement())
+  created_at DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at DateTime?     @default(now()) @db.Timestamp(6)
+  deleted_at DateTime?     @db.Timestamp(6)
+  link       String?
+  origin     OriginSession
+  prize      BingoPrize    @default(DEFECTO)
+}
+
+model parameters {
+  id                         Int       @id @default(autoincrement())
+  cost_per_code              Float     @default(1.0)
+  min_participants_for_bingo Int       @default(2)
+  cardboard_per_code         Int       @default(2)
+  created_at                 DateTime  @default(now())
+  updated_at                 DateTime
+  deleted_at                 DateTime?
+  last_modified_by_id        Int?
+  bingo_prizes               Json?
+  users                      users?    @relation(fields: [last_modified_by_id], references: [id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model source_codes {
+  id           Int    @id @default(autoincrement())
+  created_at   DateTime  @default(now()) @db.Timestamptz(6)
+  code         String?
+  is_available Boolean?
+  updated_at   DateTime? @default(now()) @db.Timestamp(6)
+  deleted_at   DateTime? @db.Timestamp(6)
+}
+
+model users {
+  id                 Int                @id @default(autoincrement())
+  names              String
+  last_names         String
+  email              String             @unique
+  password           String
+  role               Role               @default(USER)
+  phone_number       String?            @unique
+  account_owner_name String?
+  account_owner_dni  String?
+  account_number     String?
+  bank_name          String?
+  created_at         DateTime           @default(now())
+  updated_at         DateTime
+  deleted_at         DateTime?
+  code_verification  String?
+  change_password    Boolean?           @default(false)
+  is_verified        Boolean?           @default(false)
+  dni                String?            @unique
+  bingo_cardboards   bingo_cardboards[]
+  codes              codes[]
+  parameters         parameters[]
+}
+
+enum BingoPrize {
+  LINEAS
+  DEFECTO
+}
+
+enum OriginCodes {
+  PRODUCTO_PROMOCIONAL
+  CUPON
+  DISPONIBLE
+}
+
+enum OriginSession {
+  ZOOM
+  MEET
+}
+
+enum Role {
+  ADMIN
+  USER
+  OPERADOR
+}
+
+enum UsedCodeFor {
+  BINGO
+  SORTEO
+  DISPONIBLE
+}
+
+enum bingo_victories {
+  CARTON_LLENO
+  LINEA_SIMPLE
+  LINEA_DOBLE
+  CUATRO_ESQUINAS
+  PERIMETRO
+  LETRA_H
+  NUMERO_7
+  FLECHA
+}
+
+enum estado_victoria_75 {
+  LINEA
+  LINEA_SIMPLE
+  BINGO_CARTON
+  CUATRO_ESQUINAS
+  X
+  T
+  PERIMETRO
+  VENTANA
+  LINEA_EXTERIOR
+}
+
+enum status {
+  ACTIVO
+  INACTIVO
+}
