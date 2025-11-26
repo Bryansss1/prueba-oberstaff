@@ -51,6 +51,24 @@ type BingoState = {
   numbersPlayed: NumbersPlayed;
 };
 
+const isMarked = (num: number): boolean => {
+  if (num === 0) return true; // FREE siempre válido
+  return num < 0;
+};
+// Convierte el payload en una matriz 5x5 para trabajar más fácil
+const toMatrix = (boardPayload: any): number[][] => {
+  const size = boardPayload.size;
+  const matrix: number[][] = Array.from({ length: size }, () =>
+    Array(size).fill(0)
+  );
+  boardPayload.columns.forEach((col: any, colIdx: number) => {
+    col.numbers.forEach((num: number, rowIdx: number) => {
+      matrix[rowIdx][colIdx] = num;
+    });
+  });
+  return matrix;
+};
+
 // Cache en memoria para latencia baja
 const activeBingos = new Map<number, BingoState>();
 
@@ -62,12 +80,12 @@ function roomName(bingoId: number) {
 async function loadBingo(bingoId: number) {
   const b = await prisma.bingo.findUnique({
     where: { id: bingoId },
-    include: { BingoCardboards: true },
+    include: { bingo_cardboards: true },
   });
   if (!b) throw new Error("Bingo no encontrado");
 
   const prizes: Prize[] = ((b.bingo_prizes as any)?.prizes ?? []) as Prize[];
-  const numbersPlayed: NumbersPlayed = (b.numbersPlayed as any) ?? {
+  const numbersPlayed: NumbersPlayed = (b.numbers_played as any) ?? {
     sequence: [],
     last5: [],
   };
@@ -91,7 +109,7 @@ async function pushNumber(bingoId: number, n: number) {
 
   await prisma.bingo.update({
     where: { id: bingoId },
-    data: { numbersPlayed: state.numbersPlayed as any },
+    data: { numbers_played: state.numbersPlayed as any },
   });
 
   io.to(roomName(bingoId)).emit("number_drawn", {
@@ -219,7 +237,7 @@ io.on("connection", (socket) => {
           return;
         }
 
-        const board = await prisma.bingoCardboards.findUnique({
+        const board = await prisma.bingo_cardboards.findUnique({
           where: { id: boardId },
         });
         if (!board || board.is_winner || board.bingo_id !== bingoId) {
@@ -232,12 +250,11 @@ io.on("connection", (socket) => {
 
         const numbersPlayed: NumbersPlayed = ((
           await prisma.bingo.findUnique({ where: { id: bingoId } })
-        )?.numbersPlayed as any) ?? { sequence: [], last5: [] };
+        )?.numbers_played as any) ?? { sequence: [], last5: [] };
 
         const isValid = await verifyVictory(
           type_of_victory,
-          board.bingo_data_json,
-          numbersPlayed.sequence
+          board.bingo_data_json
         );
         if (!isValid) {
           socket.emit("claim_result", {
@@ -275,7 +292,7 @@ io.on("connection", (socket) => {
             where: { id: bingoId },
             data: { winners: winnersJSON as any },
           }),
-          prisma.bingoCardboards.update({
+          prisma.bingo_cardboards.update({
             where: { id: boardId },
             data: { is_winner: true },
           }),
@@ -316,17 +333,73 @@ function remainingPrizesCount(prizes: Prize[], winnersJSON: any): number {
   return Math.max(total - awarded, 0);
 }
 
-// Placeholder: implementa validaciones reales para cada patrón
 async function verifyVictory(
   type: VictoryType,
-  boardPayload: any,
-  sequence: number[]
+  boardPayload: any
 ): Promise<boolean> {
-  // boardPayload = { size, columns: [{letter, numbers: number[]}] }
-  // sequence = números ya jugados
-  // FREE = 0 siempre cuenta como válido
-  // Implementa reglas aquí; por ahora dejamos true para flujo end-to-end.
-  return true;
+  const matrix = toMatrix(boardPayload);
+  const size = boardPayload.size;
+
+  switch (type) {
+    case "CARTON_LLENO":
+      return matrix.every((row) => row.every((num) => isMarked(num)));
+
+    case "LINEA_SIMPLE":
+      return (
+        matrix.some((row) => row.every((num) => isMarked(num))) ||
+        matrix[0].some((_, colIdx) =>
+          matrix.every((row) => isMarked(row[colIdx]))
+        )
+      );
+
+    case "LINEA_DOBLE":
+      const rowsMarked = matrix.filter((row) =>
+        row.every((num) => isMarked(num))
+      ).length;
+      const colsMarked = matrix[0].filter((_, colIdx) =>
+        matrix.every((row) => isMarked(row[colIdx]))
+      ).length;
+      return rowsMarked >= 2 || colsMarked >= 2;
+
+    case "CUATRO_ESQUINAS":
+      return (
+        isMarked(matrix[0][0]) &&
+        isMarked(matrix[0][size - 1]) &&
+        isMarked(matrix[size - 1][0]) &&
+        isMarked(matrix[size - 1][size - 1])
+      );
+
+    case "PERIMETRO":
+      for (let i = 0; i < size; i++) {
+        if (!isMarked(matrix[0][i])) return false;
+        if (!isMarked(matrix[size - 1][i])) return false;
+        if (!isMarked(matrix[i][0])) return false;
+        if (!isMarked(matrix[i][size - 1])) return false;
+      }
+      return true;
+
+    case "LETRA_H":
+      const midRow = Math.floor(size / 2);
+      const leftCol = matrix.every((row) => isMarked(row[0]));
+      const rightCol = matrix.every((row) => isMarked(row[size - 1]));
+      const middleRow = matrix[midRow].every((num) => isMarked(num));
+      return leftCol && rightCol && middleRow;
+
+    case "NUMERO_7":
+      const topRow = matrix[0].every((num) => isMarked(num));
+      const diagonal = matrix.every((row, idx) =>
+        isMarked(row[size - 1 - idx])
+      );
+      return topRow && diagonal;
+
+    case "FLECHA":
+      const diag = matrix.every((row, idx) => isMarked(row[idx]));
+      const mid = matrix[Math.floor(size / 2)].every((num) => isMarked(num));
+      return diag && mid;
+
+    default:
+      return false;
+  }
 }
 
 const PORT = process.env.PORT || 4000;

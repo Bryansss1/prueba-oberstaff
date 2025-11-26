@@ -106,7 +106,7 @@ model BingoCardboards {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model live_sessions {
-  id         Int        @id @default(autoincrement())
+  id         Int           @id @default(autoincrement())
   created_at DateTime      @default(now()) @db.Timestamptz(6)
   updated_at DateTime?     @default(now()) @db.Timestamp(6)
   deleted_at DateTime?     @db.Timestamp(6)
@@ -117,7 +117,7 @@ model live_sessions {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model source_codes {
-  id           Int    @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   created_at   DateTime  @default(now()) @db.Timestamptz(6)
   code         String?
   is_available Boolean?
@@ -127,7 +127,7 @@ model source_codes {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model bingo_prizes {
-  id               Int            @id @default(autoincrement())
+  id               Int               @id @default(autoincrement())
   created_at       DateTime          @default(now()) @db.Timestamptz(6)
   prize            String?
   status           status?           @default(ACTIVO)

@@ -236,6 +236,7 @@ export type bingo_prizesWhereInput = {
   prize_image?: Prisma.StringNullableFilter<"bingo_prizes"> | string | null
   quantity?: Prisma.IntNullableFilter<"bingo_prizes"> | number | null
   description?: Prisma.StringNullableFilter<"bingo_prizes"> | string | null
+  bingo_cardboards?: Prisma.Bingo_cardboardsListRelationFilter
 }
 
 export type bingo_prizesOrderByWithRelationInput = {
@@ -246,6 +247,7 @@ export type bingo_prizesOrderByWithRelationInput = {
   prize_image?: Prisma.SortOrderInput | Prisma.SortOrder
   quantity?: Prisma.SortOrderInput | Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  bingo_cardboards?: Prisma.bingo_cardboardsOrderByRelationAggregateInput
 }
 
 export type bingo_prizesWhereUniqueInput = Prisma.AtLeast<{
@@ -259,6 +261,7 @@ export type bingo_prizesWhereUniqueInput = Prisma.AtLeast<{
   prize_image?: Prisma.StringNullableFilter<"bingo_prizes"> | string | null
   quantity?: Prisma.IntNullableFilter<"bingo_prizes"> | number | null
   description?: Prisma.StringNullableFilter<"bingo_prizes"> | string | null
+  bingo_cardboards?: Prisma.Bingo_cardboardsListRelationFilter
 }, "id">
 
 export type bingo_prizesOrderByWithAggregationInput = {
@@ -296,6 +299,7 @@ export type bingo_prizesCreateInput = {
   prize_image?: string | null
   quantity?: number | null
   description?: string | null
+  bingo_cardboards?: Prisma.bingo_cardboardsCreateNestedManyWithoutBingo_prizesInput
 }
 
 export type bingo_prizesUncheckedCreateInput = {
@@ -306,6 +310,7 @@ export type bingo_prizesUncheckedCreateInput = {
   prize_image?: string | null
   quantity?: number | null
   description?: string | null
+  bingo_cardboards?: Prisma.bingo_cardboardsUncheckedCreateNestedManyWithoutBingo_prizesInput
 }
 
 export type bingo_prizesUpdateInput = {
@@ -315,6 +320,7 @@ export type bingo_prizesUpdateInput = {
   prize_image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bingo_cardboards?: Prisma.bingo_cardboardsUpdateManyWithoutBingo_prizesNestedInput
 }
 
 export type bingo_prizesUncheckedUpdateInput = {
@@ -325,6 +331,7 @@ export type bingo_prizesUncheckedUpdateInput = {
   prize_image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bingo_cardboards?: Prisma.bingo_cardboardsUncheckedUpdateManyWithoutBingo_prizesNestedInput
 }
 
 export type bingo_prizesCreateManyInput = {
@@ -354,6 +361,11 @@ export type bingo_prizesUncheckedUpdateManyInput = {
   prize_image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type Bingo_prizesNullableScalarRelationFilter = {
+  is?: Prisma.bingo_prizesWhereInput | null
+  isNot?: Prisma.bingo_prizesWhereInput | null
 }
 
 export type bingo_prizesCountOrderByAggregateInput = {
@@ -396,6 +408,22 @@ export type bingo_prizesSumOrderByAggregateInput = {
   quantity?: Prisma.SortOrder
 }
 
+export type bingo_prizesCreateNestedOneWithoutBingo_cardboardsInput = {
+  create?: Prisma.XOR<Prisma.bingo_prizesCreateWithoutBingo_cardboardsInput, Prisma.bingo_prizesUncheckedCreateWithoutBingo_cardboardsInput>
+  connectOrCreate?: Prisma.bingo_prizesCreateOrConnectWithoutBingo_cardboardsInput
+  connect?: Prisma.bingo_prizesWhereUniqueInput
+}
+
+export type bingo_prizesUpdateOneWithoutBingo_cardboardsNestedInput = {
+  create?: Prisma.XOR<Prisma.bingo_prizesCreateWithoutBingo_cardboardsInput, Prisma.bingo_prizesUncheckedCreateWithoutBingo_cardboardsInput>
+  connectOrCreate?: Prisma.bingo_prizesCreateOrConnectWithoutBingo_cardboardsInput
+  upsert?: Prisma.bingo_prizesUpsertWithoutBingo_cardboardsInput
+  disconnect?: Prisma.bingo_prizesWhereInput | boolean
+  delete?: Prisma.bingo_prizesWhereInput | boolean
+  connect?: Prisma.bingo_prizesWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.bingo_prizesUpdateToOneWithWhereWithoutBingo_cardboardsInput, Prisma.bingo_prizesUpdateWithoutBingo_cardboardsInput>, Prisma.bingo_prizesUncheckedUpdateWithoutBingo_cardboardsInput>
+}
+
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
 }
@@ -404,6 +432,89 @@ export type NullableEnumstatusFieldUpdateOperationsInput = {
   set?: $Enums.status | null
 }
 
+export type bingo_prizesCreateWithoutBingo_cardboardsInput = {
+  created_at?: Date | string
+  prize?: string | null
+  status?: $Enums.status | null
+  prize_image?: string | null
+  quantity?: number | null
+  description?: string | null
+}
+
+export type bingo_prizesUncheckedCreateWithoutBingo_cardboardsInput = {
+  id?: number
+  created_at?: Date | string
+  prize?: string | null
+  status?: $Enums.status | null
+  prize_image?: string | null
+  quantity?: number | null
+  description?: string | null
+}
+
+export type bingo_prizesCreateOrConnectWithoutBingo_cardboardsInput = {
+  where: Prisma.bingo_prizesWhereUniqueInput
+  create: Prisma.XOR<Prisma.bingo_prizesCreateWithoutBingo_cardboardsInput, Prisma.bingo_prizesUncheckedCreateWithoutBingo_cardboardsInput>
+}
+
+export type bingo_prizesUpsertWithoutBingo_cardboardsInput = {
+  update: Prisma.XOR<Prisma.bingo_prizesUpdateWithoutBingo_cardboardsInput, Prisma.bingo_prizesUncheckedUpdateWithoutBingo_cardboardsInput>
+  create: Prisma.XOR<Prisma.bingo_prizesCreateWithoutBingo_cardboardsInput, Prisma.bingo_prizesUncheckedCreateWithoutBingo_cardboardsInput>
+  where?: Prisma.bingo_prizesWhereInput
+}
+
+export type bingo_prizesUpdateToOneWithWhereWithoutBingo_cardboardsInput = {
+  where?: Prisma.bingo_prizesWhereInput
+  data: Prisma.XOR<Prisma.bingo_prizesUpdateWithoutBingo_cardboardsInput, Prisma.bingo_prizesUncheckedUpdateWithoutBingo_cardboardsInput>
+}
+
+export type bingo_prizesUpdateWithoutBingo_cardboardsInput = {
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumstatusFieldUpdateOperationsInput | $Enums.status | null
+  prize_image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type bingo_prizesUncheckedUpdateWithoutBingo_cardboardsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prize?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableEnumstatusFieldUpdateOperationsInput | $Enums.status | null
+  prize_image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+
+/**
+ * Count Type Bingo_prizesCountOutputType
+ */
+
+export type Bingo_prizesCountOutputType = {
+  bingo_cardboards: number
+}
+
+export type Bingo_prizesCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bingo_cardboards?: boolean | Bingo_prizesCountOutputTypeCountBingo_cardboardsArgs
+}
+
+/**
+ * Bingo_prizesCountOutputType without action
+ */
+export type Bingo_prizesCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Bingo_prizesCountOutputType
+   */
+  select?: Prisma.Bingo_prizesCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * Bingo_prizesCountOutputType without action
+ */
+export type Bingo_prizesCountOutputTypeCountBingo_cardboardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.bingo_cardboardsWhereInput
+}
 
 
 export type bingo_prizesSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -414,6 +525,8 @@ export type bingo_prizesSelect<ExtArgs extends runtime.Types.Extensions.Internal
   prize_image?: boolean
   quantity?: boolean
   description?: boolean
+  bingo_cardboards?: boolean | Prisma.bingo_prizes$bingo_cardboardsArgs<ExtArgs>
+  _count?: boolean | Prisma.Bingo_prizesCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["bingo_prizes"]>
 
 export type bingo_prizesSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -447,10 +560,18 @@ export type bingo_prizesSelectScalar = {
 }
 
 export type bingo_prizesOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "created_at" | "prize" | "status" | "prize_image" | "quantity" | "description", ExtArgs["result"]["bingo_prizes"]>
+export type bingo_prizesInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  bingo_cardboards?: boolean | Prisma.bingo_prizes$bingo_cardboardsArgs<ExtArgs>
+  _count?: boolean | Prisma.Bingo_prizesCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type bingo_prizesIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type bingo_prizesIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $bingo_prizesPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "bingo_prizes"
-  objects: {}
+  objects: {
+    bingo_cardboards: Prisma.$bingo_cardboardsPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     created_at: Date
@@ -853,6 +974,7 @@ readonly fields: bingo_prizesFieldRefs;
  */
 export interface Prisma__bingo_prizesClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  bingo_cardboards<T extends Prisma.bingo_prizes$bingo_cardboardsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.bingo_prizes$bingo_cardboardsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$bingo_cardboardsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -906,6 +1028,10 @@ export type bingo_prizesFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
+  /**
    * Filter, which bingo_prizes to fetch.
    */
   where: Prisma.bingo_prizesWhereUniqueInput
@@ -924,6 +1050,10 @@ export type bingo_prizesFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exte
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
+  /**
    * Filter, which bingo_prizes to fetch.
    */
   where: Prisma.bingo_prizesWhereUniqueInput
@@ -941,6 +1071,10 @@ export type bingo_prizesFindFirstArgs<ExtArgs extends runtime.Types.Extensions.I
    * Omit specific fields from the bingo_prizes
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
   /**
    * Filter, which bingo_prizes to fetch.
    */
@@ -990,6 +1124,10 @@ export type bingo_prizesFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
+  /**
    * Filter, which bingo_prizes to fetch.
    */
   where?: Prisma.bingo_prizesWhereInput
@@ -1038,6 +1176,10 @@ export type bingo_prizesFindManyArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
+  /**
    * Filter, which bingo_prizes to fetch.
    */
   where?: Prisma.bingo_prizesWhereInput
@@ -1080,6 +1222,10 @@ export type bingo_prizesCreateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the bingo_prizes
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
   /**
    * The data needed to create a bingo_prizes.
    */
@@ -1128,6 +1274,10 @@ export type bingo_prizesUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the bingo_prizes
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
   /**
    * The data needed to update a bingo_prizes.
    */
@@ -1195,6 +1345,10 @@ export type bingo_prizesUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
+  /**
    * The filter to search for the bingo_prizes to update in case it exists.
    */
   where: Prisma.bingo_prizesWhereUniqueInput
@@ -1221,6 +1375,10 @@ export type bingo_prizesDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
+  /**
    * Filter which bingo_prizes to delete.
    */
   where: Prisma.bingo_prizesWhereUniqueInput
@@ -1241,6 +1399,30 @@ export type bingo_prizesDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
+ * bingo_prizes.bingo_cardboards
+ */
+export type bingo_prizes$bingo_cardboardsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the bingo_cardboards
+   */
+  select?: Prisma.bingo_cardboardsSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the bingo_cardboards
+   */
+  omit?: Prisma.bingo_cardboardsOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_cardboardsInclude<ExtArgs> | null
+  where?: Prisma.bingo_cardboardsWhereInput
+  orderBy?: Prisma.bingo_cardboardsOrderByWithRelationInput | Prisma.bingo_cardboardsOrderByWithRelationInput[]
+  cursor?: Prisma.bingo_cardboardsWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.Bingo_cardboardsScalarFieldEnum | Prisma.Bingo_cardboardsScalarFieldEnum[]
+}
+
+/**
  * bingo_prizes without action
  */
 export type bingo_prizesDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1252,4 +1434,8 @@ export type bingo_prizesDefaultArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Omit specific fields from the bingo_prizes
    */
   omit?: Prisma.bingo_prizesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.bingo_prizesInclude<ExtArgs> | null
 }

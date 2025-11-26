@@ -1074,7 +1074,8 @@ export const Bingo_cardboardsScalarFieldEnum = {
   bingo_data_json: 'bingo_data_json',
   created_at: 'created_at',
   updated_at: 'updated_at',
-  deleted_at: 'deleted_at'
+  deleted_at: 'deleted_at',
+  prize_id: 'prize_id'
 } as const
 
 export type Bingo_cardboardsScalarFieldEnum = (typeof Bingo_cardboardsScalarFieldEnum)[keyof typeof Bingo_cardboardsScalarFieldEnum]
