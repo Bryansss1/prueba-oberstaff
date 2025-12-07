@@ -49,6 +49,7 @@ type BingoState = {
   is_started: boolean;
   prizes: Prize[];
   numbersPlayed: NumbersPlayed;
+  winners: WinnerDTO[];
 };
 
 const isMarked = (num: number): boolean => {
@@ -80,7 +81,7 @@ function roomName(bingoId: number) {
 async function loadBingo(bingoId: number) {
   const b = await prisma.bingo.findUnique({
     where: { id: bingoId },
-    include: { bingo_cardboards: true },
+    include: { BingoCardboards: true },
   });
   if (!b) throw new Error("Bingo no encontrado");
 
@@ -90,11 +91,14 @@ async function loadBingo(bingoId: number) {
     last5: [],
   };
 
+  const winners: WinnerDTO[] = ((b.winners as any)?.data ?? []) as WinnerDTO[];
+
   const state: BingoState = {
     id: b.id,
     is_started: b.is_started,
     prizes,
     numbersPlayed,
+    winners,
   };
   activeBingos.set(bingoId, state);
 }
@@ -175,9 +179,21 @@ app.post("/bingo/:id/start", async (req, res) => {
 
 app.post("/bingo/:id/stop", async (req, res) => {
   const id = Number(req.params.id);
-  await prisma.bingo.update({ where: { id }, data: { is_started: false } });
+  await prisma.bingo.update({ 
+    where: { id }, 
+    data: { 
+      is_started: false,
+      is_finished: true 
+    } 
+  });
   const st = activeBingos.get(id);
   if (st) st.is_started = false;
+  
+  // Notificar a todos los jugadores que el bingo terminó
+  io.to(roomName(id)).emit("bingo_finished", {
+    reason: "Bingo detenido manualmente por el administrador",
+  });
+  
   res.json({ ok: true });
 });
 
@@ -192,6 +208,7 @@ io.on("connection", (socket) => {
       last5: state.numbersPlayed.last5,
       prizes: state.prizes,
       is_started: state.is_started,
+      winners: state.winners,
     });
   });
 
@@ -203,21 +220,15 @@ io.on("connection", (socket) => {
       boardId: number;
       prize_id: number;
       type_of_victory: VictoryType;
-      user: {
-        user_id?: number;
-        user_email?: string;
-        user_names?: string;
-        user_last_names?: string;
-        user_phone_number?: string;
-        user_account_owner_dni?: string;
-        user_account_number?: string;
-        user_bank_name?: string;
-        user_dni?: string;
-      };
-      boardSnapshot?: any; // opcional
+      boardSnapshot?: any; // opcional para debugging
     }) => {
       try {
-        const { bingoId, boardId, prize_id, type_of_victory, user } = payload;
+        console.log(
+          "claim bingo payload carton",
+          payload.boardSnapshot?.columns
+        );
+
+        const { bingoId, boardId, prize_id, type_of_victory } = payload;
         const state = activeBingos.get(bingoId);
 
         if (!state || !state.is_started) {
@@ -237,8 +248,9 @@ io.on("connection", (socket) => {
           return;
         }
 
-        const board = await prisma.bingo_cardboards.findUnique({
+        const board = await prisma.bingoCardboards.findUnique({
           where: { id: boardId },
+          include: { user: true }, // Incluir información completa del usuario
         });
         if (!board || board.is_winner || board.bingo_id !== bingoId) {
           socket.emit("claim_result", {
@@ -264,21 +276,23 @@ io.on("connection", (socket) => {
           return;
         }
 
-        // Registrar ganador en winners JSON y deshabilitar cartón
+        // Registrar ganador en winners JSON usando información de la BD
         const bingoRow = await prisma.bingo.findUnique({
           where: { id: bingoId },
         });
         const winnersJSON = (bingoRow?.winners as any) ?? { data: [] };
+        
+        // Construir entrada del ganador con información completa de la BD
         const winnerEntry: WinnerDTO = {
-          user_id: user.user_id ?? 0,
-          user_email: user.user_email ?? "",
-          user_names: user.user_names ?? "",
-          user_last_names: user.user_last_names ?? "",
-          user_phone_number: user.user_phone_number,
-          user_account_owner_dni: user.user_account_owner_dni,
-          user_account_number: user.user_account_number,
-          user_bank_name: user.user_bank_name,
-          user_dni: user.user_dni,
+          user_id: board.user.id,
+          user_email: board.user.email,
+          user_names: board.user.names,
+          user_last_names: board.user.last_names,
+          user_phone_number: board.user.phone_number ?? undefined,
+          user_account_owner_dni: board.user.account_owner_dni ?? undefined,
+          user_account_number: board.user.account_number ?? undefined,
+          user_bank_name: board.user.bank_name ?? undefined,
+          user_dni: board.user.dni ?? undefined,
           prize_id: prize.prize_id,
           prize_name: prize.name,
           prize_description: prize.description,
@@ -286,13 +300,14 @@ io.on("connection", (socket) => {
           type_of_victory,
         };
         winnersJSON.data.push(winnerEntry);
+        state.winners.push(winnerEntry); // Actualizar estado en memoria
 
         await prisma.$transaction([
           prisma.bingo.update({
             where: { id: bingoId },
             data: { winners: winnersJSON as any },
           }),
-          prisma.bingo_cardboards.update({
+          prisma.bingoCardboards.update({
             where: { id: boardId },
             data: { is_winner: true },
           }),
@@ -304,6 +319,7 @@ io.on("connection", (socket) => {
           prizeName: prize.name,
           type_of_victory,
           time: Date.now(),
+          winners: state.winners,
         });
         socket.emit("claim_result", { ok: true });
 
@@ -312,7 +328,10 @@ io.on("connection", (socket) => {
         if (remaining <= 0) {
           await prisma.bingo.update({
             where: { id: bingoId },
-            data: { is_started: false },
+            data: { 
+              is_started: false,
+              is_finished: true 
+            },
           });
           state.is_started = false;
           io.to(roomName(bingoId)).emit("bingo_finished", {
@@ -337,8 +356,13 @@ async function verifyVictory(
   type: VictoryType,
   boardPayload: any
 ): Promise<boolean> {
+  console.log("Board payload:", boardPayload.columns["0"].numbers);
+
   const matrix = toMatrix(boardPayload);
   const size = boardPayload.size;
+
+  console.log("Verifying victory type:", type);
+  console.log("Board matrix:", matrix);
 
   switch (type) {
     case "CARTON_LLENO":
