@@ -1,0 +1,287 @@
+{
+  "info": {
+    "_postman_id": "bingo-sockets-api",
+    "name": "Bingo Sockets API",
+    "description": "API REST para gestión de bingos con Socket.IO",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3002",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "YOUR_JWT_TOKEN_HERE",
+      "type": "string"
+    },
+    {
+      "key": "bingo_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Bingo Endpoints",
+      "item": [
+        {
+          "name": "Get Bingo State",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bingo/{{bingo_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["bingo", "{{bingo_id}}"]
+            },
+            "description": "Obtiene el estado actual de un bingo específico. Este endpoint es público y no requiere autenticación."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{base_url}}/bingo/1",
+                  "host": ["{{base_url}}"],
+                  "path": ["bingo", "1"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"bingoId\": 1,\n  \"is_started\": true,\n  \"prizes\": [\n    {\n      \"prize_id\": 1,\n      \"name\": \"Premio 1\",\n      \"description\": \"Descripción del premio\",\n      \"image\": \"https://example.com/image.jpg\",\n      \"type_of_victory\": \"LINEA_SIMPLE\"\n    }\n  ],\n  \"numbersPlayed\": {\n    \"sequence\": [15, 23, 42, 67, 8],\n    \"last5\": [23, 42, 67, 8, 51]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Start Bingo",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bingo/{{bingo_id}}/start",
+              "host": ["{{base_url}}"],
+              "path": ["bingo", "{{bingo_id}}", "start"]
+            },
+            "description": "Inicia un bingo y comienza la extracción automática de números cada 5 segundos. Requiere autenticación JWT con rol ADMIN."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{base_url}}/bingo/1/start",
+                  "host": ["{{base_url}}"],
+                  "path": ["bingo", "1", "start"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            },
+            {
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{base_url}}/bingo/1/start",
+                  "host": ["{{base_url}}"],
+                  "path": ["bingo", "1", "start"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthorized\"\n}"
+            },
+            {
+              "name": "Forbidden",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{base_url}}/bingo/1/start",
+                  "host": ["{{base_url}}"],
+                  "path": ["bingo", "1", "start"]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Forbidden: Admin access required\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Stop Bingo",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/bingo/{{bingo_id}}/stop",
+              "host": ["{{base_url}}"],
+              "path": ["bingo", "{{bingo_id}}", "stop"]
+            },
+            "description": "Detiene un bingo manualmente y notifica a todos los jugadores. Marca el bingo como finalizado en la base de datos. Requiere autenticación JWT con rol ADMIN."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{base_url}}/bingo/1/stop",
+                  "host": ["{{base_url}}"],
+                  "path": ["bingo", "1", "stop"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            },
+            {
+              "name": "Unauthorized",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{base_url}}/bingo/1/stop",
+                  "host": ["{{base_url}}"],
+                  "path": ["bingo", "1", "stop"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Unauthorized\"\n}"
+            },
+            {
+              "name": "Forbidden",
+              "originalRequest": {
+                "method": "POST",
+                "url": {
+                  "raw": "{{base_url}}/bingo/1/stop",
+                  "host": ["{{base_url}}"],
+                  "path": ["bingo", "1", "stop"]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"message\": \"Forbidden: Admin access required\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Endpoints REST para gestión de bingos"
+    },
+    {
+      "name": "Socket.IO Documentation",
+      "item": [
+        {
+          "name": "Socket.IO Connection",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/socket.io/",
+              "host": ["{{base_url}}"],
+              "path": ["socket.io", ""]
+            },
+            "description": "Socket.IO se conecta en la misma URL del servidor. Usa la librería socket.io-client para conectarte:\n\n```javascript\nconst socket = io('http://localhost:3002', {\n  auth: { token: 'YOUR_JWT_TOKEN' }\n});\n```\n\n**Eventos que puedes emitir (cliente → servidor):**\n- `join_bingo` - Unirse a una sala de bingo\n- `claim_bingo` - Reclamar una victoria\n\n**Eventos que recibes (servidor → cliente):**\n- `bootstrap` - Estado inicial al unirse\n- `number_drawn` - Nuevo número cantado\n- `claim_result` - Resultado de reclamación\n- `winner_announced` - Nuevo ganador\n- `bingo_finished` - Bingo finalizado\n- `error` - Errores del servidor"
+          }
+        }
+      ],
+      "description": "Documentación de eventos Socket.IO. Para probar WebSockets, usa herramientas como:\n- Socket.IO Client Tool\n- Postman (con WebSocket support)\n- Tu propia aplicación cliente"
+    }
+  ]
+}

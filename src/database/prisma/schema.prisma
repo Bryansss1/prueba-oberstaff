@@ -118,7 +118,7 @@ model live_sessions {
 model source_codes {
   id           Int    @id @default(autoincrement())
   created_at   DateTime  @default(now()) @db.Timestamptz(6)
-  code         String?
+  code         String?   @unique
   is_available Boolean?
   updated_at   DateTime? @default(now()) @db.Timestamp(6)
   deleted_at   DateTime? @db.Timestamp(6)
