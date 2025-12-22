@@ -39,6 +39,25 @@ export function registerBingoRoutes(app: Express, io: Server): void {
       if (!st.is_started) {
         await prisma.bingo.update({ where: { id }, data: { is_started: true } });
         st.is_started = true;
+        
+        // Importar módulos necesarios para logging
+        const { getActiveParticipantsCount } = await import("./state.js");
+        const { BingoConfig } = await import("../config/bingo.config.js");
+        const moment = (await import("moment-timezone")).default;
+        
+        const participants = await getActiveParticipantsCount(id);
+        const minRequired = st.min_number_of_participants || 0;
+        const now = moment().tz(BingoConfig.autoStart.timezone);
+        
+        // 👨‍💼 LOG: Inicio manual
+        console.log(`\n${'='.repeat(60)}`);
+        console.log(`[BINGO ${id}] 👨‍💼 INICIO MANUAL (OVERRIDE)`);
+        console.log(`👤 Iniciado por: ${req.user?.names} ${req.user?.last_names} (${req.user?.email})`);
+        console.log(`👥 Participantes actuales: ${participants}${participants < minRequired ? ` (mínimo: ${minRequired}) ⚠️` : `/${minRequired}`}`);
+        console.log(`⏰ Hora configurada: ${BingoConfig.autoStart.scheduledTime} | Hora actual: ${now.format('HH:mm')}`);
+        console.log(`🎁 Premios disponibles: ${st.prizes.length}`);
+        console.log(`⏰ Hora de inicio: ${new Date().toLocaleString()}`);
+        console.log(`${'='.repeat(60)}\n`);
       }
 
       createNumberFeeder(id, io);
@@ -52,6 +71,8 @@ export function registerBingoRoutes(app: Express, io: Server): void {
   app.post("/bingo/:id/stop", jwtMiddleware, adminOnlyMiddleware, async (req, res) => {
     try {
       const id = Number(req.params.id);
+      const st = activeBingos.get(id);
+      
       await prisma.bingo.update({
         where: { id },
         data: {
@@ -60,8 +81,16 @@ export function registerBingoRoutes(app: Express, io: Server): void {
         },
       });
 
-      const st = activeBingos.get(id);
       if (st) st.is_started = false;
+
+      // 🛑 LOG: Fin del juego (manual)
+      console.log(`\n${'='.repeat(60)}`);
+      console.log(`[BINGO ${id}] 🛑 JUEGO DETENIDO MANUALMENTE`);
+      console.log(`👤 Detenido por: ${req.user?.names} ${req.user?.last_names} (${req.user?.email})`);
+      console.log(`🎱 Números cantados: ${st?.numbersPlayed.sequence.length || 0}/75`);
+      console.log(`🏆 Ganadores totales: ${st?.winners.length || 0}`);
+      console.log(`⏰ Hora de finalización: ${new Date().toLocaleString()}`);
+      console.log(`${'='.repeat(60)}\n`);
 
       // Notificar a todos los jugadores que el bingo terminó
       io.to(roomName(id)).emit("bingo_finished", {

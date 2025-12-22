@@ -13,6 +13,24 @@ export function roomName(bingoId: number): string {
 }
 
 /**
+ * Cuenta el número de participantes únicos activos en un bingo
+ * (usuarios con al menos un cartón)
+ */
+export async function getActiveParticipantsCount(
+  bingoId: number
+): Promise<number> {
+  const uniqueUsers = await prisma.bingoCardboards.groupBy({
+    by: ["user_id"],
+    where: {
+      bingo_id: bingoId,
+      deleted_at: null,
+    },
+  });
+
+  return uniqueUsers.length;
+}
+
+/**
  * Carga el estado de un bingo desde la base de datos a la memoria
  */
 export async function loadBingo(bingoId: number): Promise<void> {
@@ -38,6 +56,7 @@ export async function loadBingo(bingoId: number): Promise<void> {
     prizes,
     numbersPlayed,
     winners,
+    min_number_of_participants: b.min_number_of_participants || 0,
   };
 
   activeBingos.set(bingoId, state);

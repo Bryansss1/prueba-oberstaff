@@ -1,0 +1,643 @@
+# Sistema de Inicio Automático de Bingo
+
+## Descripción
+
+Implementar un sistema que inicie automáticamente el bingo cuando se cumplan dos condiciones:
+1. **Mínimo de participantes alcanzado** (campo `min_number_of_participants` ya existe en BD)
+2. **Hora programada** (9am Venezuela por defecto, **configurable en proyecto**)
+
+El sistema debe mantener la capacidad de inicio manual (override) para admins.
+
+---
+
+## Análisis del Schema Actual
+
+### Tabla `bingo`
+- ✅ `min_number_of_participants: Int?` - **Ya existe, se usa**
+- ✅ `number_of_participants: Int` - Contador actual
+- ❌ **NO se agregan campos nuevos a la BD**
+
+### Configuración en Proyecto
+- ✅ Horario de inicio → **Variables de entorno o config file**
+- ✅ Timezone → **Variables de entorno** (default: "America/Caracas")
+- ✅ Auto-start habilitado → **Variables de entorno** (default: true)
+
+---
+
+## Cambios Propuestos
+
+### 1. Archivo de Configuración
+
+**Archivo:** [NEW] [bingo.config.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/config/bingo.config.ts)
+
+```typescript
+export const BingoConfig = {
+  autoStart: {
+    enabled: process.env.AUTO_START_ENABLED === 'true' || true,
+    scheduledTime: process.env.BINGO_START_TIME || '09:00', // HH:mm formato
+    timezone: process.env.BINGO_TIMEZONE || 'America/Caracas',
+    checkIntervalMinutes: 1, // Frecuencia del scheduler
+  }
+};
+```
+
+**Variables de entorno (.env):**
+```env
+AUTO_START_ENABLED=true
+BINGO_START_TIME=09:00
+BINGO_TIMEZONE=America/Caracas
+```
+
+---
+
+### 2. Instalar Dependencias
+
+**node-cron** para scheduler:
+```bash
+npm install node-cron
+npm install -D @types/node-cron
+```
+
+**moment-timezone** para manejo de zonas horarias:
+```bash
+npm install moment-timezone
+npm install -D @types/moment-timezone
+```
+
+---
+
+### 3. Crear Módulo de Scheduler
+
+**Archivo:** [NEW] [bingo-scheduler.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/bingo-scheduler.ts)
+
+**Funcionalidad:**
+- Ejecutar cada minuto (cron: `* * * * *`)
+- Verificar bingos pendientes que cumplen condiciones:
+  - `is_started: false`
+  - `is_finished: false` 
+  - Hora actual >= hora configurada en proyecto
+  - Participantes actuales >= `min_number_of_participants` (de BD)
+- Si se cumplen: iniciar bingo automáticamente
+- Logging de intentos y éxitos
+
+**Lógica:**
+```typescript
+import cron from 'node-cron';
+import moment from 'moment-timezone';
+import { BingoConfig } from '../config/bingo.config';
+
+export function startBingoScheduler(io: Server) {
+  if (!BingoConfig.autoStart.enabled) {
+    console.log('⚠️  Auto-start deshabilitado en configuración');
+    return;
+  }
+
+  cron.schedule('* * * * *', async () => {
+    await checkAndStartPendingBingos(io);
+  });
+  
+  console.log('✅ Scheduler de bingos iniciado');
+}
+```
+
+---
+
+### 4. Función de Conteo de Participantes
+
+**Archivo:** [state.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/state.ts)
+
+```typescript
+export async function getActiveParticipantsCount(bingoId: number): Promise<number> {
+  const uniqueUsers = await prisma.bingoCardboards.groupBy({
+    by: ['user_id'],
+    where: {
+      bingo_id: bingoId,
+      deleted_at: null
+    }
+  });
+  
+  return uniqueUsers.length; // Usuarios únicos con cartones
+}
+```
+
+---
+
+### 5. Función de Validación de Hora
+
+**Archivo:** [bingo-scheduler.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/bingo-scheduler.ts)
+
+```typescript
+function isTimeToStart(): boolean {
+  const now = moment().tz(BingoConfig.autoStart.timezone);
+  const [hour, minute] = BingoConfig.autoStart.scheduledTime.split(':');
+  
+  const scheduledTime = moment().tz(BingoConfig.autoStart.timezone)
+    .set({ hour: parseInt(hour), minute: parseInt(minute), second: 0 });
+  
+  // Ventana de 5 minutos para iniciar (por si el scheduler se perdió un minuto)
+  const windowEnd = scheduledTime.clone().add(5, 'minutes');
+  
+  return now.isBetween(scheduledTime, windowEnd, null, '[)');
+}
+```
+
+---
+
+### 6. Función de Inicio Automático
+
+**Archivo:** [bingo-scheduler.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/bingo-scheduler.ts)
+
+```typescript
+async function checkAndStartPendingBingos(io: Server) {
+  if (!isTimeToStart()) return;
+  
+  // Buscar bingos pendientes
+  const pendingBingos = await prisma.bingo.findMany({
+    where: {
+      is_started: false,
+      is_finished: false
+    }
+  });
+  
+  for (const bingo of pendingBingos) {
+    const participants = await getActiveParticipantsCount(bingo.id);
+    const minRequired = bingo.min_number_of_participants || 0;
+    
+    if (participants >= minRequired) {
+      await startBingoAutomatically(bingo.id, io);
+    } else {
+      console.log(`[BINGO ${bingo.id}] ⏳ Esperando participantes: ${participants}/${minRequired}`);
+    }
+  }
+}
+```
+
+---
+
+### 7. Integrar Scheduler en Index
+
+**Archivo:** [MODIFY] [index.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/index.ts)
+
+```typescript
+import { startBingoScheduler } from "./bingo/bingo-scheduler";
+
+// ... después de crear io
+startBingoScheduler(io);
+
+console.log(`⏰ Bingo auto-start: ${BingoConfig.autoStart.enabled ? 'HABILITADO' : 'DESHABILITADO'}`);
+console.log(`🕐 Hora programada: ${BingoConfig.autoStart.scheduledTime} (${BingoConfig.autoStart.timezone})`);
+```
+
+---
+
+### 8. Mantener Endpoint Manual
+
+**Archivo:** [routes.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/routes.ts)
+
+El endpoint `POST /bingo/:id/start` se mantiene igual, permite forzar inicio sin validaciones.
+
+---
+
+## Flujo de Inicio Automático
+
+```mermaid
+graph TD
+    A[Scheduler cada minuto] --> B{AUTO_START_ENABLED?}
+    B -->|No| Z[Sin acción]
+    B -->|Sí| C{Hora actual entre ventana?}
+    C -->|No| Z
+    C -->|Sí| D[Buscar bingos pendientes]
+    D --> E{Hay bingos sin iniciar?}
+    E -->|No| Z
+    E -->|Sí| F[Para cada bingo]
+    F --> G{Participantes >= mínimo?}
+    G -->|No| H[Log: Esperando participantes]
+    G -->|Sí| I[✅ Iniciar Bingo Automáticamente]
+    I --> J[Log: Inicio automático]
+    I --> K[Emitir eventos]
+    I --> L[Iniciar number feeder]
+```
+
+---
+
+## Configuración del Proyecto
+
+### Variables de Entorno (.env)
+
+```env
+# Auto-start del bingo
+AUTO_START_ENABLED=true
+BINGO_START_TIME=09:00
+BINGO_TIMEZONE=America/Caracas
+```
+
+### Customizar por Ambiente
+
+**Desarrollo (.env.development):**
+```env
+AUTO_START_ENABLED=false  # Manual en desarrollo
+```
+
+**Producción (.env.production):**
+```env
+AUTO_START_ENABLED=true
+BINGO_START_TIME=09:00
+BINGO_TIMEZONE=America/Caracas
+```
+
+---
+
+## Logging Mejorado
+
+### Inicio del Servidor
+```
+✅ Scheduler de bingos iniciado
+⏰ Bingo auto-start: HABILITADO
+🕐 Hora programada: 09:00 (America/Caracas)
+```
+
+### Inicio Automático
+```
+============================================================
+[BINGO 1] 🤖 INICIO AUTOMÁTICO
+⏰ Hora configurada: 9:00 AM (America/Caracas)
+⏰ Hora real: 9:00:30 AM
+👥 Participantes: 15/10 (mínimo requerido)
+🎁 Premios disponibles: 5
+============================================================
+```
+
+### Inicio Manual
+```
+============================================================
+[BINGO 1] 👨‍💼 INICIO MANUAL (OVERRIDE)
+👤 Iniciado por: Admin (admin@example.com)
+👥 Participantes actuales: 5 (mínimo: 10) ⚠️
+⏰ Hora configurada: 9:00 AM | Hora actual: 8:45 AM ⚠️
+🎁 Premios disponibles: 5
+============================================================
+```
+
+### Esperando Participantes
+```
+[BINGO 1] ⏳ Esperando participantes: 7/10
+[BINGO 2] ⏳ Esperando participantes: 3/5
+```
+
+---
+
+## Ventajas de esta Aproximación
+
+### ✅ Sin Cambios en BD
+- No requiere migración
+- No afecta esquema existente
+- `min_number_of_participants` ya existe
+
+### ✅ Configuración Centralizada
+- Todo en archivo [.env](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/.env)
+- Fácil cambiar horario sin tocar código
+- Diferentes configs por ambiente
+
+### ✅ Simple y Mantenible
+- Un solo scheduler para todos los bingos
+- Misma hora para todos (caso de uso común)
+- Código más simple
+
+### ✅ Flexible
+- Deshabilitar auto-start con variable
+- Cambiar timezone sin recompilar
+- Ajustar ventana de tiempo
+
+---
+
+## Plan de Verificación
+
+### Verificación Manual
+
+**1. Verificar configuración al iniciar**
+```bash
+npm run dev
+# Debe mostrar: 
+# ✅ Scheduler de bingos iniciado
+# ⏰ Bingo auto-start: HABILITADO
+# 🕐 Hora programada: 09:00 (America/Caracas)
+```
+
+**2. Probar conteo de participantes**
+```typescript
+const count = await getActiveParticipantsCount(1);
+console.log(`Participantes: ${count}`);
+```
+
+**3. Probar inicio automático**
+- Configurar `BINGO_START_TIME` en 2 minutos desde ahora
+- Crear bingo con `min_number_of_participants: 2`
+- Agregar 2 usuarios con cartones
+- Esperar y verificar logs de inicio automático
+
+**4. Probar inicio manual override**
+- Configurar `BINGO_START_TIME=09:00`
+- Usar endpoint `POST /bingo/:id/start` a las 8:00am
+- Verificar que inicia sin validar hora
+
+**5. Deshabilitar auto-start**
+```env
+AUTO_START_ENABLED=false
+```
+- Reiniciar servidor
+- Verificar que no aparece el scheduler en logs
+
+---
+
+## Archivos Modificados/Creados
+
+### Nuevos
+1. `src/config/bingo.config.ts` - Configuración del auto-start
+2. `src/bingo/bingo-scheduler.ts` - Scheduler y lógica de inicio
+
+### Modificados
+1. [src/bingo/state.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/state.ts) - Función de conteo de participantes
+2. [src/index.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/index.ts) - Iniciar scheduler al arrancar
+3. [.env](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/.env) - Variables de configuración
+
+### Sin Cambios
+- ❌ NO se modifica [schema.prisma](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/database/prisma/schema.prisma)
+- ✅ Se usa campo existente `min_number_of_participants`
+
+
+---
+
+## Análisis del Schema Actual
+
+### Tabla `bingo`
+- ✅ `min_number_of_participants: Int?` - Ya existe
+- ✅ `number_of_participants: Int` - Contador actual
+- ❌ `scheduled_start_time: DateTime?` - **NECESITA AGREGARSE**
+- ❌ `timezone: String?` - **NECESITA AGREGARSE** (default: "America/Caracas")
+- ❌ `auto_start_enabled: Boolean` - **NECESITA AGREGARSE** (default: true)
+
+### Tabla `BingoCardboards`
+- Usaremos COUNT de cardboards únicos por `bingo_id` para contar participantes
+
+---
+
+## Cambios Propuestos
+
+### 1. Actualizar Schema Prisma
+
+**Archivo:** [schema.prisma](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/database/prisma/schema.prisma)
+
+Agregar campos al modelo [Bingo](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/state.ts#15-45):
+```prisma
+model Bingo {
+  // ... campos existentes
+  scheduled_start_time DateTime?  // Hora programada de inicio
+  timezone             String?     @default("America/Caracas")
+  auto_start_enabled   Boolean     @default(true)
+}
+```
+
+**Migración:**
+```bash
+npx prisma migrate dev --name add_bingo_auto_start_fields
+```
+
+---
+
+### 2. Instalar Dependencias
+
+**node-cron** para scheduler:
+```bash
+npm install node-cron
+npm install -D @types/node-cron
+```
+
+**moment-timezone** para manejo de zonas horarias:
+```bash
+npm install moment-timezone
+npm install -D @types/moment-timezone
+```
+
+---
+
+### 3. Crear Módulo de Scheduler
+
+**Archivo:** [NEW] [bingo-scheduler.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/bingo-scheduler.ts)
+
+**Funcionalidad:**
+- Ejecutar cada minuto (cron: `* * * * *`)
+- Verificar bingos pendientes con `auto_start_enabled: true`
+- Validar condiciones de inicio:
+  - Hora actual >= `scheduled_start_time` (en timezone correcto)
+  - Participantes actuales >= `min_number_of_participants`
+- Si se cumplen: iniciar bingo automáticamente
+- Logging de intentos y éxitos
+
+---
+
+### 4. Función de Conteo de Participantes
+
+**Archivo:** [state.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/state.ts)
+
+```typescript
+export async function getActiveParticipantsCount(bingoId: number): Promise<number> {
+  const count = await prisma.bingoCardboards.groupBy({
+    by: ['user_id'],
+    where: {
+      bingo_id: bingoId,
+      deleted_at: null
+    },
+    _count: true
+  });
+  
+  return count.length; // Usuarios únicos con cartones
+}
+```
+
+---
+
+### 5. Función de Inicio Automático
+
+**Archivo:** [bingo-scheduler.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/bingo-scheduler.ts)
+
+```typescript
+async function checkAndStartBingo(bingoId: number, io: Server) {
+  const bingo = await prisma.bingo.findUnique({ where: { id: bingoId } });
+  
+  // Validaciones
+  if (!bingo.auto_start_enabled) return;
+  if (bingo.is_started) return;
+  if (!bingo.scheduled_start_time) return;
+  
+  const now = moment().tz(bingo.timezone || "America/Caracas");
+  const scheduledTime = moment(bingo.scheduled_start_time).tz(bingo.timezone!);
+  
+  if (now.isBefore(scheduledTime)) return;
+  
+  const participants = await getActiveParticipantsCount(bingoId);
+  if (participants < (bingo.min_number_of_participants || 0)) return;
+  
+  // ✅ Iniciar bingo
+  await startBingoAutomatically(bingoId, io);
+}
+```
+
+---
+
+### 6. Integrar Scheduler en Index
+
+**Archivo:** [MODIFY] [index.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/index.ts)
+
+```typescript
+import { startBingoScheduler } from "./bingo/bingo-scheduler";
+
+// ... después de crear io
+startBingoScheduler(io);
+```
+
+---
+
+### 7. Mantener Endpoint Manual
+
+**Archivo:** [routes.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/routes.ts)
+
+El endpoint `POST /bingo/:id/start` se mantiene igual, pero agregamos:
+- Log indicando si es inicio **manual** vs **automático**
+- Bypass de validaciones de hora y participantes en inicio manual
+
+---
+
+### 8. Actualizar Tipos
+
+**Archivo:** [types.ts](file:///c:/Users/welcome/Desktop/trabajo-programacion/freenlancers/bingo-sockets/src/bingo/types.ts)
+
+```typescript
+export type BingoState = {
+  // ... campos existentes
+  scheduled_start_time?: Date;
+  timezone: string;
+  auto_start_enabled: boolean;
+};
+```
+
+---
+
+## Flujo de Inicio Automático
+
+```mermaid
+graph TD
+    A[Scheduler cada minuto] --> B{Hay bingos pendientes?}
+    B -->|No| A
+    B -->|Sí| C{auto_start_enabled?}
+    C -->|No| A
+    C -->|Sí| D{Hora alcanzada?}
+    D -->|No| A
+    D -->|Sí| E{Participantes >= mínimo?}
+    E -->|No| F[Log: Esperando participantes]
+    E -->|Sí| G[✅ Iniciar Bingo Automáticamente]
+    G --> H[Log: Inicio automático]
+    G --> I[Emitir evento bingo_started]
+    G --> J[Iniciar number feeder]
+    F --> A
+```
+
+---
+
+## Logging Mejorado
+
+### Inicio Automático
+```
+============================================================
+[BINGO 1] 🤖 INICIO AUTOMÁTICO
+⏰ Hora programada: 9:00 AM (America/Caracas)
+👥 Participantes: 15/10 (mínimo requerido)
+🎁 Premios disponibles: 5
+⏰ Hora real de inicio: 9:00:30 AM
+============================================================
+```
+
+### Inicio Manual
+```
+============================================================
+[BINGO 1] 👨‍💼 INICIO MANUAL (OVERRIDE)
+👤 Iniciado por: Admin (admin@example.com)
+👥 Participantes actuales: 5 (mínimo: 10) ⚠️
+⏰ Hora programada: 9:00 AM | Hora actual: 8:45 AM ⚠️
+🎁 Premios disponibles: 5
+============================================================
+```
+
+---
+
+## Ejemplo de Configuración
+
+### Crear Bingo con Auto-Start
+```json
+{
+  "min_number_of_participants": 10,
+  "scheduled_start_time": "2025-12-22T09:00:00",
+  "timezone": "America/Caracas",
+  "auto_start_enabled": true
+}
+```
+
+### Deshabilitar Auto-Start
+```json
+{
+  "auto_start_enabled": false
+}
+```
+
+---
+
+## Plan de Verificación
+
+### Pruebas Automatizadas
+No implementadas inicialmente.
+
+### Verificación Manual
+
+**1. Verificar conteo de participantes**
+```typescript
+await getActiveParticipantsCount(bingoId);
+```
+
+**2. Probar inicio automático**
+- Configurar bingo con `scheduled_start_time` en 2 minutos
+- Agregar participantes hasta alcanzar mínimo
+- Esperar y verificar logs de inicio automático
+
+**3. Probar inicio manual (override)**
+- Configurar bingo con hora futura
+- Usar endpoint `POST /bingo/:id/start` como admin
+- Verificar que inicie sin validar condiciones
+
+**4. Verificar timezone**
+- Configurar bingos con diferentes timezones
+- Verificar que la hora se respete correctamente
+
+---
+
+## Consideraciones
+
+### Seguridad
+- ✅ Scheduler solo puede iniciar, no detener
+- ✅ Solo admins pueden forzar inicio manual
+- ✅ Logs auditables de inicio automático vs manual
+
+### Performance
+- Scheduler ejecuta cada minuto (bajo impacto)
+- Query optimizado con índices en `is_started` y `scheduled_start_time`
+
+### Escalabilidad
+- Si múltiples instancias del servidor: usar Redis locks (futuro)
+- Actual: single instance, no hay race conditions
+
+---
+
+## Próximos Pasos Opcionales
+
+1. **API para configurar auto-start** (crear/editar bingos con estos campos)
+2. **Notificaciones** cuando faltan X minutos para inicio
+3. **Dashboard** mostrando próximos bingos y conteo de participantes
+4. **Recordatorios** a usuarios cuando faltan participantes

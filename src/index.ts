@@ -6,6 +6,7 @@ import cors from "cors";
 import { createSocketServer } from "./config/socket-io";
 import { registerBingoRoutes } from "./bingo/routes";
 import { registerSocketHandlers } from "./bingo/socket-handlers";
+import { startBingoScheduler } from "./bingo/bingo-scheduler";
 
 // Configurar Express
 const app = express();
@@ -18,11 +19,14 @@ const server = http.createServer(app);
 // Crear servidor Socket.IO
 const io = createSocketServer(server);
 
-// Registrar rutas REST API
-registerBingoRoutes(app, io);
-
 // Registrar manejadores de Socket.IO
 registerSocketHandlers(io);
+
+// Iniciar scheduler de auto-start de bingos
+startBingoScheduler(io);
+
+// Registrar rutas REST API
+registerBingoRoutes(app, io);
 
 // Iniciar servidor
 const PORT = process.env.PORT || 4000;

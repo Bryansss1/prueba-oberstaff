@@ -160,6 +160,15 @@ export function registerSocketHandlers(io: Server): void {
               },
             });
             state.is_started = false;
+            
+            // 🏁 LOG: Fin del juego (automático)
+            console.log(`\n${'='.repeat(60)}`);
+            console.log(`[BINGO ${bingoId}] 🏁 JUEGO FINALIZADO - SIN PREMIOS RESTANTES`);
+            console.log(`🎱 Números cantados: ${state.numbersPlayed.sequence.length}/75`);
+            console.log(`🏆 Ganadores totales: ${state.winners.length}`);
+            console.log(`⏰ Hora de finalización: ${new Date().toLocaleString()}`);
+            console.log(`${'='.repeat(60)}\n`);
+            
             io.to(roomName(bingoId)).emit("bingo_finished", {
               reason: "Sin premios restantes",
             });

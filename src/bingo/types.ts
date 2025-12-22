@@ -35,8 +35,9 @@ export type WinnerDTO = {
 
 export type BingoState = {
   id: number;
-  is_started: boolean;
   prizes: Prize[];
   numbersPlayed: NumbersPlayed;
   winners: WinnerDTO[];
+  is_started: boolean;
+  min_number_of_participants: number; // Mínimo de participantes requeridos
 };

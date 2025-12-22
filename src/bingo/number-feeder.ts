@@ -22,6 +22,9 @@ export async function pushNumber(
     data: { numbers_played: state.numbersPlayed as any },
   });
 
+  // 📊 LOG: Número jugado
+  console.log(`[BINGO ${bingoId}] 🎱 Número cantado: ${n} | Total cantados: ${state.numbersPlayed.sequence.length}/75 | Hora: ${new Date().toLocaleTimeString()}`);
+
   io.to(roomName(bingoId)).emit("number_drawn", {
     number: n,
     last5: state.numbersPlayed.last5,
