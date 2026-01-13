@@ -4,7 +4,7 @@ import { prisma } from "../config/prisma";
 import { activeBingos, roomName } from "./state";
 
 /**
- * Emite y persiste un nuevo número en el bingo
+* Emite y persisste un nuevo número en el bingo
  */
 export async function pushNumber(
   bingoId: number,
