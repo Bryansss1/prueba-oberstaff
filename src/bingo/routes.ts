@@ -4,8 +4,6 @@ import { Server } from "socket.io";
 import { prisma } from "../config/prisma";
 import { activeBingos, loadBingo, roomName } from "./state";
 import { createNumberFeeder } from "./number-feeder";
-import { jwtMiddleware } from "../middlewares/premiddlewares/jwt.middleware";
-import { adminOnlyMiddleware } from "../middlewares/premiddlewares/admin.middleware";
 
 /**
  * Registra las rutas REST API del bingo
@@ -29,8 +27,8 @@ export function registerBingoRoutes(app: Express, io: Server): void {
     }
   });
 
-  // POST /bingo/:id/start - Iniciar bingo (PROTEGIDO - Solo ADMIN)
-  app.post("/bingo/:id/start", jwtMiddleware, adminOnlyMiddleware, async (req, res) => {
+  // POST /bingo/:id/start - Iniciar bingo (SIN AUTENTICACIÓN - Para pruebas)
+  app.post("/bingo/:id/start", async (req, res) => {
     try {
       const id = Number(req.params.id);
       await loadBingo(id);
@@ -49,10 +47,10 @@ export function registerBingoRoutes(app: Express, io: Server): void {
         const minRequired = st.min_number_of_participants || 0;
         const now = moment().tz(BingoConfig.autoStart.timezone);
         
-        // 👨‍💼 LOG: Inicio manual
+        // 👨‍💼 LOG: Inicio manual (sin autenticación para pruebas)
         console.log(`\n${'='.repeat(60)}`);
-        console.log(`[BINGO ${id}] 👨‍💼 INICIO MANUAL (OVERRIDE)`);
-        console.log(`👤 Iniciado por: ${req.user?.names} ${req.user?.last_names} (${req.user?.email})`);
+        console.log(`[BINGO ${id}] 👨‍💼 INICIO MANUAL (PRUEBA - Sin autenticación)`);
+        console.log(`👤 Iniciado por: Usuario de prueba`);
         console.log(`👥 Participantes actuales: ${participants}${participants < minRequired ? ` (mínimo: ${minRequired}) ⚠️` : `/${minRequired}`}`);
         console.log(`⏰ Hora configurada: ${BingoConfig.autoStart.scheduledTime} | Hora actual: ${now.format('HH:mm')}`);
         console.log(`🎁 Premios disponibles: ${st.prizes.length}`);
@@ -67,8 +65,8 @@ export function registerBingoRoutes(app: Express, io: Server): void {
     }
   });
 
-  // POST /bingo/:id/stop - Detener bingo (PROTEGIDO - Solo ADMIN)
-  app.post("/bingo/:id/stop", jwtMiddleware, adminOnlyMiddleware, async (req, res) => {
+  // POST /bingo/:id/stop - Detener bingo (SIN AUTENTICACIÓN - Para pruebas)
+  app.post("/bingo/:id/stop", async (req, res) => {
     try {
       const id = Number(req.params.id);
       const st = activeBingos.get(id);
@@ -83,10 +81,10 @@ export function registerBingoRoutes(app: Express, io: Server): void {
 
       if (st) st.is_started = false;
 
-      // 🛑 LOG: Fin del juego (manual)
+      // 🛑 LOG: Fin del juego (manual - sin autenticación para pruebas)
       console.log(`\n${'='.repeat(60)}`);
-      console.log(`[BINGO ${id}] 🛑 JUEGO DETENIDO MANUALMENTE`);
-      console.log(`👤 Detenido por: ${req.user?.names} ${req.user?.last_names} (${req.user?.email})`);
+      console.log(`[BINGO ${id}] 🛑 JUEGO DETENIDO MANUALMENTE (PRUEBA - Sin autenticación)`);
+      console.log(`👤 Detenido por: Usuario de prueba`);
       console.log(`🎱 Números cantados: ${st?.numbersPlayed.sequence.length || 0}/75`);
       console.log(`🏆 Ganadores totales: ${st?.winners.length || 0}`);
       console.log(`⏰ Hora de finalización: ${new Date().toLocaleString()}`);

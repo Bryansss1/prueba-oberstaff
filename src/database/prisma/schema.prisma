@@ -61,6 +61,7 @@ model Parameters {
   deleted_at                 DateTime?
   last_modified_by_id        Int?
   bingo_prizes               Json?
+  start_time                 String?
   last_modified_by           User?     @relation(fields: [last_modified_by_id], references: [id])
 
   @@map("parameters")

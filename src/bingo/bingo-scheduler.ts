@@ -3,18 +3,25 @@ import cron from "node-cron";
 import moment from "moment-timezone";
 import { Server } from "socket.io";
 import { prisma } from "../config/prisma";
-import { BingoConfig } from "../config/bingo.config";
+import { BingoConfig, getScheduledStartTime } from "../config/bingo.config";
+import { refreshParametersCache } from "../config/parameters";
 import { getActiveParticipantsCount, loadBingo, activeBingos } from "./state";
 import { createNumberFeeder } from "./number-feeder";
 
 /**
  * Verifica si es hora de iniciar bingos según la configuración
+ * Obtiene la hora desde parámetros de BD o fallback a ENV
+ * IMPORTANTE: Todo se maneja en zona horaria de Venezuela (America/Caracas)
  */
-function isTimeToStart(): boolean {
+async function isTimeToStart(): Promise<boolean> {
+  const { scheduledTime, source } = await getScheduledStartTime();
+  // Obtener hora actual en zona horaria de Venezuela
   const now = moment().tz(BingoConfig.autoStart.timezone);
-  const [hour, minute] = BingoConfig.autoStart.scheduledTime.split(":");
+  const [hour, minute] = scheduledTime.split(":");
 
-  const scheduledTime = moment()
+  // Crear momento programado en zona horaria de Venezuela
+  // start_time viene como string HH:mm (ej: "08:00" = 8am, "14:00" = 2pm) en hora Venezuela
+  const scheduledTimeMoment = moment()
     .tz(BingoConfig.autoStart.timezone)
     .set({
       hour: parseInt(hour),
@@ -24,11 +31,11 @@ function isTimeToStart(): boolean {
     });
 
   // Ventana de tiempo para iniciar (5 minutos después de la hora programada)
-  const windowEnd = scheduledTime
+  const windowEnd = scheduledTimeMoment
     .clone()
     .add(BingoConfig.autoStart.startWindowMinutes, "minutes");
 
-  return now.isBetween(scheduledTime, windowEnd, null, "[)");
+  return now.isBetween(scheduledTimeMoment, windowEnd, null, "[)");
 }
 
 /**
@@ -57,12 +64,13 @@ async function startBingoAutomatically(
 
     const participants = await getActiveParticipantsCount(bingoId);
     const now = moment().tz(BingoConfig.autoStart.timezone);
+    const { scheduledTime, source } = await getScheduledStartTime();
 
     // 🤖 LOG: Inicio automático
     console.log(`\n${"=".repeat(60)}`);
     console.log(`[BINGO ${bingoId}] 🤖 INICIO AUTOMÁTICO`);
     console.log(
-      `⏰ Hora configurada: ${BingoConfig.autoStart.scheduledTime} (${BingoConfig.autoStart.timezone})`
+      `⏰ Hora configurada: ${scheduledTime} (${BingoConfig.autoStart.timezone}) [Fuente: ${source}]`
     );
     console.log(`⏰ Hora real: ${now.format("HH:mm:ss")}`);
     console.log(
@@ -85,7 +93,7 @@ async function startBingoAutomatically(
  * Verifica y inicia bingos pendientes que cumplen las condiciones
  */
 async function checkAndStartPendingBingos(io: Server): Promise<void> {
-  if (!isTimeToStart()) return;
+  if (!(await isTimeToStart())) return;
 
   try {
     // Buscar bingos pendientes (no iniciados, no finalizados)
@@ -118,22 +126,35 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
 /**
  * Inicia el scheduler de bingos automáticos
  */
-export function startBingoScheduler(io: Server): void {
+export async function startBingoScheduler(io: Server): Promise<void> {
   if (!BingoConfig.autoStart.enabled) {
     console.log("⚠️  Auto-start de bingos DESHABILITADO en configuración");
     return;
   }
 
-  // Ejecutar cada minuto
+  // Refresh inicial de parámetros
+  await refreshParametersCache();
+
+  // Cron 1: Refrescar parámetros cada 2 minutos
+  cron.schedule("*/2 * * * *", async () => {
+    await refreshParametersCache();
+  });
+
+  // Cron 2: Verificar inicio de bingos cada minuto
   cron.schedule("* * * * *", async () => {
     await checkAndStartPendingBingos(io);
   });
 
+  // Obtener hora configurada para logs iniciales
+  const { scheduledTime, source } = await getScheduledStartTime();
+
   console.log("\n✅ Scheduler de bingos iniciado");
+  console.log("🔄 Cron de parámetros: cada 2 minutos");
+  console.log("⏰ Cron de bingos: cada 1 minuto");
   console.log(
     `⏰ Bingo auto-start: ${BingoConfig.autoStart.enabled ? "HABILITADO" : "DESHABILITADO"}`
   );
   console.log(
-    `🕐 Hora programada: ${BingoConfig.autoStart.scheduledTime} (${BingoConfig.autoStart.timezone})\n`
+    `🕐 Hora programada: ${scheduledTime} (${BingoConfig.autoStart.timezone}) [Fuente: ${source}]\n`
   );
 }
