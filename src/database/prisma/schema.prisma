@@ -80,6 +80,7 @@ model Bingo {
   bingo_prizes               Json?
   numbers_played             Json?
   is_finished                Boolean?          @default(false)
+  start_time                 String?
   BingoCardboards            BingoCardboards[]
 
   @@map("bingo")
