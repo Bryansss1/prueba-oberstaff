@@ -1,5 +1,6 @@
 // Lógica de verificación de patrones de victoria en el bingo
 import type { VictoryType, Prize } from "./types";
+import { normalizeWinners } from "./state";
 
 /**
  * Verifica si un número está marcado (negativo o cero para FREE)
@@ -109,6 +110,8 @@ export async function verifyVictory(
  */
 export function remainingPrizesCount(prizes: Prize[], winnersJSON: any): number {
   const total = prizes.length;
-  const awarded = winnersJSON?.data?.length ?? 0;
+  // Normalizar winners a estructura consistente antes de contar
+  const normalizedWinners = normalizeWinners(winnersJSON);
+  const awarded = normalizedWinners.data.length;
   return Math.max(total - awarded, 0);
 }

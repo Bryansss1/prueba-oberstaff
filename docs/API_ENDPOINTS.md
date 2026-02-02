@@ -56,6 +56,8 @@ curl http://localhost:4000/bingo/123
 
 **Request Body**: Ninguno
 
+**Autenticación**: ⚠️ **SIN AUTENTICACIÓN** (configurado para pruebas)
+
 **Respuesta:**
 ```json
 {
@@ -87,6 +89,8 @@ curl -X POST http://localhost:4000/bingo/123/start
 - `id` (number): ID del bingo
 
 **Request Body**: Ninguno
+
+**Autenticación**: ⚠️ **SIN AUTENTICACIÓN** (configurado para pruebas)
 
 **Respuesta:**
 ```json
@@ -259,7 +263,9 @@ function BingoAdmin({ bingoId }) {
 
 ### Estado Actual
 
-⚠️ **Los endpoints están desprotegidos**. Cualquiera puede iniciar/detener un bingo.
+⚠️ **Los endpoints `/bingo/:id/start` y `/bingo/:id/stop` están desprotegidos** (configurado para pruebas). Cualquiera puede iniciar/detener un bingo.
+
+**Nota**: En producción, se recomienda habilitar autenticación JWT y control de roles.
 
 ### Mejoras Recomendadas
 

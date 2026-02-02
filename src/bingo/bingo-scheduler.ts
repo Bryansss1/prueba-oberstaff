@@ -5,16 +5,45 @@ import { Server } from "socket.io";
 import { prisma } from "../config/prisma";
 import { BingoConfig, getScheduledStartTime } from "../config/bingo.config";
 import { refreshParametersCache } from "../config/parameters";
+import {
+  checkAndCreateNewBingo,
+  updatePendingBingosFromParameters,
+  processExpiredBingos,
+} from "./bingo-manager";
 import { getActiveParticipantsCount, loadBingo, activeBingos } from "./state";
 import { createNumberFeeder } from "./number-feeder";
 
 /**
  * Verifica si es hora de iniciar bingos según la configuración
- * Obtiene la hora desde parámetros de BD o fallback a ENV
+ * Si se proporciona bingoStartTime, usa esa hora (del último bingo)
+ * Si no, usa parámetros de BD o fallback a ENV
  * IMPORTANTE: Todo se maneja en zona horaria de Venezuela (America/Caracas)
+ * @param bingoStartTime Hora del bingo en formato HH:mm (opcional)
  */
-async function isTimeToStart(): Promise<boolean> {
-  const { scheduledTime, source } = await getScheduledStartTime();
+async function isTimeToStart(bingoStartTime?: string | null): Promise<boolean> {
+  let scheduledTime: string;
+  let source: "BD" | "ENV" | "BINGO";
+
+  // Si se proporciona hora del bingo, usar esa
+  if (bingoStartTime && typeof bingoStartTime === "string") {
+    // Validar formato HH:mm
+    const timePattern = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/;
+    if (timePattern.test(bingoStartTime)) {
+      scheduledTime = bingoStartTime;
+      source = "BINGO";
+    } else {
+      // Si el formato es inválido, usar fallback a parámetros
+      const params = await getScheduledStartTime();
+      scheduledTime = params.scheduledTime;
+      source = params.source;
+    }
+  } else {
+    // Fallback a parámetros o ENV
+    const params = await getScheduledStartTime();
+    scheduledTime = params.scheduledTime;
+    source = params.source;
+  }
+
   // Obtener hora actual en zona horaria de Venezuela
   const now = moment().tz(BingoConfig.autoStart.timezone);
   const [hour, minute] = scheduledTime.split(":");
@@ -64,13 +93,32 @@ async function startBingoAutomatically(
 
     const participants = await getActiveParticipantsCount(bingoId);
     const now = moment().tz(BingoConfig.autoStart.timezone);
-    const { scheduledTime, source } = await getScheduledStartTime();
+    
+    // Obtener información del bingo para logs
+    const bingo = await prisma.bingo.findUnique({
+      where: { id: bingoId },
+      select: { start_time: true },
+    });
+    
+    // Determinar fuente de la hora
+    const bingoStartTime = bingo?.start_time;
+    let scheduledTime: string;
+    let source: "BD" | "ENV" | "BINGO";
+    
+    if (bingoStartTime) {
+      scheduledTime = bingoStartTime;
+      source = "BINGO";
+    } else {
+      const params = await getScheduledStartTime();
+      scheduledTime = params.scheduledTime;
+      source = params.source;
+    }
 
     // 🤖 LOG: Inicio automático
     console.log(`\n${"=".repeat(60)}`);
     console.log(`[BINGO ${bingoId}] 🤖 INICIO AUTOMÁTICO`);
     console.log(
-      `⏰ Hora configurada: ${scheduledTime} (${BingoConfig.autoStart.timezone}) [Fuente: ${source}]`
+      `⏰ Hora programada: ${scheduledTime} (${BingoConfig.autoStart.timezone}) [Fuente: ${source === "BINGO" ? "Último bingo creado" : source}]`
     );
     console.log(`⏰ Hora real: ${now.format("HH:mm:ss")}`);
     console.log(
@@ -90,33 +138,52 @@ async function startBingoAutomatically(
 }
 
 /**
- * Verifica y inicia bingos pendientes que cumplen las condiciones
+ * Verifica y inicia el último bingo pendiente si cumple las condiciones
+ * Usa la hora (start_time) del último bingo creado para verificar si es momento de iniciar
  */
 async function checkAndStartPendingBingos(io: Server): Promise<void> {
-  if (!(await isTimeToStart())) return;
-
   try {
-    // Buscar bingos pendientes (no iniciados, no finalizados)
-    const pendingBingos = await prisma.bingo.findMany({
+    // Buscar el ÚLTIMO bingo pendiente (ordenado por id DESC)
+    const lastPendingBingo = await prisma.bingo.findFirst({
       where: {
         is_started: false,
         is_finished: false,
+        deleted_at: null,
+      },
+      orderBy: {
+        id: "desc",
+      },
+      select: {
+        id: true,
+        start_time: true,
+        min_number_of_participants: true,
+        created_at: true,
       },
     });
 
-    if (pendingBingos.length === 0) return;
+    // Si no hay bingo pendiente, no hacer nada
+    if (!lastPendingBingo) {
+      return;
+    }
 
-    for (const bingo of pendingBingos) {
-      const participants = await getActiveParticipantsCount(bingo.id);
-      const minRequired = bingo.min_number_of_participants || 0;
+    // Obtener hora del bingo (o fallback a parámetros)
+    const bingoStartTime = lastPendingBingo.start_time;
 
-      if (participants >= minRequired) {
-        await startBingoAutomatically(bingo.id, io);
-      } else {
-        console.log(
-          `[BINGO ${bingo.id}] ⏳ Esperando participantes: ${participants}/${minRequired}`
-        );
-      }
+    // Verificar si es hora de iniciar usando la hora del último bingo
+    if (!(await isTimeToStart(bingoStartTime))) {
+      return; // No es hora aún
+    }
+
+    // Verificar si tiene suficientes participantes
+    const participants = await getActiveParticipantsCount(lastPendingBingo.id);
+    const minRequired = lastPendingBingo.min_number_of_participants || 0;
+
+    if (participants >= minRequired) {
+      await startBingoAutomatically(lastPendingBingo.id, io);
+    } else {
+      console.log(
+        `[BINGO ${lastPendingBingo.id}] ⏳ Esperando participantes: ${participants}/${minRequired} (Hora programada: ${bingoStartTime || "parámetros"})`
+      );
     }
   } catch (error: any) {
     console.error("❌ Error en scheduler de bingos:", error.message);
@@ -137,7 +204,11 @@ export async function startBingoScheduler(io: Server): Promise<void> {
 
   // Cron 1: Refrescar parámetros cada 2 minutos
   cron.schedule("*/2 * * * *", async () => {
-    await refreshParametersCache();
+    const hasChanged = await refreshParametersCache();
+    // Si los parámetros cambiaron, actualizar bingos pendientes
+    if (hasChanged) {
+      await updatePendingBingosFromParameters();
+    }
   });
 
   // Cron 2: Verificar inicio de bingos cada minuto
@@ -145,16 +216,58 @@ export async function startBingoScheduler(io: Server): Promise<void> {
     await checkAndStartPendingBingos(io);
   });
 
-  // Obtener hora configurada para logs iniciales
-  const { scheduledTime, source } = await getScheduledStartTime();
+  // Cron 3: Gestión de bingos (crear nuevo cuando termine uno, actualizar pendientes) cada 3 minutos
+  cron.schedule("*/3 * * * *", async () => {
+    // Verificar y crear nuevo bingo si hay finalizados
+    await checkAndCreateNewBingo();
+    // Actualizar bingos pendientes con últimos parámetros
+    await updatePendingBingosFromParameters();
+  });
+
+  // Cron 4: Procesar bingos expirados (que no alcanzaron mínimo de participantes) cada 2 minutos
+  cron.schedule("*/2 * * * *", async () => {
+    await processExpiredBingos();
+  });
+
+  // Obtener información del último bingo pendiente para logs iniciales
+  const lastPendingBingo = await prisma.bingo.findFirst({
+    where: {
+      is_started: false,
+      is_finished: false,
+      deleted_at: null,
+    },
+    orderBy: { id: "desc" },
+    select: { id: true, start_time: true },
+  });
+
+  let scheduledTime: string;
+  let source: "BD" | "ENV" | "BINGO";
+  let logMessage: string;
+
+  if (lastPendingBingo?.start_time) {
+    scheduledTime = lastPendingBingo.start_time;
+    source = "BINGO";
+    logMessage = `🕐 Hora programada: ${scheduledTime} (${BingoConfig.autoStart.timezone}) [Fuente: Último bingo creado (ID: ${lastPendingBingo.id})]`;
+  } else {
+    const params = await getScheduledStartTime();
+    scheduledTime = params.scheduledTime;
+    source = params.source;
+    logMessage = `🕐 Hora programada: ${scheduledTime} (${BingoConfig.autoStart.timezone}) [Fuente: ${source}]`;
+    if (lastPendingBingo) {
+      logMessage += ` (Bingo ${lastPendingBingo.id} sin start_time, usando parámetros)`;
+    } else {
+      logMessage += ` (No hay bingos pendientes)`;
+    }
+  }
 
   console.log("\n✅ Scheduler de bingos iniciado");
   console.log("🔄 Cron de parámetros: cada 2 minutos");
   console.log("⏰ Cron de bingos: cada 1 minuto");
+  console.log("📋 Cron de gestión de bingos: cada 3 minutos");
+  console.log("⏳ Cron de bingos expirados: cada 2 minutos");
   console.log(
     `⏰ Bingo auto-start: ${BingoConfig.autoStart.enabled ? "HABILITADO" : "DESHABILITADO"}`
   );
-  console.log(
-    `🕐 Hora programada: ${scheduledTime} (${BingoConfig.autoStart.timezone}) [Fuente: ${source}]\n`
-  );
+  console.log("📌 Comportamiento: Usa hora del último bingo pendiente creado");
+  console.log(`${logMessage}\n`);
 }

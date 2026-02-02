@@ -21,6 +21,11 @@ Este proyecto es un **servidor backend para un sistema de Bingo en tiempo real**
 - **Sistema de premios** configurable por tipo de victoria
 - **Persistencia de datos** usando PostgreSQL con Prisma ORM
 - **Emisión de eventos** a todos los participantes de una sala
+- **Inicio automático de bingos** basado en hora del último bingo pendiente (desde BD o ENV como fallback)
+- **Gestión automática de ciclo de vida** de bingos (creación, actualización, expiración)
+- **Transferencia automática de cartones** no jugados entre bingos
+- **Parámetros dinámicos** desde base de datos con caché en memoria
+- **Normalización de datos** para garantizar estructura consistente de campos JSON (winners, prizes, etc.)
 
 ---
 

@@ -75,6 +75,63 @@ function createNumberFeeder(bingoId: number): NodeJS.Timer
 - Genera números del **1 al 75** sin repetición
 - Se detiene cuando se agotan números o el bingo se detiene
 
+### 5. **Sistema de Parámetros Dinámicos**
+
+```typescript
+// Caché de parámetros
+let cachedParameters: Parameters | null = null;
+
+// Funciones principales
+getCurrentParameters(): Promise<Parameters | null>
+refreshParametersCache(): Promise<boolean>
+```
+
+- Parámetros se cachean en memoria
+- Se refrescan cada 2 minutos desde BD
+- `start_time` ahora viene de BD (formato HH:mm en hora Venezuela)
+- Fallback a variables de entorno si no hay parámetros en BD
+
+### 6. **Sistema de Auto-Start con Hora del Último Bingo**
+
+```typescript
+// Verifica hora del último bingo pendiente
+async function isTimeToStart(bingoStartTime?: string | null): Promise<boolean>
+async function checkAndStartPendingBingos(io: Server): Promise<void>
+```
+
+- **Comportamiento**: El auto-start usa la hora (`start_time`) del **último bingo pendiente creado**
+- Solo un bingo puede iniciarse por día
+- Si el último bingo no tiene `start_time`, usa parámetros o ENV como fallback
+- Verifica cada minuto si es hora de iniciar el último bingo pendiente
+
+### 7. **Normalización de Estructura de Winners**
+
+```typescript
+// Función helper para normalizar winners
+export function normalizeWinners(winners: any): { data: WinnerDTO[] }
+```
+
+- Garantiza que el campo `winners` siempre tenga la estructura `{ data: WinnerDTO[] }`
+- Maneja casos donde `winners` es `null`, `undefined`, o tiene estructura incorrecta
+- Se usa en todos los lugares donde se lee o escribe `winners` desde/hacia la BD
+- Previene errores por estructuras inconsistentes
+
+### 8. **Gestión Automática de Bingos**
+
+```typescript
+// Funciones principales
+createBingoFromParameters(): Promise<number | null>
+updatePendingBingosFromParameters(): Promise<void>
+checkAndCreateNewBingo(): Promise<void>
+processExpiredBingos(): Promise<void>
+transferUnplayedCardboards(oldBingoId, newBingoId): Promise<number>
+```
+
+- Crea bingos automáticamente con últimos parámetros
+- Actualiza bingos pendientes cuando cambian parámetros
+- Detecta y procesa bingos expirados
+- Transfiere cartones no jugados entre bingos
+
 ---
 
 ## Flujo de Datos Detallado
@@ -229,14 +286,18 @@ io.emit('global_announcement', data);
 
 ```
 ┌─────────────┐
-│   CREADO    │ (is_started: false)
-│             │
+│   CREADO    │ (is_started: false, is_finished: false)
+│             │ Creado automáticamente o manualmente
 └──────┬──────┘
-       │ POST /bingo/:id/start
+       │ 
+       ├─ POST /bingo/:id/start (manual)
+       ├─ Auto-start (si alcanza mínimo de participantes)
+       └─ EXPIRACIÓN (si no alcanza mínimo después de ventana de inicio)
+       │
        ▼
 ┌─────────────┐
 │  INICIADO   │ (is_started: true)
-│             │ Timer corriendo
+│             │ Timer corriendo (cada 5 segundos)
 └──────┬──────┘
        │ Jugadores reclaman premios
        ▼
@@ -249,8 +310,15 @@ io.emit('global_announcement', data);
        │ (c) Se acaban los 75 números
        ▼
 ┌─────────────┐
-│ FINALIZADO  │ (is_started: false)
+│ FINALIZADO  │ (is_finished: true)
 │             │ Timer detenido
+│             │ Cartones no jugados transferidos al siguiente bingo
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│ NUEVO BINGO │ Creado automáticamente con últimos parámetros
+│   CREADO    │ Cartones transferidos asignados
 └─────────────┘
 ```
 
@@ -270,6 +338,40 @@ io.emit('global_announcement', data);
 ```
 
 ---
+
+## Normalización de Datos JSON
+
+### Problema: Estructuras Inconsistentes en Campos JSON
+
+Los campos JSON en PostgreSQL (`winners`, `bingo_prizes`, `numbers_played`) pueden venir como `null` o con estructuras incorrectas desde la BD, lo que puede causar errores en tiempo de ejecución.
+
+### Solución: Función de Normalización
+
+```typescript
+// Función helper para normalizar winners
+export function normalizeWinners(winners: any): { data: WinnerDTO[] } {
+  if (!winners || typeof winners !== 'object') {
+    return { data: [] };
+  }
+  if (!winners.data || !Array.isArray(winners.data)) {
+    return { data: [] };
+  }
+  return { data: winners.data };
+}
+```
+
+### Uso en el Sistema
+
+- **Al cargar desde BD**: `state.ts` normaliza `winners` antes de convertirlo a array
+- **Al actualizar ganadores**: `socket-handlers.ts` normaliza antes de hacer `push`
+- **Al contar premios**: `verification.ts` normaliza antes de acceder a `data.length`
+
+### Garantías
+
+- ✅ El campo `winners` siempre tiene la estructura `{ data: WinnerDTO[] }`
+- ✅ Nunca será `null`, `undefined` o estructura incorrecta
+- ✅ Previene errores por acceso a propiedades inexistentes
+- ✅ Código más robusto y mantenible
 
 ## Consideraciones de Concurrencia
 
@@ -305,19 +407,54 @@ El servidor valida:
 
 ---
 
+## Sistema de Cron Jobs
+
+El sistema utiliza **node-cron** para tareas programadas:
+
+### Cron Jobs Configurados
+
+1. **Refrescar Parámetros** (cada 2 minutos)
+   - Actualiza caché de parámetros desde BD
+   - Si cambian, actualiza bingos pendientes
+
+2. **Verificar Inicio de Bingos** (cada 1 minuto)
+   - Busca el **último bingo pendiente** (ordenado por `id DESC`)
+   - Usa la hora (`start_time`) de ese bingo para verificar si es momento de iniciar
+   - Si el bingo no tiene `start_time`, usa parámetros o ENV como fallback
+   - Inicia automáticamente si hay mínimo de participantes
+   - **Solo un bingo puede iniciarse por día** (el último creado)
+
+3. **Gestión de Bingos** (cada 3 minutos)
+   - Crea nuevo bingo cuando uno finaliza
+   - Actualiza bingos pendientes con últimos parámetros
+
+4. **Procesar Bingos Expirados** (cada 2 minutos)
+   - Detecta bingos que no alcanzaron mínimo de participantes
+   - Marca como finalizados
+   - Transfiere cartones no jugados al nuevo bingo
+
+### Transferencia de Cartones
+
+Cuando un bingo expira sin iniciarse:
+- Se identifican cartones no jugados (`is_winner = false` y sin números marcados)
+- Se transfieren automáticamente al nuevo bingo creado
+- Los cartones mantienen su `user_id`, `code_id` y `bingo_data_json` original
+
 ## Escalabilidad Futura
 
 ### Limitaciones Actuales
 
 - **Caché local**: No compartida entre instancias
 - **Timer local**: No distribuido
+- **Cron jobs locales**: No distribuidos
 
 ### Mejoras Recomendadas
 
 1. **Redis**: Caché compartida
-2. **Bull/BullMQ**: Cola de trabajos para sorteo
+2. **Bull/BullMQ**: Cola de trabajos para sorteo y cron jobs distribuidos
 3. **Adaptador Redis para Socket.IO**: Broadcast multi-instancia
 4. **Load Balancer**: Nginx con sticky sessions
+5. **Scheduler distribuido**: Usar Redis o base de datos para coordinar cron jobs
 
 ---
 

@@ -1,7 +1,7 @@
 // Manejadores de eventos Socket.IO para el bingo
 import { Server, Socket } from "socket.io";
 import { prisma } from "../config/prisma";
-import { activeBingos, loadBingo, roomName } from "./state";
+import { activeBingos, loadBingo, roomName, normalizeWinners } from "./state";
 import { verifyVictory, remainingPrizesCount } from "./verification";
 import type { VictoryType, WinnerDTO, NumbersPlayed } from "./types";
 
@@ -106,7 +106,9 @@ export function registerSocketHandlers(io: Server): void {
           const bingoRow = await prisma.bingo.findUnique({
             where: { id: bingoId },
           });
-          const winnersJSON = (bingoRow?.winners as any) ?? { data: [] };
+          
+          // Normalizar winners a estructura consistente { data: [] } antes de agregar ganador
+          const winnersJSON = normalizeWinners(bingoRow?.winners);
 
           // Construir entrada del ganador con información completa
           const winnerEntry: WinnerDTO = {

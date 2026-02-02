@@ -116,6 +116,7 @@ model Bingo {
   is_started                 Boolean   @default(false)
   min_number_of_participants Int?
   is_finished                Boolean?  @default(false)
+  start_time                 String?   // Hora de inicio en formato HH:mm (hora militar)
   winners                    Json?     // Ver estructura abajo
   bingo_prizes               Json?     // Ver estructura abajo
   numbers_played             Json?     // Ver estructura abajo
@@ -127,9 +128,15 @@ model Bingo {
 
 **Campos Clave:**
 - `is_started`: Si el bingo está en curso
+- `is_finished`: Si el bingo finalizó (normalmente o por expiración)
+- `start_time`: Hora programada de inicio (formato HH:mm, hora Venezuela)
 - `winners`: Array JSON de ganadores
 - `bingo_prizes`: Configuración de premios
 - `numbers_played`: Historial de números sorteados
+
+**Nota sobre Transferencia de Cartones:**
+- Cuando un bingo expira sin iniciarse (no alcanza mínimo de participantes), los cartones no jugados se transfieren automáticamente al siguiente bingo
+- Un cartón se considera "no jugado" si `is_winner = false` y no tiene números marcados (negativos) en `bingo_data_json`
 
 ---
 
@@ -196,12 +203,20 @@ model Parameters {
   min_participants_for_bingo Int       @default(2)
   cardboard_per_code         Int       @default(2)
   bingo_prizes               Json?
+  start_time                 String?   // Hora de inicio en formato HH:mm (hora militar)
   last_modified_by_id        Int?
   created_at                 DateTime  @default(now())
   updated_at                 DateTime  @updatedAt
   deleted_at                 DateTime?
 }
 ```
+
+**Campos Clave:**
+- `start_time`: Hora de inicio del bingo en formato `HH:mm` (hora militar, zona Venezuela)
+  - Ejemplo: `"08:00"` = 8:00 AM
+  - Ejemplo: `"14:00"` = 2:00 PM
+  - Si es `null`, se usa `BINGO_START_TIME` de variables de entorno
+  - El sistema siempre usa el último registro de `parameters` (ordenado por `id DESC`)
 
 ---
 
@@ -280,7 +295,7 @@ enum status {
 
 ### `Bingo.winners`
 
-Almacena el array de ganadores.
+Almacena el array de ganadores. **IMPORTANTE**: Este campo siempre debe tener la estructura `{ data: WinnerDTO[] }`, nunca debe ser `null` o tener una estructura diferente.
 
 **Estructura:**
 ```typescript
@@ -288,6 +303,11 @@ Almacena el array de ganadores.
   data: WinnerDTO[]
 }
 ```
+
+**Normalización:**
+- El sistema usa la función `normalizeWinners()` para garantizar que siempre tenga esta estructura
+- Si el campo viene como `null` o tiene estructura incorrecta desde la BD, se normaliza automáticamente
+- Al crear un bingo, siempre se inicializa como `{ data: [] }`
 
 **Tipo `WinnerDTO`:**
 ```typescript
@@ -309,7 +329,7 @@ Almacena el array de ganadores.
 }
 ```
 
-**Ejemplo:**
+**Ejemplo cuando hay ganadores:**
 ```json
 {
   "data": [
@@ -325,6 +345,19 @@ Almacena el array de ganadores.
   ]
 }
 ```
+
+**Ejemplo cuando no hay ganadores (inicial):**
+```json
+{
+  "data": []
+}
+```
+
+**⚠️ IMPORTANTE:**
+- El campo `winners` **NUNCA** debe ser `null` en la base de datos
+- Siempre debe tener la estructura `{ data: [] }` o `{ data: [...] }`
+- El sistema usa la función `normalizeWinners()` para garantizar esta estructura
+- Si el campo viene como `null` desde la BD, se normaliza automáticamente a `{ data: [] }`
 
 ---
 

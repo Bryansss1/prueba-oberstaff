@@ -6,6 +6,27 @@ import type { BingoState, Prize, NumbersPlayed, WinnerDTO } from "./types";
 export const activeBingos = new Map<number, BingoState>();
 
 /**
+ * Normaliza el campo winners a la estructura consistente { data: WinnerDTO[] }
+ * Maneja casos donde winners es null, undefined, o tiene estructura incorrecta
+ * @param winners Valor del campo winners desde la BD (puede ser null, undefined, o cualquier estructura)
+ * @returns Objeto normalizado con estructura { data: WinnerDTO[] }
+ */
+export function normalizeWinners(winners: any): { data: WinnerDTO[] } {
+  // Si winners es null, undefined, o no es un objeto, retornar estructura vacía
+  if (!winners || typeof winners !== 'object') {
+    return { data: [] };
+  }
+  
+  // Si winners no tiene la propiedad 'data' o 'data' no es un array, retornar estructura vacía
+  if (!winners.data || !Array.isArray(winners.data)) {
+    return { data: [] };
+  }
+  
+  // Retornar estructura normalizada con el array de winners
+  return { data: winners.data };
+}
+
+/**
  * Genera el nombre de la sala de Socket.IO para un bingo
  */
 export function roomName(bingoId: number): string {
@@ -48,7 +69,10 @@ export async function loadBingo(bingoId: number): Promise<void> {
     sequence: [],
     last5: [],
   };
-  const winners: WinnerDTO[] = ((b.winners as any)?.data ?? []) as WinnerDTO[];
+  
+  // Normalizar winners a estructura consistente { data: [] } antes de extraer el array
+  const normalizedWinners = normalizeWinners(b.winners);
+  const winners: WinnerDTO[] = normalizedWinners.data;
 
   const state: BingoState = {
     id: b.id,

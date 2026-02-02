@@ -95,8 +95,8 @@ socket.on('number_drawn', (data) => {
 | Método | Endpoint | Auth | Rol | Descripción |
 |--------|----------|------|-----|-------------|
 | GET | `/bingo/:id` | ❌ No | - | Obtener estado del bingo |
-| POST | `/bingo/:id/start` | ✅ Sí | 🔒 ADMIN | Iniciar bingo |
-| POST | `/bingo/:id/stop` | ✅ Sí | 🔒 ADMIN | Detener bingo |
+| POST | `/bingo/:id/start` | ⚠️ No | - | Iniciar bingo (sin autenticación para pruebas) |
+| POST | `/bingo/:id/stop` | ⚠️ No | - | Detener bingo (sin autenticación para pruebas) |
 
 ---
 
@@ -172,12 +172,13 @@ Para más información, revisa:
 
 ## 🔒 Seguridad
 
-- ✅ JWT requerido para endpoints administrativos
-- ✅ Control de acceso basado en roles (ADMIN/USER)
-- ✅ Solo usuarios ADMIN pueden iniciar/detener bingos
+- ⚠️ Endpoints `/bingo/:id/start` y `/bingo/:id/stop` están sin autenticación (configurado para pruebas)
+- ✅ Control de acceso basado en roles (ADMIN/USER) - preparado para uso futuro
 - ✅ Socket.IO protegido con JWT
 - ✅ Validación de propiedad de cartones
 - ✅ Verificación server-side de patrones de victoria
+
+**Nota**: En producción, se recomienda habilitar autenticación JWT para los endpoints administrativos.
 
 ---
 
