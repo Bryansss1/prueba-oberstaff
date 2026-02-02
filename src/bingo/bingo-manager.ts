@@ -99,6 +99,7 @@ export async function createBingoFromParameters(): Promise<number | null> {
 
 /**
  * Actualiza bingos pendientes (no iniciados) con los últimos parámetros
+ * IMPORTANTE: NO actualiza bingos en curso (is_started: true) para evitar cambios durante el juego
  */
 export async function updatePendingBingosFromParameters(): Promise<void> {
   try {
@@ -108,10 +109,11 @@ export async function updatePendingBingosFromParameters(): Promise<void> {
       return;
     }
 
-    // Buscar bingos pendientes (no iniciados, no finalizados)
+    // Buscar SOLO bingos pendientes (no iniciados, no finalizados)
+    // IMPORTANTE: is_started: false asegura que NO se actualicen bingos en curso
     const pendingBingos = await prisma.bingo.findMany({
       where: {
-        is_started: false,
+        is_started: false, // Solo bingos que NO han comenzado
         is_finished: false,
         deleted_at: null,
       },
@@ -122,7 +124,16 @@ export async function updatePendingBingosFromParameters(): Promise<void> {
     }
 
     // Actualizar cada bingo pendiente con los últimos parámetros
+    // Verificación adicional de seguridad: asegurar que el bingo NO esté iniciado
     for (const bingo of pendingBingos) {
+      // Verificación de seguridad: si por alguna razón el bingo está iniciado, saltarlo
+      if (bingo.is_started) {
+        console.log(
+          `⚠️  Bingo ${bingo.id} está iniciado, no se actualizarán sus parámetros`
+        );
+        continue;
+      }
+
       const updateData: any = {};
 
       // Solo actualizar si hay cambios
