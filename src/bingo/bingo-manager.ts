@@ -169,9 +169,24 @@ export async function updatePendingBingosFromParameters(): Promise<void> {
 
 /**
  * Verifica si hay bingos finalizados y crea uno nuevo si es necesario
+ * IMPORTANTE: No crea un nuevo bingo si hay uno en curso (is_started: true)
  */
 export async function checkAndCreateNewBingo(): Promise<void> {
   try {
+    // Verificar si hay un bingo en curso
+    const activeBingo = await prisma.bingo.findFirst({
+      where: {
+        is_started: true,
+        is_finished: false,
+        deleted_at: null,
+      },
+    });
+
+    if (activeBingo) {
+      // Hay un bingo en curso, no crear uno nuevo
+      return;
+    }
+
     // Buscar bingos finalizados
     const finishedBingos = await prisma.bingo.findMany({
       where: {

@@ -23,7 +23,7 @@ export async function pushNumber(
   });
 
   // 📊 LOG: Número jugado
-  console.log(`[BINGO ${bingoId}] 🎱 Número cantado: ${n} | Total cantados: ${state.numbersPlayed.sequence.length}/75 | Hora: ${new Date().toLocaleTimeString()}`);
+  console.log(`[BINGO ${bingoId}] 🎱 Número cantado: ${n} | Total cantados: ${state.numbersPlayed.sequence.length} (sin límite) | Hora: ${new Date().toLocaleTimeString()}`);
 
   io.to(roomName(bingoId)).emit("number_drawn", {
     number: n,
@@ -45,9 +45,10 @@ export function createNumberFeeder(bingoId: number, io: Server): NodeJS.Timeout 
       clearInterval(interval);
       return;
     }
+    
+    // Si se agotaron los 75 números únicos, reiniciar el pool para permitir repeticiones
     if (drawn.size === pool.length) {
-      clearInterval(interval);
-      return;
+      drawn.clear(); // Reiniciar para permitir repetición de números
     }
 
     let candidate: number | null = null;
