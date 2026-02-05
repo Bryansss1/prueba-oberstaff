@@ -3,6 +3,7 @@ import { prisma } from "../config/prisma";
 import { getCurrentParameters } from "../config/parameters";
 import moment from "moment-timezone";
 import { BingoConfig, getScheduledStartTime } from "../config/bingo.config";
+import { getActiveParticipantsCount } from "./state";
 
 /**
  * Compara dos valores JSON de manera robusta
@@ -13,17 +14,17 @@ function compareJsonValues(a: any, b: any): boolean {
   if ((a === null || a === undefined) && (b === null || b === undefined)) {
     return true;
   }
-  
+
   // Si uno es null/undefined y el otro no, son diferentes
   if ((a === null || a === undefined) !== (b === null || b === undefined)) {
     return false;
   }
-  
+
   // Si ambos son primitivos, comparar directamente
-  if (typeof a !== 'object' || typeof b !== 'object') {
+  if (typeof a !== "object" || typeof b !== "object") {
     return a === b;
   }
-  
+
   // Comparar usando JSON.stringify
   // Nota: JSON.stringify puede tener problemas con orden de propiedades,
   // pero para objetos JSON simples del schema esto debería funcionar
@@ -87,7 +88,9 @@ export async function createBingoFromParameters(): Promise<number | null> {
     console.log(
       `⏰ Hora de inicio: ${newBingo.start_time || "No configurada"}`
     );
-    console.log(`🎁 Premios: ${parameters.bingo_prizes ? "Configurados" : "Sin premios"}`);
+    console.log(
+      `🎁 Premios: ${parameters.bingo_prizes ? "Configurados" : "Sin premios"}`
+    );
     console.log(`${"=".repeat(60)}\n`);
 
     return newBingo.id;
@@ -171,10 +174,7 @@ export async function updatePendingBingosFromParameters(): Promise<void> {
       }
     }
   } catch (error: any) {
-    console.error(
-      `❌ Error al actualizar bingos pendientes:`,
-      error.message
-    );
+    console.error(`❌ Error al actualizar bingos pendientes:`, error.message);
   }
 }
 
@@ -229,10 +229,7 @@ export async function checkAndCreateNewBingo(): Promise<void> {
     // Crear nuevo bingo con los últimos parámetros
     await createBingoFromParameters();
   } catch (error: any) {
-    console.error(
-      `❌ Error al verificar y crear nuevo bingo:`,
-      error.message
-    );
+    console.error(`❌ Error al verificar y crear nuevo bingo:`, error.message);
   }
 }
 
@@ -253,7 +250,7 @@ function isCardboardPlayed(cardboard: {
 
   try {
     const bingoData = cardboard.bingo_data_json;
-    
+
     // Si no hay datos del cartón, considerar que no se jugó
     if (!bingoData || typeof bingoData !== "object") {
       return false;
@@ -331,14 +328,12 @@ export async function getExpiredPendingBingos(): Promise<
 
       // Crear momento programado usando la fecha de creación del bingo
       // Si la hora programada es menor que la hora de creación, asumir que es para el día siguiente
-      let scheduledTimeMoment = bingoCreatedAt
-        .clone()
-        .set({
-          hour: parseInt(hour),
-          minute: parseInt(minute),
-          second: 0,
-          millisecond: 0,
-        });
+      let scheduledTimeMoment = bingoCreatedAt.clone().set({
+        hour: parseInt(hour),
+        minute: parseInt(minute),
+        second: 0,
+        millisecond: 0,
+      });
 
       // Si la hora programada es anterior a la hora de creación, es para el día siguiente
       if (scheduledTimeMoment.isBefore(bingoCreatedAt)) {
@@ -361,10 +356,7 @@ export async function getExpiredPendingBingos(): Promise<
 
     return expiredBingos;
   } catch (error: any) {
-    console.error(
-      `❌ Error al detectar bingos expirados:`,
-      error.message
-    );
+    console.error(`❌ Error al detectar bingos expirados:`, error.message);
     return [];
   }
 }
@@ -419,16 +411,20 @@ export async function transferUnplayedCardboards(
       },
     });
 
+    // Actualizar number_of_participants del bingo destino
+    const participantCount = await getActiveParticipantsCount(newBingoId);
+    await prisma.bingo.update({
+      where: { id: newBingoId },
+      data: { number_of_participants: participantCount },
+    });
+
     console.log(
       `📦 Transferidos ${unplayedCardboards.length} cartones no jugados del bingo ${oldBingoId} al bingo ${newBingoId}`
     );
 
     return unplayedCardboards.length;
   } catch (error: any) {
-    console.error(
-      `❌ Error al transferir cartones:`,
-      error.message
-    );
+    console.error(`❌ Error al transferir cartones:`, error.message);
     return 0;
   }
 }
@@ -446,12 +442,8 @@ export async function processExpiredBingos(): Promise<void> {
     }
 
     for (const expiredBingo of expiredBingos) {
-      console.log(
-        `\n${"=".repeat(60)}`
-      );
-      console.log(
-        `⏰ BINGO EXPIRADO DETECTADO (ID: ${expiredBingo.id})`
-      );
+      console.log(`\n${"=".repeat(60)}`);
+      console.log(`⏰ BINGO EXPIRADO DETECTADO (ID: ${expiredBingo.id})`);
       console.log(
         `🕐 Hora programada: ${expiredBingo.start_time || "No configurada"}`
       );
@@ -481,9 +473,7 @@ export async function processExpiredBingos(): Promise<void> {
 
       if (existingPending) {
         newBingoId = existingPending.id;
-        console.log(
-          `ℹ️  Usando bingo pendiente existente (ID: ${newBingoId})`
-        );
+        console.log(`ℹ️  Usando bingo pendiente existente (ID: ${newBingoId})`);
       } else {
         // Crear nuevo bingo con últimos parámetros
         newBingoId = await createBingoFromParameters();
@@ -508,9 +498,6 @@ export async function processExpiredBingos(): Promise<void> {
       console.log(`${"=".repeat(60)}\n`);
     }
   } catch (error: any) {
-    console.error(
-      `❌ Error al procesar bingos expirados:`,
-      error.message
-    );
+    console.error(`❌ Error al procesar bingos expirados:`, error.message);
   }
 }
