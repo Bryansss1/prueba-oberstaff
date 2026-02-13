@@ -18,9 +18,15 @@ import { createNumberFeeder } from "./number-feeder";
  * Si se proporciona bingoStartTime, usa esa hora (del último bingo)
  * Si no, usa parámetros de BD o fallback a ENV
  * IMPORTANTE: Todo se maneja en zona horaria de Venezuela (America/Caracas)
+ * Cuando bingoCreatedAt se proporciona, se usa para determinar el día de inicio
+ * (permite manejar correctamente start_time 00:00 / medianoche)
  * @param bingoStartTime Hora del bingo en formato HH:mm (opcional)
+ * @param bingoCreatedAt Fecha de creación del bingo (opcional, para calcular día correcto)
  */
-async function isTimeToStart(bingoStartTime?: string | null): Promise<boolean> {
+async function isTimeToStart(
+  bingoStartTime?: string | null,
+  bingoCreatedAt?: Date | null
+): Promise<boolean> {
   let scheduledTime: string;
   let source: "BD" | "ENV" | "BINGO";
 
@@ -48,16 +54,34 @@ async function isTimeToStart(bingoStartTime?: string | null): Promise<boolean> {
   const now = moment().tz(BingoConfig.autoStart.timezone);
   const [hour, minute] = scheduledTime.split(":");
 
-  // Crear momento programado en zona horaria de Venezuela
-  // start_time viene como string HH:mm (ej: "08:00" = 8am, "14:00" = 2pm) en hora Venezuela
-  const scheduledTimeMoment = moment()
-    .tz(BingoConfig.autoStart.timezone)
-    .set({
+  let scheduledTimeMoment: moment.Moment;
+
+  if (bingoCreatedAt) {
+    // Usar fecha de creación para determinar el día (maneja correctamente 00:00)
+    const bingoCreatedMoment = moment(bingoCreatedAt).tz(
+      BingoConfig.autoStart.timezone
+    );
+    scheduledTimeMoment = bingoCreatedMoment.clone().set({
       hour: parseInt(hour),
       minute: parseInt(minute),
       second: 0,
       millisecond: 0,
     });
+    // Si la hora programada es anterior a la de creación, es para el día siguiente
+    if (scheduledTimeMoment.isBefore(bingoCreatedMoment)) {
+      scheduledTimeMoment.add(1, "day");
+    }
+  } else {
+    // Fallback: usar fecha actual (comportamiento anterior)
+    scheduledTimeMoment = moment()
+      .tz(BingoConfig.autoStart.timezone)
+      .set({
+        hour: parseInt(hour),
+        minute: parseInt(minute),
+        second: 0,
+        millisecond: 0,
+      });
+  }
 
   // Ventana de tiempo para iniciar (5 minutos después de la hora programada)
   const windowEnd = scheduledTimeMoment
@@ -93,18 +117,18 @@ async function startBingoAutomatically(
 
     const participants = await getActiveParticipantsCount(bingoId);
     const now = moment().tz(BingoConfig.autoStart.timezone);
-    
+
     // Obtener información del bingo para logs
     const bingo = await prisma.bingo.findUnique({
       where: { id: bingoId },
       select: { start_time: true },
     });
-    
+
     // Determinar fuente de la hora
     const bingoStartTime = bingo?.start_time;
     let scheduledTime: string;
     let source: "BD" | "ENV" | "BINGO";
-    
+
     if (bingoStartTime) {
       scheduledTime = bingoStartTime;
       source = "BINGO";
@@ -170,7 +194,7 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
     const bingoStartTime = lastPendingBingo.start_time;
 
     // Verificar si es hora de iniciar usando la hora del último bingo
-    if (!(await isTimeToStart(bingoStartTime))) {
+    if (!(await isTimeToStart(bingoStartTime, lastPendingBingo.created_at))) {
       return; // No es hora aún
     }
 
