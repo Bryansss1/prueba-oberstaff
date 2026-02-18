@@ -2,8 +2,12 @@
 import { Server, Socket } from "socket.io";
 import { prisma } from "../config/prisma";
 import { activeBingos, loadBingo, roomName, normalizeWinners } from "./state";
-import { verifyVictory, remainingPrizesCount } from "./verification";
-import type { VictoryType, WinnerDTO, NumbersPlayed } from "./types";
+import {
+  verifyVictory,
+  areMarkedNumbersPlayed,
+  remainingPrizesCount,
+} from "./verification";
+import type { VictoryType, WinnerDTO } from "./types";
 
 /**
  * Registra los manejadores de eventos Socket.IO
@@ -48,7 +52,10 @@ export function registerSocketHandlers(io: Server): void {
           const state = activeBingos.get(bingoId);
 
           if (!state || !state.is_started) {
-            socket.emit("claim_result", { ok: false, reason: "Bingo inactivo" });
+            socket.emit("claim_result", {
+              ok: false,
+              reason: "Bingo inactivo",
+            });
             return;
           }
 
@@ -86,10 +93,6 @@ export function registerSocketHandlers(io: Server): void {
             return;
           }
 
-          const numbersPlayed: NumbersPlayed = ((
-            await prisma.bingo.findUnique({ where: { id: bingoId } })
-          )?.numbers_played as any) ?? { sequence: [], last5: [] };
-
           const isValid = await verifyVictory(
             type_of_victory,
             board.bingo_data_json
@@ -102,11 +105,24 @@ export function registerSocketHandlers(io: Server): void {
             return;
           }
 
+          if (
+            !areMarkedNumbersPlayed(
+              board.bingo_data_json,
+              state.numbersPlayed.sequence
+            )
+          ) {
+            socket.emit("claim_result", {
+              ok: false,
+              reason: "Números marcados no coinciden con los cantados",
+            });
+            return;
+          }
+
           // Registrar ganador en winners JSON
           const bingoRow = await prisma.bingo.findUnique({
             where: { id: bingoId },
           });
-          
+
           // Normalizar winners a estructura consistente { data: [] } antes de agregar ganador
           const winnersJSON = normalizeWinners(bingoRow?.winners);
 
@@ -162,15 +178,21 @@ export function registerSocketHandlers(io: Server): void {
               },
             });
             state.is_started = false;
-            
+
             // 🏁 LOG: Fin del juego (automático)
-            console.log(`\n${'='.repeat(60)}`);
-            console.log(`[BINGO ${bingoId}] 🏁 JUEGO FINALIZADO - SIN PREMIOS RESTANTES`);
-            console.log(`🎱 Números cantados: ${state.numbersPlayed.sequence.length}/75`);
+            console.log(`\n${"=".repeat(60)}`);
+            console.log(
+              `[BINGO ${bingoId}] 🏁 JUEGO FINALIZADO - SIN PREMIOS RESTANTES`
+            );
+            console.log(
+              `🎱 Números cantados: ${state.numbersPlayed.sequence.length}/75`
+            );
             console.log(`🏆 Ganadores totales: ${state.winners.length}`);
-            console.log(`⏰ Hora de finalización: ${new Date().toLocaleString()}`);
-            console.log(`${'='.repeat(60)}\n`);
-            
+            console.log(
+              `⏰ Hora de finalización: ${new Date().toLocaleString()}`
+            );
+            console.log(`${"=".repeat(60)}\n`);
+
             io.to(roomName(bingoId)).emit("bingo_finished", {
               reason: "Sin premios restantes",
             });

@@ -29,6 +29,32 @@ export function toMatrix(boardPayload: any): number[][] {
 }
 
 /**
+ * Verifica que todos los números marcados en el cartón hayan sido cantados
+ * Un número está "marcado" si es negativo (o 0 = FREE, que siempre es válido)
+ * @returns true si todos los números marcados (excepto 0) están en la secuencia de cantados
+ */
+export function areMarkedNumbersPlayed(
+  boardPayload: any,
+  numbersPlayedSequence: number[]
+): boolean {
+  const matrix = toMatrix(boardPayload);
+  const playedSet = new Set(numbersPlayedSequence);
+
+  for (const row of matrix) {
+    for (const num of row) {
+      if (num === 0) continue; // FREE siempre válido
+      if (num < 0) {
+        const actualNumber = Math.abs(num);
+        if (!playedSet.has(actualNumber)) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+/**
  * Verifica si un patrón de victoria es válido en el cartón
  */
 export async function verifyVictory(
@@ -108,7 +134,10 @@ export async function verifyVictory(
 /**
  * Cuenta los premios restantes basado en configuración y ganadores
  */
-export function remainingPrizesCount(prizes: Prize[], winnersJSON: any): number {
+export function remainingPrizesCount(
+  prizes: Prize[],
+  winnersJSON: any
+): number {
   const total = prizes.length;
   // Normalizar winners a estructura consistente antes de contar
   const normalizedWinners = normalizeWinners(winnersJSON);
