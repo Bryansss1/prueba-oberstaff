@@ -165,7 +165,8 @@ exports.Prisma.ParametersScalarFieldEnum = {
   updated_at: 'updated_at',
   deleted_at: 'deleted_at',
   last_modified_by_id: 'last_modified_by_id',
-  bingo_prizes: 'bingo_prizes'
+  bingo_prizes: 'bingo_prizes',
+  start_time: 'start_time'
 };
 
 exports.Prisma.BingoScalarFieldEnum = {
@@ -180,7 +181,8 @@ exports.Prisma.BingoScalarFieldEnum = {
   winners: 'winners',
   bingo_prizes: 'bingo_prizes',
   numbers_played: 'numbers_played',
-  is_finished: 'is_finished'
+  is_finished: 'is_finished',
+  start_time: 'start_time'
 };
 
 exports.Prisma.BingoCardboardsScalarFieldEnum = {

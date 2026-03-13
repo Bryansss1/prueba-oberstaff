@@ -4330,6 +4330,7 @@ export namespace Prisma {
     updated_at: Date | null
     deleted_at: Date | null
     last_modified_by_id: number | null
+    start_time: string | null
   }
 
   export type ParametersMaxAggregateOutputType = {
@@ -4341,6 +4342,7 @@ export namespace Prisma {
     updated_at: Date | null
     deleted_at: Date | null
     last_modified_by_id: number | null
+    start_time: string | null
   }
 
   export type ParametersCountAggregateOutputType = {
@@ -4353,6 +4355,7 @@ export namespace Prisma {
     deleted_at: number
     last_modified_by_id: number
     bingo_prizes: number
+    start_time: number
     _all: number
   }
 
@@ -4382,6 +4385,7 @@ export namespace Prisma {
     updated_at?: true
     deleted_at?: true
     last_modified_by_id?: true
+    start_time?: true
   }
 
   export type ParametersMaxAggregateInputType = {
@@ -4393,6 +4397,7 @@ export namespace Prisma {
     updated_at?: true
     deleted_at?: true
     last_modified_by_id?: true
+    start_time?: true
   }
 
   export type ParametersCountAggregateInputType = {
@@ -4405,6 +4410,7 @@ export namespace Prisma {
     deleted_at?: true
     last_modified_by_id?: true
     bingo_prizes?: true
+    start_time?: true
     _all?: true
   }
 
@@ -4504,6 +4510,7 @@ export namespace Prisma {
     deleted_at: Date | null
     last_modified_by_id: number | null
     bingo_prizes: JsonValue | null
+    start_time: string | null
     _count: ParametersCountAggregateOutputType | null
     _avg: ParametersAvgAggregateOutputType | null
     _sum: ParametersSumAggregateOutputType | null
@@ -4535,6 +4542,7 @@ export namespace Prisma {
     deleted_at?: boolean
     last_modified_by_id?: boolean
     bingo_prizes?: boolean
+    start_time?: boolean
     last_modified_by?: boolean | Parameters$last_modified_byArgs<ExtArgs>
   }, ExtArgs["result"]["parameters"]>
 
@@ -4548,6 +4556,7 @@ export namespace Prisma {
     deleted_at?: boolean
     last_modified_by_id?: boolean
     bingo_prizes?: boolean
+    start_time?: boolean
     last_modified_by?: boolean | Parameters$last_modified_byArgs<ExtArgs>
   }, ExtArgs["result"]["parameters"]>
 
@@ -4561,6 +4570,7 @@ export namespace Prisma {
     deleted_at?: boolean
     last_modified_by_id?: boolean
     bingo_prizes?: boolean
+    start_time?: boolean
     last_modified_by?: boolean | Parameters$last_modified_byArgs<ExtArgs>
   }, ExtArgs["result"]["parameters"]>
 
@@ -4574,9 +4584,10 @@ export namespace Prisma {
     deleted_at?: boolean
     last_modified_by_id?: boolean
     bingo_prizes?: boolean
+    start_time?: boolean
   }
 
-  export type ParametersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "cost_per_code" | "min_participants_for_bingo" | "cardboard_per_code" | "created_at" | "updated_at" | "deleted_at" | "last_modified_by_id" | "bingo_prizes", ExtArgs["result"]["parameters"]>
+  export type ParametersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "cost_per_code" | "min_participants_for_bingo" | "cardboard_per_code" | "created_at" | "updated_at" | "deleted_at" | "last_modified_by_id" | "bingo_prizes" | "start_time", ExtArgs["result"]["parameters"]>
   export type ParametersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     last_modified_by?: boolean | Parameters$last_modified_byArgs<ExtArgs>
   }
@@ -4602,6 +4613,7 @@ export namespace Prisma {
       deleted_at: Date | null
       last_modified_by_id: number | null
       bingo_prizes: Prisma.JsonValue | null
+      start_time: string | null
     }, ExtArgs["result"]["parameters"]>
     composites: {}
   }
@@ -5035,6 +5047,7 @@ export namespace Prisma {
     readonly deleted_at: FieldRef<"Parameters", 'DateTime'>
     readonly last_modified_by_id: FieldRef<"Parameters", 'Int'>
     readonly bingo_prizes: FieldRef<"Parameters", 'Json'>
+    readonly start_time: FieldRef<"Parameters", 'String'>
   }
     
 
@@ -5504,6 +5517,7 @@ export namespace Prisma {
     is_started: boolean | null
     min_number_of_participants: number | null
     is_finished: boolean | null
+    start_time: string | null
   }
 
   export type BingoMaxAggregateOutputType = {
@@ -5516,6 +5530,7 @@ export namespace Prisma {
     is_started: boolean | null
     min_number_of_participants: number | null
     is_finished: boolean | null
+    start_time: string | null
   }
 
   export type BingoCountAggregateOutputType = {
@@ -5531,6 +5546,7 @@ export namespace Prisma {
     bingo_prizes: number
     numbers_played: number
     is_finished: number
+    start_time: number
     _all: number
   }
 
@@ -5559,6 +5575,7 @@ export namespace Prisma {
     is_started?: true
     min_number_of_participants?: true
     is_finished?: true
+    start_time?: true
   }
 
   export type BingoMaxAggregateInputType = {
@@ -5571,6 +5588,7 @@ export namespace Prisma {
     is_started?: true
     min_number_of_participants?: true
     is_finished?: true
+    start_time?: true
   }
 
   export type BingoCountAggregateInputType = {
@@ -5586,6 +5604,7 @@ export namespace Prisma {
     bingo_prizes?: true
     numbers_played?: true
     is_finished?: true
+    start_time?: true
     _all?: true
   }
 
@@ -5688,6 +5707,7 @@ export namespace Prisma {
     bingo_prizes: JsonValue | null
     numbers_played: JsonValue | null
     is_finished: boolean | null
+    start_time: string | null
     _count: BingoCountAggregateOutputType | null
     _avg: BingoAvgAggregateOutputType | null
     _sum: BingoSumAggregateOutputType | null
@@ -5722,6 +5742,7 @@ export namespace Prisma {
     bingo_prizes?: boolean
     numbers_played?: boolean
     is_finished?: boolean
+    start_time?: boolean
     BingoCardboards?: boolean | Bingo$BingoCardboardsArgs<ExtArgs>
     _count?: boolean | BingoCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bingo"]>
@@ -5739,6 +5760,7 @@ export namespace Prisma {
     bingo_prizes?: boolean
     numbers_played?: boolean
     is_finished?: boolean
+    start_time?: boolean
   }, ExtArgs["result"]["bingo"]>
 
   export type BingoSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5754,6 +5776,7 @@ export namespace Prisma {
     bingo_prizes?: boolean
     numbers_played?: boolean
     is_finished?: boolean
+    start_time?: boolean
   }, ExtArgs["result"]["bingo"]>
 
   export type BingoSelectScalar = {
@@ -5769,9 +5792,10 @@ export namespace Prisma {
     bingo_prizes?: boolean
     numbers_played?: boolean
     is_finished?: boolean
+    start_time?: boolean
   }
 
-  export type BingoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number_of_participants" | "cardboard_by_code" | "created_at" | "updated_at" | "deleted_at" | "is_started" | "min_number_of_participants" | "winners" | "bingo_prizes" | "numbers_played" | "is_finished", ExtArgs["result"]["bingo"]>
+  export type BingoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number_of_participants" | "cardboard_by_code" | "created_at" | "updated_at" | "deleted_at" | "is_started" | "min_number_of_participants" | "winners" | "bingo_prizes" | "numbers_played" | "is_finished" | "start_time", ExtArgs["result"]["bingo"]>
   export type BingoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     BingoCardboards?: boolean | Bingo$BingoCardboardsArgs<ExtArgs>
     _count?: boolean | BingoCountOutputTypeDefaultArgs<ExtArgs>
@@ -5797,6 +5821,7 @@ export namespace Prisma {
       bingo_prizes: Prisma.JsonValue | null
       numbers_played: Prisma.JsonValue | null
       is_finished: boolean | null
+      start_time: string | null
     }, ExtArgs["result"]["bingo"]>
     composites: {}
   }
@@ -6233,6 +6258,7 @@ export namespace Prisma {
     readonly bingo_prizes: FieldRef<"Bingo", 'Json'>
     readonly numbers_played: FieldRef<"Bingo", 'Json'>
     readonly is_finished: FieldRef<"Bingo", 'Boolean'>
+    readonly start_time: FieldRef<"Bingo", 'String'>
   }
     
 
@@ -11170,7 +11196,8 @@ export namespace Prisma {
     updated_at: 'updated_at',
     deleted_at: 'deleted_at',
     last_modified_by_id: 'last_modified_by_id',
-    bingo_prizes: 'bingo_prizes'
+    bingo_prizes: 'bingo_prizes',
+    start_time: 'start_time'
   };
 
   export type ParametersScalarFieldEnum = (typeof ParametersScalarFieldEnum)[keyof typeof ParametersScalarFieldEnum]
@@ -11188,7 +11215,8 @@ export namespace Prisma {
     winners: 'winners',
     bingo_prizes: 'bingo_prizes',
     numbers_played: 'numbers_played',
-    is_finished: 'is_finished'
+    is_finished: 'is_finished',
+    start_time: 'start_time'
   };
 
   export type BingoScalarFieldEnum = (typeof BingoScalarFieldEnum)[keyof typeof BingoScalarFieldEnum]
@@ -11696,6 +11724,7 @@ export namespace Prisma {
     deleted_at?: DateTimeNullableFilter<"Parameters"> | Date | string | null
     last_modified_by_id?: IntNullableFilter<"Parameters"> | number | null
     bingo_prizes?: JsonNullableFilter<"Parameters">
+    start_time?: StringNullableFilter<"Parameters"> | string | null
     last_modified_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
@@ -11709,6 +11738,7 @@ export namespace Prisma {
     deleted_at?: SortOrderInput | SortOrder
     last_modified_by_id?: SortOrderInput | SortOrder
     bingo_prizes?: SortOrderInput | SortOrder
+    start_time?: SortOrderInput | SortOrder
     last_modified_by?: UserOrderByWithRelationInput
   }
 
@@ -11725,6 +11755,7 @@ export namespace Prisma {
     deleted_at?: DateTimeNullableFilter<"Parameters"> | Date | string | null
     last_modified_by_id?: IntNullableFilter<"Parameters"> | number | null
     bingo_prizes?: JsonNullableFilter<"Parameters">
+    start_time?: StringNullableFilter<"Parameters"> | string | null
     last_modified_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
@@ -11738,6 +11769,7 @@ export namespace Prisma {
     deleted_at?: SortOrderInput | SortOrder
     last_modified_by_id?: SortOrderInput | SortOrder
     bingo_prizes?: SortOrderInput | SortOrder
+    start_time?: SortOrderInput | SortOrder
     _count?: ParametersCountOrderByAggregateInput
     _avg?: ParametersAvgOrderByAggregateInput
     _max?: ParametersMaxOrderByAggregateInput
@@ -11758,6 +11790,7 @@ export namespace Prisma {
     deleted_at?: DateTimeNullableWithAggregatesFilter<"Parameters"> | Date | string | null
     last_modified_by_id?: IntNullableWithAggregatesFilter<"Parameters"> | number | null
     bingo_prizes?: JsonNullableWithAggregatesFilter<"Parameters">
+    start_time?: StringNullableWithAggregatesFilter<"Parameters"> | string | null
   }
 
   export type BingoWhereInput = {
@@ -11776,6 +11809,7 @@ export namespace Prisma {
     bingo_prizes?: JsonNullableFilter<"Bingo">
     numbers_played?: JsonNullableFilter<"Bingo">
     is_finished?: BoolNullableFilter<"Bingo"> | boolean | null
+    start_time?: StringNullableFilter<"Bingo"> | string | null
     BingoCardboards?: BingoCardboardsListRelationFilter
   }
 
@@ -11792,6 +11826,7 @@ export namespace Prisma {
     bingo_prizes?: SortOrderInput | SortOrder
     numbers_played?: SortOrderInput | SortOrder
     is_finished?: SortOrderInput | SortOrder
+    start_time?: SortOrderInput | SortOrder
     BingoCardboards?: BingoCardboardsOrderByRelationAggregateInput
   }
 
@@ -11811,6 +11846,7 @@ export namespace Prisma {
     bingo_prizes?: JsonNullableFilter<"Bingo">
     numbers_played?: JsonNullableFilter<"Bingo">
     is_finished?: BoolNullableFilter<"Bingo"> | boolean | null
+    start_time?: StringNullableFilter<"Bingo"> | string | null
     BingoCardboards?: BingoCardboardsListRelationFilter
   }, "id">
 
@@ -11827,6 +11863,7 @@ export namespace Prisma {
     bingo_prizes?: SortOrderInput | SortOrder
     numbers_played?: SortOrderInput | SortOrder
     is_finished?: SortOrderInput | SortOrder
+    start_time?: SortOrderInput | SortOrder
     _count?: BingoCountOrderByAggregateInput
     _avg?: BingoAvgOrderByAggregateInput
     _max?: BingoMaxOrderByAggregateInput
@@ -11850,6 +11887,7 @@ export namespace Prisma {
     bingo_prizes?: JsonNullableWithAggregatesFilter<"Bingo">
     numbers_played?: JsonNullableWithAggregatesFilter<"Bingo">
     is_finished?: BoolNullableWithAggregatesFilter<"Bingo"> | boolean | null
+    start_time?: StringNullableWithAggregatesFilter<"Bingo"> | string | null
   }
 
   export type BingoCardboardsWhereInput = {
@@ -12030,15 +12068,15 @@ export namespace Prisma {
 
   export type source_codesWhereUniqueInput = Prisma.AtLeast<{
     id?: number
+    code?: string
     AND?: source_codesWhereInput | source_codesWhereInput[]
     OR?: source_codesWhereInput[]
     NOT?: source_codesWhereInput | source_codesWhereInput[]
     created_at?: DateTimeFilter<"source_codes"> | Date | string
-    code?: StringNullableFilter<"source_codes"> | string | null
     is_available?: BoolNullableFilter<"source_codes"> | boolean | null
     updated_at?: DateTimeNullableFilter<"source_codes"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"source_codes"> | Date | string | null
-  }, "id">
+  }, "id" | "code">
 
   export type source_codesOrderByWithAggregationInput = {
     id?: SortOrder
@@ -12395,6 +12433,7 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: string | null
     last_modified_by?: UserCreateNestedOneWithoutParametersInput
   }
 
@@ -12408,6 +12447,7 @@ export namespace Prisma {
     deleted_at?: Date | string | null
     last_modified_by_id?: number | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: string | null
   }
 
   export type ParametersUpdateInput = {
@@ -12418,6 +12458,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
     last_modified_by?: UserUpdateOneWithoutParametersNestedInput
   }
 
@@ -12431,6 +12472,7 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_modified_by_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ParametersCreateManyInput = {
@@ -12443,6 +12485,7 @@ export namespace Prisma {
     deleted_at?: Date | string | null
     last_modified_by_id?: number | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: string | null
   }
 
   export type ParametersUpdateManyMutationInput = {
@@ -12453,6 +12496,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ParametersUncheckedUpdateManyInput = {
@@ -12465,6 +12509,7 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_modified_by_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BingoCreateInput = {
@@ -12479,6 +12524,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
+    start_time?: string | null
     BingoCardboards?: BingoCardboardsCreateNestedManyWithoutBingoInput
   }
 
@@ -12495,6 +12541,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
+    start_time?: string | null
     BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutBingoInput
   }
 
@@ -12510,6 +12557,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
     BingoCardboards?: BingoCardboardsUpdateManyWithoutBingoNestedInput
   }
 
@@ -12526,6 +12574,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
     BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutBingoNestedInput
   }
 
@@ -12542,6 +12591,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
+    start_time?: string | null
   }
 
   export type BingoUpdateManyMutationInput = {
@@ -12556,6 +12606,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BingoUncheckedUpdateManyInput = {
@@ -12571,6 +12622,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BingoCardboardsCreateInput = {
@@ -13327,6 +13379,7 @@ export namespace Prisma {
     deleted_at?: SortOrder
     last_modified_by_id?: SortOrder
     bingo_prizes?: SortOrder
+    start_time?: SortOrder
   }
 
   export type ParametersAvgOrderByAggregateInput = {
@@ -13346,6 +13399,7 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrder
     last_modified_by_id?: SortOrder
+    start_time?: SortOrder
   }
 
   export type ParametersMinOrderByAggregateInput = {
@@ -13357,6 +13411,7 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrder
     last_modified_by_id?: SortOrder
+    start_time?: SortOrder
   }
 
   export type ParametersSumOrderByAggregateInput = {
@@ -13438,6 +13493,7 @@ export namespace Prisma {
     bingo_prizes?: SortOrder
     numbers_played?: SortOrder
     is_finished?: SortOrder
+    start_time?: SortOrder
   }
 
   export type BingoAvgOrderByAggregateInput = {
@@ -13457,6 +13513,7 @@ export namespace Prisma {
     is_started?: SortOrder
     min_number_of_participants?: SortOrder
     is_finished?: SortOrder
+    start_time?: SortOrder
   }
 
   export type BingoMinOrderByAggregateInput = {
@@ -13469,6 +13526,7 @@ export namespace Prisma {
     is_started?: SortOrder
     min_number_of_participants?: SortOrder
     is_finished?: SortOrder
+    start_time?: SortOrder
   }
 
   export type BingoSumOrderByAggregateInput = {
@@ -14651,6 +14709,7 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: string | null
   }
 
   export type ParametersUncheckedCreateWithoutLast_modified_byInput = {
@@ -14662,6 +14721,7 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: string | null
   }
 
   export type ParametersCreateOrConnectWithoutLast_modified_byInput = {
@@ -14768,6 +14828,7 @@ export namespace Prisma {
     deleted_at?: DateTimeNullableFilter<"Parameters"> | Date | string | null
     last_modified_by_id?: IntNullableFilter<"Parameters"> | number | null
     bingo_prizes?: JsonNullableFilter<"Parameters">
+    start_time?: StringNullableFilter<"Parameters"> | string | null
   }
 
   export type BingoCardboardsCreateWithoutCodesInput = {
@@ -15092,6 +15153,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
+    start_time?: string | null
   }
 
   export type BingoUncheckedCreateWithoutBingoCardboardsInput = {
@@ -15107,6 +15169,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
+    start_time?: string | null
   }
 
   export type BingoCreateOrConnectWithoutBingoCardboardsInput = {
@@ -15243,6 +15306,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BingoUncheckedUpdateWithoutBingoCardboardsInput = {
@@ -15258,6 +15322,7 @@ export namespace Prisma {
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CodesUpsertWithoutBingoCardboardsInput = {
@@ -15467,6 +15532,7 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: string | null
   }
 
   export type BingoCardboardsUpdateWithoutUserInput = {
@@ -15552,6 +15618,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ParametersUncheckedUpdateWithoutLast_modified_byInput = {
@@ -15563,6 +15630,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ParametersUncheckedUpdateManyWithoutLast_modified_byInput = {
@@ -15574,6 +15642,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
+    start_time?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type BingoCardboardsCreateManyCodesInput = {

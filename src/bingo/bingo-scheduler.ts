@@ -12,6 +12,7 @@ import {
 } from "./bingo-manager";
 import { getActiveParticipantsCount, loadBingo, activeBingos } from "./state";
 import { createNumberFeeder } from "./number-feeder";
+//
 
 /**
  * Verifica si es hora de iniciar bingos según la configuración

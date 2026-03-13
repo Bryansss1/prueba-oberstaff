@@ -13,15 +13,15 @@ export const activeBingos = new Map<number, BingoState>();
  */
 export function normalizeWinners(winners: any): { data: WinnerDTO[] } {
   // Si winners es null, undefined, o no es un objeto, retornar estructura vacía
-  if (!winners || typeof winners !== 'object') {
+  if (!winners || typeof winners !== "object") {
     return { data: [] };
   }
-  
+
   // Si winners no tiene la propiedad 'data' o 'data' no es un array, retornar estructura vacía
   if (!winners.data || !Array.isArray(winners.data)) {
     return { data: [] };
   }
-  
+
   // Retornar estructura normalizada con el array de winners
   return { data: winners.data };
 }
@@ -69,7 +69,7 @@ export async function loadBingo(bingoId: number): Promise<void> {
     sequence: [],
     last5: [],
   };
-  
+
   // Normalizar winners a estructura consistente { data: [] } antes de extraer el array
   const normalizedWinners = normalizeWinners(b.winners);
   const winners: WinnerDTO[] = normalizedWinners.data;

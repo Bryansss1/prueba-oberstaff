@@ -7,6 +7,8 @@ import {
   areMarkedNumbersPlayed,
   remainingPrizesCount,
 } from "./verification";
+import { finishBingo } from "./number-feeder";
+import { BingoConfig } from "../config/bingo.config";
 import type { VictoryType, WinnerDTO } from "./types";
 
 /**
@@ -26,6 +28,7 @@ export function registerSocketHandlers(io: Server): void {
           prizes: state.prizes,
           is_started: state.is_started,
           winners: state.winners,
+          game_mode: BingoConfig.gameMode, // REAL | PRUEBA (desde ENV BINGO_MODE)
         });
       } catch (error) {
         socket.emit("error", { message: "Error al unirse al bingo" });
@@ -170,32 +173,7 @@ export function registerSocketHandlers(io: Server): void {
           // Fin del bingo si no quedan premios
           const remaining = remainingPrizesCount(state.prizes, winnersJSON);
           if (remaining <= 0) {
-            await prisma.bingo.update({
-              where: { id: bingoId },
-              data: {
-                is_started: false,
-                is_finished: true,
-              },
-            });
-            state.is_started = false;
-
-            // 🏁 LOG: Fin del juego (automático)
-            console.log(`\n${"=".repeat(60)}`);
-            console.log(
-              `[BINGO ${bingoId}] 🏁 JUEGO FINALIZADO - SIN PREMIOS RESTANTES`
-            );
-            console.log(
-              `🎱 Números cantados: ${state.numbersPlayed.sequence.length}/75`
-            );
-            console.log(`🏆 Ganadores totales: ${state.winners.length}`);
-            console.log(
-              `⏰ Hora de finalización: ${new Date().toLocaleString()}`
-            );
-            console.log(`${"=".repeat(60)}\n`);
-
-            io.to(roomName(bingoId)).emit("bingo_finished", {
-              reason: "Sin premios restantes",
-            });
+            await finishBingo(bingoId, io, "Sin premios restantes");
           }
         } catch (err) {
           socket.emit("claim_result", { ok: false, reason: "Error interno" });

@@ -1,6 +1,7 @@
 // Punto de entrada principal del servidor de bingo
 import "dotenv/config";
 import express from "express";
+import { BingoConfig } from "./config/bingo.config";
 import http from "http";
 import cors from "cors";
 import { createSocketServer } from "./config/socket-io";
@@ -33,11 +34,16 @@ registerBingoRoutes(app, io);
 
 // Configurar Swagger UI
 setupSwagger(app);
-
+//
 // Iniciar servidor
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+  console.log(
+    `🎮 Modo bingo: ${BingoConfig.gameMode} (BINGO_MODE=${process.env.BINGO_MODE || "no definido"})`
+  );
   console.log(`📚 Swagger UI disponible en http://localhost:${PORT}/api-docs`);
-  console.log(`📄 OpenAPI JSON disponible en http://localhost:${PORT}/api-docs.json`);
+  console.log(
+    `📄 OpenAPI JSON disponible en http://localhost:${PORT}/api-docs.json`
+  );
 });
