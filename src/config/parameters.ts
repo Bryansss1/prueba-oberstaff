@@ -1,6 +1,6 @@
 // Servicio para obtener y cachear parámetros del sistema
 import { prisma } from "./prisma";
-import type { Parameters } from "../database/prisma/generated/index.js";
+import type { Parameters } from "@prisma/client";
 
 // Cache de parámetros (actualizado por cron)
 let cachedParameters: Parameters | null = null;

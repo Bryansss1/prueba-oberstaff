@@ -1,5 +1,5 @@
 // Tipos y enumeraciones para el sistema de bingo
-import { bingo_victories } from "../database/prisma/generated/enums";
+import { bingo_victories } from "@prisma/client";
 
 export type VictoryType = keyof typeof bingo_victories;
 
