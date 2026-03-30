@@ -45,6 +45,8 @@ model Codes {
   updated_at      DateTime          @updatedAt
   deleted_at      DateTime?
   used_date       DateTime?         @db.Timestamp(6)
+  referred_code   String?
+  bingo_re_use    Int?           @default(1)
   BingoCardboards BingoCardboards[]
   User            User              @relation(fields: [user_id], references: [id])
 
@@ -62,6 +64,7 @@ model Parameters {
   last_modified_by_id        Int?
   bingo_prizes               Json?
   start_time                 String?
+  bingo_re_use               Int?
   last_modified_by           User?     @relation(fields: [last_modified_by_id], references: [id])
 
   @@map("parameters")
@@ -124,6 +127,7 @@ model source_codes {
   is_available Boolean?
   updated_at   DateTime? @default(now()) @db.Timestamp(6)
   deleted_at   DateTime? @db.Timestamp(6)
+  bingo_re_use Int?   @default(1)
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -142,6 +146,7 @@ enum Role {
   ADMIN
   USER
   OPERADOR
+  VENDEDOR
 }
 
 enum OriginCodes {
