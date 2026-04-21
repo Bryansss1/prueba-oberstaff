@@ -48,6 +48,7 @@ model Codes {
   referred_code   String?
   bingo_re_use    Int?           @default(1)
   BingoCardboards BingoCardboards[]
+  source_codes    source_codes      @relation(fields: [code], references: [code], onDelete: NoAction, onUpdate: NoAction)
   User            User              @relation(fields: [user_id], references: [id])
 
   @@map("codes")
@@ -123,11 +124,13 @@ model live_sessions {
 model source_codes {
   id           Int    @id @default(autoincrement())
   created_at   DateTime  @default(now()) @db.Timestamptz(6)
-  code         String?   @unique
+  code         String    @unique
   is_available Boolean?
   updated_at   DateTime? @default(now()) @db.Timestamp(6)
   deleted_at   DateTime? @db.Timestamp(6)
   bingo_re_use Int?   @default(1)
+  was_printed  Boolean?  @default(false)
+  codes        Codes?
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
