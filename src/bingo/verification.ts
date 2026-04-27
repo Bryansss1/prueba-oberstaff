@@ -88,7 +88,7 @@ export async function verifyVictory(
       const colsMarked = matrix[0].filter((_, colIdx) =>
         matrix.every((row) => isMarked(row[colIdx]))
       ).length;
-      return rowsMarked >= 2 || colsMarked >= 2;
+      return (rowsMarked + colsMarked) >= 2;
 
     case "CUATRO_ESQUINAS":
       return (

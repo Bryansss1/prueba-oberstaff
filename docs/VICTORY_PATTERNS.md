@@ -136,7 +136,7 @@ matrix[0].some((_, colIdx) => matrix.every((row) => isMarked(row[colIdx])))
 
 ### 3. **LINEA_DOBLE**
 
-**Regla**: Al menos 2 filas completas **O** 2 columnas completas.
+**Regla**: La suma total de filas completas y columnas completas debe ser al menos 2.
 
 ```typescript
 const rowsMarked = matrix.filter((row) => 
@@ -147,8 +147,14 @@ const colsMarked = matrix[0].filter((_, colIdx) =>
   matrix.every((row) => isMarked(row[colIdx]))
 ).length;
 
-return rowsMarked >= 2 || colsMarked >= 2;
+return (rowsMarked + colsMarked) >= 2; // ✅ Ahora permite 1H + 1V
 ```
+
+**Ejemplo de combinaciones válidas:**
+*   2 filas horizontales.
+*   2 columnas verticales.
+*   1 fila horizontal + 1 columna vertical.
+
 
 **Ejemplo:**
 ```
@@ -418,8 +424,31 @@ describe('verifyVictory', () => {
 
 ---
 
+## 📊 Resumen de Complementos y Jerarquías
+
+Para una gestión eficiente de los premios, es fundamental entender cómo se solapan los patrones:
+
+| Patrón | Implicancia Lógica | Nivel de Complejidad |
+| :--- | :--- | :--- |
+| **`LINEA_SIMPLE`** | Base para H, 7, Flecha y Doble. | ⭐ (Bajo) |
+| **`LINEA_DOBLE`** | Requiere cualquier combinación de 2 líneas. | ⭐⭐ (Medio) |
+| **`CUATRO_ESQUINAS`** | Parte esencial del Perímetro. | ⭐ (Bajo) |
+| **`PERIMETRO`** | Contiene a las 4 esquinas. | ⭐⭐⭐ (Alto) |
+| **`LETRA_H`** | Implica 3 líneas (2V + 1H). | ⭐⭐⭐ (Alto) |
+| **`NUMERO_7`** | Implica 1 fila + 1 diagonal. | ⭐⭐ (Medio) |
+| **`FLECHA`** | Implica 1 fila + 1 diagonal. | ⭐⭐ (Medio) |
+| **`CARTON_LLENO`** | **Contiene a TODOS los demás.** | 🏆 (Máximo) |
+
+### 🔗 Reglas de Relación
+1.  **Herencia Total:** Si un cartón tiene `CARTON_LLENO`, automáticamente tiene todos los patrones anteriores.
+2.  **Inclusión por Perímetro:** No se puede tener `PERIMETRO` sin tener `CUATRO_ESQUINAS`.
+3.  **Múltiples Líneas:** La `LETRA_H` es el patrón de líneas más fuerte, ya que garantiza tanto `LINEA_SIMPLE` como `LINEA_DOBLE`.
+
+---
+
 ## 🔗 Documentos Relacionados
 
 - [Arquitectura del Sistema](./ARCHITECTURE.md)
 - [Eventos de Socket.IO](./SOCKET_EVENTS.md)
 - [Esquema de Base de Datos](./DATABASE.md)
+
