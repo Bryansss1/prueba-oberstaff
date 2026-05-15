@@ -7,6 +7,7 @@ import { Config } from "../utils/config/env.config";
 export function createSocketServer(httpServer: http.Server): Server {
   const io = new Server(httpServer, {
     cors: { origin: "*" },
+    path: Config.SOCKET_PATH,
   });
 
   // Middleware de autenticación JWT para Socket.IO
