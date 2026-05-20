@@ -124,8 +124,19 @@ export function registerSocketHandlers(io: Server): void {
           // Obtener datos del referido: BingoCardboards → Codes → referred_code
           const codeRecord = await prisma.codes.findUnique({
             where: { id: board.code_id, deleted_at: null },
-            select: { code: true, referred_code: true },
+            select: { id: true, code: true, referred_code: true },
           });
+
+          console.log("\n🔍 REFERRAL DEBUG — Reclamación de premio");
+          console.log(`   boardId: ${boardId} | code_id: ${board.code_id}`);
+          console.log(`   codeRecord encontrado:`, codeRecord ? "SÍ" : "NO");
+          if (codeRecord) {
+            console.log(`   codeRecord.id: ${codeRecord.id}`);
+            console.log(`   codeRecord.code: "${codeRecord.code}"`);
+            console.log(
+              `   codeRecord.referred_code: ${codeRecord.referred_code ? `"${codeRecord.referred_code}"` : "null/undefined — NO HAY REFERIDO"}`
+            );
+          }
 
           let referralData: {
             winner_code?: string;
@@ -144,7 +155,19 @@ export function registerSocketHandlers(io: Server): void {
               const ref = await prisma.referred_code.findUnique({
                 where: { referred_code: codeRecord.referred_code },
               });
+              console.log(
+                `   referred_code encontrado en BD:`,
+                ref ? "SÍ" : "NO"
+              );
               if (ref) {
+                console.log(`   ref.campaign_ref: "${ref.campaign_ref}"`);
+                console.log(`   ref.vip: "${ref.vip}"`);
+                console.log(`   ref.state: "${ref.state}"`);
+                console.log(`   ref.country_code: "${ref.country_code}"`);
+                console.log(`   ref.phone_number: "${ref.phone_number}"`);
+                console.log(`   ref.master: ${ref.master ? `"${ref.master}"` : "null"}`);
+                console.log(`   ref.city: ${ref.city ? `"${ref.city}"` : "null"}`);
+
                 referralData.referred_campaign_ref = ref.campaign_ref;
                 referralData.referred_vip = ref.vip;
                 referralData.referred_state = ref.state;
@@ -155,6 +178,9 @@ export function registerSocketHandlers(io: Server): void {
               }
             }
           }
+
+          console.log("   📦 referralData final:", JSON.stringify(referralData, null, 2));
+          console.log("");
 
           // Registrar ganador en winners JSON
           const bingoRow = await prisma.bingo.findUnique({
@@ -192,6 +218,10 @@ export function registerSocketHandlers(io: Server): void {
           winnersJSON.data.push(winnerEntry);
           state.winners.push(winnerEntry);
 
+          console.log("🏆 WINNER ENTRY enviado a BD y winner_announced:");
+          console.log(JSON.stringify(winnerEntry, null, 2));
+          console.log("");
+
           await prisma.$transaction([
             prisma.bingo.update({
               where: { id: bingoId },
@@ -209,9 +239,22 @@ export function registerSocketHandlers(io: Server): void {
             prizeName: prize.name,
             type_of_victory,
             time: Date.now(),
-            winners: state.winners,
+            // Winners sin datos sensibles del referido (solo claim_result los recibe)
+            winners: state.winners.map(
+              ({ winner_code: _wc, referred_campaign_ref: _rcr, referred_vip: _rv, referred_state: _rs, referred_country_code: _rcc, referred_phone_number: _rpn, referred_master: _rm, referred_city: _rci, ...publicWinner }) => publicWinner
+            ),
           });
-          socket.emit("claim_result", { ok: true });
+          socket.emit("claim_result", {
+            ok: true,
+            winner_code: winnerEntry.winner_code,
+            referred_campaign_ref: winnerEntry.referred_campaign_ref,
+            referred_vip: winnerEntry.referred_vip,
+            referred_state: winnerEntry.referred_state,
+            referred_country_code: winnerEntry.referred_country_code,
+            referred_phone_number: winnerEntry.referred_phone_number,
+            referred_master: winnerEntry.referred_master,
+            referred_city: winnerEntry.referred_city,
+          });
 
           // Fin del bingo si no quedan premios
           const remaining = remainingPrizesCount(state.prizes, winnersJSON);
