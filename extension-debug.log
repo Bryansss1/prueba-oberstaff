@@ -1,0 +1,53 @@
+2026-05-20T17:22:19.684Z [INFO] DotAgents VSCode is now active
+2026-05-20T17:22:23.314Z [INFO] Installed rule for cursor
+2026-05-20T17:22:23.380Z [DEBUG] [DiffSyncAdapter] === START SYNC INBOUND ===
+2026-05-20T17:22:23.382Z [DEBUG] [DiffSyncAdapter] workspaceRoot: c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets
+2026-05-20T17:22:23.384Z [DEBUG] [DiffSyncAdapter] agentId: cursor
+2026-05-20T17:22:23.385Z [DEBUG] [DiffSyncAdapter] affectedPaths: undefined
+2026-05-20T17:22:23.387Z [DEBUG] [DiffSyncAdapter] DIRECTORY SCAN: cursor.yaml, make_rule_prompt.md
+2026-05-20T17:22:23.388Z [DEBUG] [DiffSyncAdapter] Loading rules from: c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets\.agents\.ai\rules
+2026-05-20T17:22:23.398Z [DEBUG] [DiffSyncAdapter] Rules loaded: 1
+2026-05-20T17:22:23.400Z [DEBUG] [DiffSyncAdapter] Available agents: ["cursor"]
+2026-05-20T17:22:23.401Z [DEBUG] [DiffSyncAdapter] Rules path: c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets\.agents\.ai\rules
+2026-05-20T17:22:23.403Z [DEBUG] [DiffSyncAdapter] Rule found for agent: cursor
+2026-05-20T17:22:23.405Z [DEBUG] [DiffSyncAdapter] sourceRoot: .cursor/
+2026-05-20T17:22:23.407Z [DEBUG] [DiffSyncAdapter] inbound mappings: [{"from":"rules/","to":"rules/","format":"directory","sourceExt":".mdc","targetExt":".md"},{"from":"skills/","to":"skills/","format":"directory"},{"from":"commands/","to":"workflows/","format":"directory"},{"from":"agents/","to":"agents/","format":"directory"},{"from":"mcp.json","to":"mcp/mcp.json","format":"json-transform","extract":"$.mcpServers"}]
+2026-05-20T17:22:23.408Z [DEBUG] [DiffSyncAdapter] Executing sync with request: {
+  "rules": [
+    {
+      "from": "rules/",
+      "to": "rules/",
+      "format": "directory",
+      "sourceExt": ".mdc",
+      "targetExt": ".md"
+    },
+    {
+      "from": "skills/",
+      "to": "skills/",
+      "format": "directory"
+    },
+    {
+      "from": "commands/",
+      "to": "workflows/",
+      "format": "directory"
+    },
+    {
+      "from": "agents/",
+      "to": "agents/",
+      "format": "directory"
+    },
+    {
+      "from": "mcp.json",
+      "to": "mcp/mcp.json",
+      "format": "json-transform",
+      "extract": "$.mcpServers"
+    }
+  ],
+  "sourcePath": "c:\\Users\\welcome\\Desktop\\trabajo-programacion\\freenlancers\\bingo-sockets\\.cursor\\",
+  "targetPath": "c:\\Users\\welcome\\Desktop\\trabajo-programacion\\freenlancers\\bingo-sockets\\.agents"
+}
+2026-05-20T17:22:23.459Z [DEBUG] [DiffSyncAdapter] Sync result - actions performed: []
+2026-05-20T17:22:23.472Z [DEBUG] [DiffSyncAdapter] Written paths: []
+2026-05-20T17:22:23.474Z [DEBUG] [DiffSyncAdapter] Had changes: false
+2026-05-20T17:22:23.476Z [DEBUG] [DiffSyncAdapter] === END SYNC INBOUND ===
+2026-05-20T17:22:23.655Z [INFO] [DiffSyncAdapter] currentAgent set to cursor workspaceRoot c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets

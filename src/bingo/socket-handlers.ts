@@ -121,6 +121,41 @@ export function registerSocketHandlers(io: Server): void {
             return;
           }
 
+          // Obtener datos del referido: BingoCardboards → Codes → referred_code
+          const codeRecord = await prisma.codes.findUnique({
+            where: { id: board.code_id, deleted_at: null },
+            select: { code: true, referred_code: true },
+          });
+
+          let referralData: {
+            winner_code?: string;
+            referred_campaign_ref?: string;
+            referred_vip?: string;
+            referred_state?: string;
+            referred_country_code?: string;
+            referred_phone_number?: string;
+            referred_master?: string | null;
+            referred_city?: string | null;
+          } = {};
+
+          if (codeRecord) {
+            referralData.winner_code = codeRecord.code;
+            if (codeRecord.referred_code) {
+              const ref = await prisma.referred_code.findUnique({
+                where: { referred_code: codeRecord.referred_code },
+              });
+              if (ref) {
+                referralData.referred_campaign_ref = ref.campaign_ref;
+                referralData.referred_vip = ref.vip;
+                referralData.referred_state = ref.state;
+                referralData.referred_country_code = ref.country_code;
+                referralData.referred_phone_number = ref.phone_number;
+                referralData.referred_master = ref.master;
+                referralData.referred_city = ref.city;
+              }
+            }
+          }
+
           // Registrar ganador en winners JSON
           const bingoRow = await prisma.bingo.findUnique({
             where: { id: bingoId },
@@ -145,6 +180,14 @@ export function registerSocketHandlers(io: Server): void {
             prize_description: prize.description,
             prize_image: prize.image,
             type_of_victory,
+            winner_code: referralData.winner_code,
+            referred_campaign_ref: referralData.referred_campaign_ref,
+            referred_vip: referralData.referred_vip,
+            referred_state: referralData.referred_state,
+            referred_country_code: referralData.referred_country_code,
+            referred_phone_number: referralData.referred_phone_number,
+            referred_master: referralData.referred_master,
+            referred_city: referralData.referred_city,
           };
           winnersJSON.data.push(winnerEntry);
           state.winners.push(winnerEntry);

@@ -31,6 +31,15 @@ export type WinnerDTO = {
   prize_description?: string;
   prize_image?: string;
   type_of_victory: VictoryType;
+  // Referral data (from BingoCardboards → Codes → referred_code)
+  winner_code?: string; // The code string used to create the cardboard
+  referred_campaign_ref?: string;
+  referred_vip?: string;
+  referred_state?: string;
+  referred_country_code?: string;
+  referred_phone_number?: string;
+  referred_master?: string | null;
+  referred_city?: string | null;
 };
 
 export type BingoState = {
