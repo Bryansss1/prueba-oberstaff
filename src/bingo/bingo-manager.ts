@@ -281,6 +281,81 @@ function isCardboardPlayed(cardboard: {
 }
 
 /**
+ * Verifica si la ventana de inicio de un bingo ya expiró.
+ * Retorna true si ya pasó start_time + 5 minutos (startWindowMinutes).
+ * @param bingoStartTime Hora del bingo en formato HH:mm (o null)
+ * @param bingoCreatedAt Fecha de creación del bingo
+ * @param fallbackScheduledTime Hora programada de fallback (desde parámetros/ENV)
+ */
+export function isBingoStartWindowExpired(
+  bingoStartTime: string | null,
+  bingoCreatedAt: Date,
+  fallbackScheduledTime: string
+): boolean {
+  const effectiveTime = bingoStartTime || fallbackScheduledTime;
+  if (!effectiveTime) return false;
+
+  const now = moment().tz(BingoConfig.autoStart.timezone);
+  const [hour, minute] = effectiveTime.split(":");
+
+  const bingoCreatedMoment = moment(bingoCreatedAt).tz(
+    BingoConfig.autoStart.timezone
+  );
+
+  let scheduledMoment = bingoCreatedMoment.clone().set({
+    hour: parseInt(hour),
+    minute: parseInt(minute),
+    second: 0,
+    millisecond: 0,
+  });
+
+  // Si la hora programada es anterior a la de creación, es para el día siguiente
+  if (scheduledMoment.isBefore(bingoCreatedMoment)) {
+    scheduledMoment.add(1, "day");
+  }
+
+  const windowEnd = scheduledMoment
+    .clone()
+    .add(BingoConfig.autoStart.startWindowMinutes, "minutes");
+
+  return now.isSameOrAfter(windowEnd);
+}
+
+/**
+ * Verifica si ya pasó la hora programada de inicio (sin ventana de tolerancia).
+ * A diferencia de isBingoStartWindowExpired, NO suma los 5 minutos extra.
+ * Útil para finalizar inmediatamente un bingo que no alcanzó el mínimo apenas llega la hora.
+ */
+export function isPastScheduledStartTime(
+  bingoStartTime: string | null,
+  bingoCreatedAt: Date,
+  fallbackScheduledTime: string
+): boolean {
+  const effectiveTime = bingoStartTime || fallbackScheduledTime;
+  if (!effectiveTime) return false;
+
+  const now = moment().tz(BingoConfig.autoStart.timezone);
+  const [hour, minute] = effectiveTime.split(":");
+
+  const bingoCreatedMoment = moment(bingoCreatedAt).tz(
+    BingoConfig.autoStart.timezone
+  );
+
+  let scheduledMoment = bingoCreatedMoment.clone().set({
+    hour: parseInt(hour),
+    minute: parseInt(minute),
+    second: 0,
+    millisecond: 0,
+  });
+
+  if (scheduledMoment.isBefore(bingoCreatedMoment)) {
+    scheduledMoment.add(1, "day");
+  }
+
+  return now.isSameOrAfter(scheduledMoment);
+}
+
+/**
  * Detecta bingos pendientes que ya expiraron (pasó la ventana de inicio)
  * Un bingo expiró si:
  * - is_started = false
@@ -291,7 +366,6 @@ export async function getExpiredPendingBingos(): Promise<
   Array<{ id: number; start_time: string | null }>
 > {
   try {
-    const now = moment().tz(BingoConfig.autoStart.timezone);
     const { scheduledTime } = await getScheduledStartTime();
 
     // Buscar bingos pendientes (incluir created_at para calcular fecha correcta)
@@ -311,42 +385,7 @@ export async function getExpiredPendingBingos(): Promise<
     const expiredBingos: Array<{ id: number; start_time: string | null }> = [];
 
     for (const bingo of pendingBingos) {
-      // Usar start_time del bingo o el de los parámetros como fallback
-      const bingoStartTime = bingo.start_time || scheduledTime;
-
-      if (!bingoStartTime) {
-        continue; // Si no hay hora configurada, saltar
-      }
-
-      // Parsear hora del bingo (formato HH:mm)
-      const [hour, minute] = bingoStartTime.split(":");
-
-      // Obtener fecha de creación del bingo en zona horaria de Venezuela
-      const bingoCreatedAt = moment(bingo.created_at).tz(
-        BingoConfig.autoStart.timezone
-      );
-
-      // Crear momento programado usando la fecha de creación del bingo
-      // Si la hora programada es menor que la hora de creación, asumir que es para el día siguiente
-      let scheduledTimeMoment = bingoCreatedAt.clone().set({
-        hour: parseInt(hour),
-        minute: parseInt(minute),
-        second: 0,
-        millisecond: 0,
-      });
-
-      // Si la hora programada es anterior a la hora de creación, es para el día siguiente
-      if (scheduledTimeMoment.isBefore(bingoCreatedAt)) {
-        scheduledTimeMoment.add(1, "day");
-      }
-
-      // Calcular fin de ventana de inicio (5 minutos después)
-      const windowEnd = scheduledTimeMoment
-        .clone()
-        .add(BingoConfig.autoStart.startWindowMinutes, "minutes");
-
-      // Si ya pasó la ventana de inicio, el bingo expiró
-      if (now.isAfter(windowEnd)) {
+      if (isBingoStartWindowExpired(bingo.start_time, bingo.created_at, scheduledTime)) {
         expiredBingos.push({
           id: bingo.id,
           start_time: bingo.start_time,
@@ -430,8 +469,9 @@ export async function transferUnplayedCardboards(
 }
 
 /**
- * Procesa bingos expirados: los marca como finalizados, crea nuevo bingo si no existe,
- * y transfiere cartones no jugados
+ * Procesa bingos expirados: los marca como finalizados, crea uno nuevo si no existe,
+ * y transfiere los cartones NO jugados (sin números marcados) al nuevo bingo.
+ * Los cartones que alguien abrió y marcó números NO se transfieren.
  */
 export async function processExpiredBingos(): Promise<void> {
   try {
@@ -459,7 +499,7 @@ export async function processExpiredBingos(): Promise<void> {
 
       console.log(`✅ Bingo ${expiredBingo.id} marcado como finalizado`);
 
-      // Verificar si existe un bingo pendiente (nuevo)
+      // Determinar el bingo destino para transferir cartones
       let newBingoId: number | null = null;
 
       const existingPending = await prisma.bingo.findFirst({
@@ -475,26 +515,26 @@ export async function processExpiredBingos(): Promise<void> {
         newBingoId = existingPending.id;
         console.log(`ℹ️  Usando bingo pendiente existente (ID: ${newBingoId})`);
       } else {
-        // Crear nuevo bingo con últimos parámetros
         newBingoId = await createBingoFromParameters();
-        if (!newBingoId) {
-          console.log(
-            `⚠️  No se pudo crear nuevo bingo para transferir cartones`
-          );
-          console.log(`${"=".repeat(60)}\n`);
-          continue;
+        if (newBingoId) {
+          console.log(`🆕 Nuevo bingo creado (ID: ${newBingoId})`);
+        } else {
+          console.log(`⚠️  No se pudo crear nuevo bingo`);
         }
       }
 
-      // Transferir cartones no jugados al nuevo bingo
-      const transferredCount = await transferUnplayedCardboards(
-        expiredBingo.id,
-        newBingoId
-      );
+      // Transferir solo cartones NO jugados (sin números marcados)
+      // isCardboardPlayed() filtra: si tiene números negativos → NO se transfiere
+      if (newBingoId) {
+        const transferredCount = await transferUnplayedCardboards(
+          expiredBingo.id,
+          newBingoId
+        );
+        console.log(
+          `📊 ${transferredCount} cartones transferidos al bingo ${newBingoId} (solo los no jugados)`
+        );
+      }
 
-      console.log(
-        `📊 Resumen: ${transferredCount} cartones transferidos al bingo ${newBingoId}`
-      );
       console.log(`${"=".repeat(60)}\n`);
     }
   } catch (error: any) {

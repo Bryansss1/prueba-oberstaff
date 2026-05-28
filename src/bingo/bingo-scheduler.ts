@@ -9,6 +9,10 @@ import {
   checkAndCreateNewBingo,
   updatePendingBingosFromParameters,
   processExpiredBingos,
+  isBingoStartWindowExpired,
+  isPastScheduledStartTime,
+  createBingoFromParameters,
+  transferUnplayedCardboards,
 } from "./bingo-manager";
 import { getActiveParticipantsCount, loadBingo, activeBingos } from "./state";
 import { createNumberFeeder } from "./number-feeder";
@@ -196,7 +200,22 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
 
     // Verificar si es hora de iniciar usando la hora del último bingo
     if (!(await isTimeToStart(bingoStartTime, lastPendingBingo.created_at))) {
-      return; // No es hora aún
+      // Si no es hora de iniciar, verificar si la ventana YA expiró
+      const { scheduledTime } = await getScheduledStartTime();
+      if (
+        isBingoStartWindowExpired(
+          bingoStartTime,
+          lastPendingBingo.created_at,
+          scheduledTime
+        )
+      ) {
+        // ⏰ La ventana se cerró sin alcanzar el mínimo → procesar expiración AHORA
+        console.log(
+          `\n[BINGO ${lastPendingBingo.id}] ⏰ Ventana de inicio cerrada — procesando expiración inmediata`
+        );
+        await processExpiredBingos();
+      }
+      return;
     }
 
     // Verificar si tiene suficientes participantes
@@ -206,9 +225,66 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
     if (participants >= minRequired) {
       await startBingoAutomatically(lastPendingBingo.id, io);
     } else {
-      console.log(
-        `[BINGO ${lastPendingBingo.id}] ⏳ Esperando participantes: ${participants}/${minRequired} (Hora programada: ${bingoStartTime || "parámetros"})`
-      );
+      // No hay suficientes participantes — verificar si ya pasó la hora de inicio
+      const { scheduledTime } = await getScheduledStartTime();
+      if (
+        isPastScheduledStartTime(
+          bingoStartTime,
+          lastPendingBingo.created_at,
+          scheduledTime
+        )
+      ) {
+        // ☠️ Hora de inicio alcanzada sin mínimo → finalizar AHORA
+        await prisma.bingo.update({
+          where: { id: lastPendingBingo.id },
+          data: { is_finished: true },
+        });
+
+        // Notificar a los sockets conectados que el bingo terminó
+        const { roomName } = await import("./state.js");
+        io.to(roomName(lastPendingBingo.id)).emit("bingo_finished", {
+          reason: "Hora de inicio alcanzada sin mínimo de participantes",
+        });
+
+        console.log(
+          `\n[BINGO ${lastPendingBingo.id}] ☠️ Finalizado: hora de inicio (${bingoStartTime || scheduledTime}) alcanzada sin mínimo de participantes (${participants}/${minRequired})`
+        );
+
+        // Transferir cartones no jugados y crear nuevo bingo si no existe
+        let newBingoId: number | null = null;
+        const existingPending = await prisma.bingo.findFirst({
+          where: {
+            is_started: false,
+            is_finished: false,
+            deleted_at: null,
+          },
+          select: { id: true },
+        });
+
+        if (existingPending) {
+          newBingoId = existingPending.id;
+          console.log(`ℹ️  Usando bingo pendiente existente (ID: ${newBingoId})`);
+        } else {
+          newBingoId = await createBingoFromParameters();
+          if (newBingoId) {
+            console.log(`🆕 Nuevo bingo creado (ID: ${newBingoId})`);
+          }
+        }
+
+        if (newBingoId) {
+          const transferred = await transferUnplayedCardboards(
+            lastPendingBingo.id,
+            newBingoId
+          );
+          console.log(
+            `📊 ${transferred} cartones transferidos al bingo ${newBingoId}\n`
+          );
+        }
+      } else {
+        console.log(
+          `[BINGO ${lastPendingBingo.id}] ⏳ Esperando participantes: ${participants}/${minRequired} (Hora programada: ${bingoStartTime || "parámetros"})`
+        );
+      }
     }
   } catch (error: any) {
     console.error("❌ Error en scheduler de bingos:", error.message);
@@ -241,8 +317,8 @@ export async function startBingoScheduler(io: Server): Promise<void> {
     await checkAndStartPendingBingos(io);
   });
 
-  // Cron 3: Gestión de bingos (crear nuevo cuando termine uno, actualizar pendientes) cada 3 minutos
-  cron.schedule("*/3 * * * *", async () => {
+  // Cron 3: Gestión de bingos (crear nuevo cuando termine uno, actualizar pendientes) cada 1 minuto
+  cron.schedule("* * * * *", async () => {
     // Verificar y crear nuevo bingo si hay finalizados
     await checkAndCreateNewBingo();
     // Actualizar bingos pendientes con últimos parámetros
@@ -288,7 +364,7 @@ export async function startBingoScheduler(io: Server): Promise<void> {
   console.log("\n✅ Scheduler de bingos iniciado");
   console.log("🔄 Cron de parámetros: cada 2 minutos");
   console.log("⏰ Cron de bingos: cada 1 minuto");
-  console.log("📋 Cron de gestión de bingos: cada 3 minutos");
+  console.log("📋 Cron de gestión de bingos: cada 1 minuto");
   console.log("⏳ Cron de bingos expirados: cada 2 minutos");
   console.log(
     `⏰ Bingo auto-start: ${BingoConfig.autoStart.enabled ? "HABILITADO" : "DESHABILITADO"}`
