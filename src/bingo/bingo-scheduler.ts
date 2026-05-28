@@ -265,6 +265,8 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
           newBingoId = existingPending.id;
           console.log(`ℹ️  Usando bingo pendiente existente (ID: ${newBingoId})`);
         } else {
+          // Refrescar cache antes de crear para usar parámetros actualizados
+          await refreshParametersCache();
           newBingoId = await createBingoFromParameters();
           if (newBingoId) {
             console.log(`🆕 Nuevo bingo creado (ID: ${newBingoId})`);

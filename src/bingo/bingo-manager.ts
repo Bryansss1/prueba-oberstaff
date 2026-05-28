@@ -1,6 +1,6 @@
 // Gestión de creación y actualización de bingos desde parámetros
 import { prisma } from "../config/prisma";
-import { getCurrentParameters } from "../config/parameters";
+import { getCurrentParameters, refreshParametersCache } from "../config/parameters";
 import moment from "moment-timezone";
 import { BingoConfig, getScheduledStartTime } from "../config/bingo.config";
 import { getActiveParticipantsCount } from "./state";
@@ -515,6 +515,8 @@ export async function processExpiredBingos(): Promise<void> {
         newBingoId = existingPending.id;
         console.log(`ℹ️  Usando bingo pendiente existente (ID: ${newBingoId})`);
       } else {
+        // Refrescar cache antes de crear para usar parámetros actualizados
+        await refreshParametersCache();
         newBingoId = await createBingoFromParameters();
         if (newBingoId) {
           console.log(`🆕 Nuevo bingo creado (ID: ${newBingoId})`);
