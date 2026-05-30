@@ -57,7 +57,6 @@ export async function getActiveParticipantsCount(
 export async function loadBingo(bingoId: number): Promise<void> {
   const b = await prisma.bingo.findUnique({
     where: { id: bingoId },
-    include: { BingoCardboards: true },
   });
 
   if (!b) {
