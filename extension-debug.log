@@ -369,3 +369,17 @@
 2026-05-30T16:11:53.156Z [DEBUG] [DiffSyncAdapter] Had changes: false
 2026-05-30T16:11:53.157Z [DEBUG] [DiffSyncAdapter] === END SYNC INBOUND ===
 2026-05-30T16:11:53.167Z [INFO] [DiffSyncAdapter] currentAgent set to cursor workspaceRoot c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets
+2026-06-08T06:03:41.249Z [DEBUG] [DiffSyncAdapter] === START SYNC INBOUND ===
+2026-06-08T06:03:41.251Z [DEBUG] [DiffSyncAdapter] workspaceRoot: c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets
+2026-06-08T06:03:41.252Z [DEBUG] [DiffSyncAdapter] agentId: cursor
+2026-06-08T06:03:41.254Z [DEBUG] [DiffSyncAdapter] affectedPaths: ["c:\\Users\\welcome\\Desktop\\trabajo-programacion\\freenlancers\\bingo-sockets\\.cursor"]
+2026-06-08T06:03:41.256Z [DEBUG] [DiffSyncAdapter] DIRECTORY SCAN: cursor.yaml, make_rule_prompt.md
+2026-06-08T06:03:41.258Z [DEBUG] [DiffSyncAdapter] Loading rules from: c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets\.agents\.ai\rules
+2026-06-08T06:03:41.262Z [DEBUG] [DiffSyncAdapter] Rules loaded: 1
+2026-06-08T06:03:41.264Z [DEBUG] [DiffSyncAdapter] Available agents: ["cursor"]
+2026-06-08T06:03:41.267Z [DEBUG] [DiffSyncAdapter] Rules path: c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets\.agents\.ai\rules
+2026-06-08T06:03:41.273Z [DEBUG] [DiffSyncAdapter] Rule found for agent: cursor
+2026-06-08T06:03:41.275Z [DEBUG] [DiffSyncAdapter] sourceRoot: .cursor/
+2026-06-08T06:03:41.276Z [DEBUG] [DiffSyncAdapter] inbound mappings: [{"from":"rules/","to":"rules/","format":"directory","sourceExt":".mdc","targetExt":".md"},{"from":"skills/","to":"skills/","format":"directory"},{"from":"commands/","to":"workflows/","format":"directory"},{"from":"agents/","to":"agents/","format":"directory"},{"from":"mcp.json","to":"mcp/mcp.json","format":"json-transform","extract":"$.mcpServers"}]
+2026-06-08T06:03:41.278Z [DEBUG] [DiffSyncAdapter] Skipping inbound sync - sourceRoot does not exist: c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets\.cursor\
+2026-06-08T06:03:41.314Z [INFO] [DiffSyncAdapter] currentAgent set to cursor workspaceRoot c:\Users\welcome\Desktop\trabajo-programacion\freenlancers\bingo-sockets
