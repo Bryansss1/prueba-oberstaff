@@ -85,6 +85,36 @@ export function createNumberFeeder(
       return;
     }
 
+    // 🔄 Inicializar `drawn` desde la secuencia persistida en el primer tick.
+    // Necesario para el recovery post-restart: si el proceso se cayó con 50
+    // números cantados, al reanudar el feeder el `drawn` Set estaba vacío
+    // y podría redibujar números que ya están en la secuencia. Esta
+    // inicialización ocurre UNA sola vez (después drawn.size > 0).
+    if (drawn.size === 0 && state.numbersPlayed.sequence.length > 0) {
+      for (const n of state.numbersPlayed.sequence) {
+        drawn.add(n);
+      }
+    }
+
+    // ⏸️ Sincronizar is_pause desde DB cada tick (operador puede haber
+    // pausado/despausado desde su endpoint externo). Polling de 5s.
+    // Si está pausado: no sacar números, mantener el interval vivo para
+    // detectar el próximo despause. Si la transición a true ocurrió en
+    // este tick, marcar was_paused=true (sticky) — sirve al scheduler
+    // para no marcar el bingo como expirado al despausar tarde.
+    const fresh = await prisma.bingo.findUnique({
+      where: { id: bingoId },
+      select: { is_pause: true },
+    });
+    const freshIsPause = fresh?.is_pause ?? false;
+    if (freshIsPause) {
+      state.was_paused = true;
+    }
+    state.is_pause = freshIsPause;
+    if (state.is_pause) {
+      return;
+    }
+
     // Modo REAL (desde ENV BINGO_MODE): al cantar 75 números, detener y programar fin en 5 min
     if (BingoConfig.gameMode === "REAL" && drawn.size === pool.length) {
       clearInterval(interval);

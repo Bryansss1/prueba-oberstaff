@@ -68,6 +68,7 @@ model Parameters {
   start_time                 String?
   bingo_re_use               Int?
   maximum_referral_use       Int       @default(6)
+  maximum_cardboard          Int?   @default(0)
   last_modified_by           User?     @relation(fields: [last_modified_by_id], references: [id])
 
   @@map("parameters")
@@ -87,6 +88,8 @@ model Bingo {
   numbers_played             Json?
   is_finished                Boolean?          @default(false)
   start_time                 String?
+  is_pause                   Boolean?          @default(false)
+  maximum_cardboard          Int?           @default(0)
   BingoCardboards            BingoCardboards[]
 
   @@map("bingo")
