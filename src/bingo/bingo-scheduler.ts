@@ -426,8 +426,8 @@ export async function startBingoScheduler(io: Server): Promise<void> {
   cron.schedule("* * * * *", async () => {
     // Verificar y crear nuevo bingo si hay finalizados
     await checkAndCreateNewBingo();
-    // Actualizar bingos pendientes con últimos parámetros
-    await updatePendingBingosFromParameters();
+    // Actualizar bingos pendientes con últimos parámetros (deshabilitado por bugs, el nuevo bingo toma los parámetros frescos)
+    // await updatePendingBingosFromParameters();
   });
 
   // Cron 4: Procesar bingos expirados (que no alcanzaron mínimo de participantes) cada 2 minutos
