@@ -93,6 +93,7 @@ export async function createBingoFromParameters(): Promise<number | null> {
         min_number_of_participants: parameters.min_participants_for_bingo,
         bingo_prizes: parameters.bingo_prizes as any,
         start_time: parameters.start_time,
+        maximum_cardboard: parameters.maximum_cardboard,
         is_started: false,
         is_finished: false,
         number_of_participants: 0,
@@ -106,6 +107,9 @@ export async function createBingoFromParameters(): Promise<number | null> {
     console.log(`📋 Cartones por código: ${newBingo.cardboard_by_code}`);
     console.log(
       `👥 Mínimo de participantes: ${newBingo.min_number_of_participants}`
+    );
+    console.log(
+      `🧮 Máximo de cartones: ${newBingo.maximum_cardboard ?? "Sin límite"}`
     );
     console.log(
       `⏰ Hora de inicio: ${newBingo.start_time || "No configurada"}`
@@ -182,6 +186,10 @@ export async function updatePendingBingosFromParameters(): Promise<void> {
         updateData.start_time = parameters.start_time;
       }
 
+      if (bingo.maximum_cardboard !== parameters.maximum_cardboard) {
+        updateData.maximum_cardboard = parameters.maximum_cardboard;
+      }
+
       // Solo actualizar si hay cambios
       if (Object.keys(updateData).length > 0) {
         await prisma.bingo.update({
@@ -209,6 +217,9 @@ export async function checkAndCreateNewBingo(): Promise<void> {
   try {
     // Si el sistema está pausado, no crear reemplazo.
     if (await isSystemPaused()) {
+      console.log(
+        "⏸️  Sistema pausado: no se crea bingo de reemplazo (checkAndCreateNewBingo)"
+      );
       return;
     }
 
@@ -418,6 +429,9 @@ export async function getExpiredPendingBingos(): Promise<
     // explícita del operador de "no toques este bingo". Cuando se despause,
     // el scheduler los evaluará con la nueva lógica (was_paused).
     if (bingo.is_pause) {
+      console.log(
+        `[BINGO ${bingo.id}] ⏸️  Bingo pending pausado — se omite de la lista de expirados (esperando despause)`
+      );
       continue;
     }
     if (isBingoStartWindowExpired(bingo.start_time, bingo.created_at, scheduledTime)) {

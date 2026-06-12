@@ -211,6 +211,9 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
     // pueda saber que estuvo pausado. Sin esto, was_paused se perdería
     // porque el estado nunca habría entrado a memoria.
     if (lastPendingBingo.is_pause) {
+      console.log(
+        `[BINGO ${lastPendingBingo.id}] ⏸️  Bingo pending pausado por operador — no se inicia (esperando despause)`
+      );
       await loadBingo(lastPendingBingo.id);
       return;
     }
@@ -410,7 +413,7 @@ export async function startBingoScheduler(io: Server): Promise<void> {
     const hasChanged = await refreshParametersCache();
     // Si los parámetros cambiaron, actualizar bingos pendientes
     if (hasChanged) {
-      await updatePendingBingosFromParameters();
+      // await updatePendingBingosFromParameters();
     }
   });
 

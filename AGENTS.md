@@ -6,29 +6,25 @@
 
 ```bash
 npm install
-cp .env.example .env             # Fill DATABASE_URL, SECRET_KEY, BINGO_MODE (and optionally AUTO_START_* — see below)
+cp .env.example .env             # Fill DATABASE_URL, SECRET_KEY, BINGO_MODE (and AUTO_START_* — see below)
 npx prisma generate              # See "Prisma gotcha" before running
-npm run build && node dist/src/index.js   # Recommended (works for sure)
-npm run dev                      # nodemon — see "Watch-out" below, often broken
+npm run build && node dist/src/index.js   # Recommended
+npm run dev                      # nodemon — BROKEN on npm, see "Build & Prisma gotchas" below
 ```
 
-### ⚠️ Watch-out: Dev & Build
+### ⚠️ Build & Prisma gotchas
 
-- `nodemon.json` runs `pnpm build` but the repo uses **npm**. `npm run dev` fails unless pnpm is installed or the exec line is fixed to `npm run build && node dist/src/index.js`.
-- `build` is `tsc -p .` (TypeScript compiler), NOT `tsx`. The `tsx` dep exists in `package.json` but is **not** wired into any script — only used manually for the stress test (`npx tsx scripts/stress-test.ts`).
-- `bun.lockb` exists at the root but is gitignored — ignore it.
-- **Port is `4000`**, set as a hardcoded fallback in `src/index.ts:39` (`process.env.PORT || 4000`). It is NOT read from `Config.PORT` (which defaults to `3000` and is also dead — see "Dead code" below).
-- `tsc` emits to `dist/` (mirroring `src/`), so the entry is `dist/src/index.js`, not `dist/index.js`.
-
-### ⚠️ Critical: Prisma generator output
-
-The Prisma client is generated to **`src/database/prisma/generated/`** (non-standard path, **and the generated folder is COMMITTED to git** — the `/generated/prisma` rule in `.gitignore` doesn't match this path).
-
-The **source schema** (`src/database/prisma/schema.prisma`) does NOT have `output = "generated"` in the generator block. The **copy inside the generated folder** (`src/database/prisma/generated/schema.prisma`) DOES. If you re-run `prisma generate` without restoring the `output` line first, the client is regenerated to `node_modules/.prisma/client` and the rest of the app reads stale types from the committed folder.
-
-**Before running `prisma generate`**: add `output = "generated"` to the generator block in the source schema, or edit `prisma generate` to point at the existing folder.
-
-All code imports Prisma as `import { PrismaClient } from "@prisma/client"` — standard facade, never a deep import.
+- **`npm run dev` is broken.** `nodemon.json` runs `pnpm build` but the repo uses **npm**. Either install pnpm or fix `nodemon.json` `exec` to `npm run build && node dist/src/index.js`. To dev on npm, just run the build+start command in a loop.
+- **`build` is `tsc -p .`** (NOT `tsx`). `tsx` exists in `devDependencies` but is not wired into any script — only used manually: `npx tsx scripts/stress-test.ts`.
+- **`tsc` emits to `dist/` mirroring `src/`**, so the entry is `dist/src/index.js`, not `dist/index.js` (the `start` script in `package.json` already reflects this).
+- **`bun.lockb`** is at the root and gitignored — ignore it.
+- **Port is `4000`** as a hardcoded fallback at `src/index.ts:39` (`process.env.PORT || 4000`). It is NOT read from `Config.PORT` (dead — see "Dead code"). Override via `PORT` env.
+- **Prisma client is generated to a non-standard path `src/database/prisma/generated/`** AND that folder is **committed to git** (the `/generated/prisma` rule in `.gitignore` doesn't match).
+  - The source schema (`src/database/prisma/schema.prisma`) does **NOT** have `output = "generated"`. The copy inside the generated folder DOES.
+  - If you re-run `prisma generate` without restoring the `output` line first, the client is regenerated to `node_modules/.prisma/client` and the rest of the app reads **stale** types from the committed folder.
+  - **Before running `prisma generate`**: add `output = "generated"` to the source schema's generator block (or point `prisma generate` at the existing folder).
+  - All code imports as `import { PrismaClient } from "@prisma/client"` (standard facade, never a deep import).
+- **Committed generated client is stale** (e.g. lacks `Bingo.is_pause`). If you need to touch fields added after the last regeneration, run `prisma generate` (writes to `node_modules/.prisma/client/`) — but first do the `output` line restore above, then re-commit the regenerated folder.
 
 ### ⚠️ Critical: Incomplete `.env.example`
 
@@ -138,12 +134,10 @@ This is what prevents the "stuck bingo" scenario where a server restart would le
 
 ## Conventions
 
-- ESLint: `@typescript-eslint/no-explicit-any` is **error**, `semi` is **error** (always), `sourceType: "commonjs"`. The lint script is not in `package.json`; run `npx eslint "src/**/*.ts"` to lint.
+- ESLint: `@typescript-eslint/no-explicit-any` is **error**, `semi` is **error** (always), `sourceType: "commonjs"`. The lint script is not in `package.json`; run `npx eslint "src/**/*.ts"` to lint. There is **no CI lint gate** — `any` does appear in the source where DB JSON or untyped cardboards are handled (`normalizeWinners`, `toMatrix`, `verifyVictory`, `areMarkedNumbersPlayed`, `isCardboardPlayed`, `compareJsonValues`, JSON writes in `pushNumber`).
 - TSConfig: `strict: true`, `module: NodeNext`, `moduleResolution: NodeNext`, `outDir: dist`. Imports use `.js` extensions (e.g. `from "./state.js"`) for ESM compat.
 - **Cardboard numbers**: positive = unmarked, **negative = marked**, `0` = FREE (always counted as marked).
 - **Victory types** (enum `bingo_victories` / type `VictoryType`): `CARTON_LLENO`, `LINEA_SIMPLE`, `LINEA_DOBLE`, `CUATRO_ESQUINAS`, `PERIMETRO`, `LETRA_H`, `NUMERO_7`, `FLECHA`.
-- **Type safety gap**: despite the `no-explicit-any` rule, several functions accept `any` because the source is DB JSON or untyped board payloads: `normalizeWinners()`, `toMatrix()`, `verifyVictory()`, `areMarkedNumbersPlayed()`, `isCardboardPlayed()`, `compareJsonValues()`, `pushNumber` JSON writes. ESLint allows this in practice (no CI lint gate).
-- `package.json` author: **Bryan Sanabria @Bryansss1**. License ISC.
 
 ## Socket.IO
 
@@ -174,14 +168,6 @@ All intentionally **unauthenticated** for testing:
 
 ## Key Docs
 
-- `docs/ARCHITECTURE.md` — full system design with mermaid diagrams
-- `docs/DATABASE.md` — schema details and JSON field shapes
-- `docs/SOCKET_EVENTS.md` — every Socket.IO event with payloads
-- `docs/ENV_VARIABLES.md` — auto-start env vars (note: also documents the gap with `.env.example`)
-- `docs/VICTORY_PATTERNS.md` — per-pattern verification logic
-- `docs/API_ENDPOINTS.md` — REST reference (some pages mention port `3002`; ignore, see above)
-- `docs/DOCUMENTATION_INDEX.md` — quick-start
-- `docs/Bingo_API.postman_collection.json` — Postman collection for the REST API
-- `docs/SOCKET_EXAMPLES.md` — client code in React/Vanilla/Node
+`docs/` has per-topic deep dives (ARCHITECTURE, DATABASE, SOCKET_EVENTS, ENV_VARIABLES, VICTORY_PATTERNS, API_ENDPOINTS, SOCKET_EXAMPLES, API_DOCUMENTATION, DOCUMENTATION_INDEX, plus `Bingo_API.postman_collection.json`). **Several docs hardcode the old port `3002` and recommend `prisma migrate dev` / `npm run dev`** — both are wrong (see "Build & Prisma gotchas" and "Stress scripts"). Treat the code as the source of truth.
 
 `README` (root, no extension) is **empty** — there is no project README.

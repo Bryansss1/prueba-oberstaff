@@ -107,10 +107,23 @@ export function createNumberFeeder(
       select: { is_pause: true },
     });
     const freshIsPause = fresh?.is_pause ?? false;
+    const previousIsPause = state.is_pause;
     if (freshIsPause) {
       state.was_paused = true;
     }
     state.is_pause = freshIsPause;
+
+    // 📋 Log SOLO en transiciones de pausa (no cada tick, sino el log se inunda)
+    if (freshIsPause && !previousIsPause) {
+      console.log(
+        `[BINGO ${bingoId}] ⏸️  PAUSADO por operador — feeder inerte, was_paused=true (sticky)`
+      );
+    } else if (!freshIsPause && previousIsPause) {
+      console.log(
+        `[BINGO ${bingoId}] ▶️  DESPAUSADO por operador — feeder reanuda sorteo de números`
+      );
+    }
+
     if (state.is_pause) {
       return;
     }

@@ -79,6 +79,17 @@ export async function loadBingo(bingoId: number): Promise<void> {
   const freshIsPause = b.is_pause ?? false;
   const wasPaused = existing?.was_paused ?? false;
 
+  // 📋 Log de estado de pausa al cargar (visible para el operador)
+  if (freshIsPause) {
+    console.log(
+      `[BINGO ${bingoId}] ⏸️  Cargado en memoria con is_pause=true (operador pausó)`
+    );
+  } else if (wasPaused && !freshIsPause) {
+    console.log(
+      `[BINGO ${bingoId}] ▶️  Cargado en memoria DESPAUSADO (was_paused=true preservado)`
+    );
+  }
+
   const state: BingoState = {
     id: b.id,
     is_started: b.is_started,
