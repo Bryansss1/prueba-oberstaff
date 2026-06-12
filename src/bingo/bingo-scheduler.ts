@@ -13,6 +13,7 @@ import {
   isPastScheduledStartTime,
   createBingoFromParameters,
   transferUnplayedCardboards,
+  isSystemPaused,
 } from "./bingo-manager";
 import { getActiveParticipantsCount, loadBingo, activeBingos } from "./state";
 import { createNumberFeeder } from "./number-feeder";
@@ -112,6 +113,13 @@ async function startBingoAutomatically(
       return;
     }
 
+    // Defensa en profundidad: si está pausado ahora, no marcar como
+    // started. El scheduler ya validó esto, pero entre su check y este
+    // loadBingo el operador podría haber pausado.
+    if (state.is_pause) {
+      return;
+    }
+
     // Marcar como iniciado en BD
     await prisma.bingo.update({
       where: { id: bingoId },
@@ -187,6 +195,7 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
         start_time: true,
         min_number_of_participants: true,
         created_at: true,
+        is_pause: true,
       },
     });
 
@@ -194,6 +203,39 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
     if (!lastPendingBingo) {
       return;
     }
+
+    // ⏸️ Si el bingo más reciente está pausado, no iniciar ni expirar.
+    // El sistema queda "congelado" hasta que el operador despause.
+    // PERO igual cargamos el estado en memoria para que was_paused quede
+    // seteado=true (sticky) y el cron del próximo tick (cuando se despause)
+    // pueda saber que estuvo pausado. Sin esto, was_paused se perdería
+    // porque el estado nunca habría entrado a memoria.
+    if (lastPendingBingo.is_pause) {
+      console.log(
+        `[BINGO ${lastPendingBingo.id}] ⏸️  Bingo pending pausado por operador — no se inicia (esperando despause)`
+      );
+      await loadBingo(lastPendingBingo.id);
+      return;
+    }
+
+    // Cargar el bingo en memoria para tener was_paused actualizado.
+    // Si el operador lo pausó antes y acaba de despausarlo, el feeder ya
+    // seteó state.was_paused=true; aquí se refleja para la decisión de
+    // "despausado tarde" abajo.
+    await loadBingo(lastPendingBingo.id);
+    const state = activeBingos.get(lastPendingBingo.id);
+    if (!state) {
+      // No debería pasar: loadBingo tira error si no encuentra. Defensa.
+      return;
+    }
+    // Re-check defensivo: si el operador pausó entre la query inicial y
+    // este loadBingo, abortar el inicio (race condition). Sin esto, el
+    // bingo podría quedar "is_started=true" en DB pero pausado, y el feeder
+    // quedaría inerte hasta el próximo despause.
+    if (state.is_pause) {
+      return;
+    }
+    const wasPausedBefore = state.was_paused;
 
     // Obtener hora del bingo (o fallback a parámetros)
     const bingoStartTime = lastPendingBingo.start_time;
@@ -209,6 +251,15 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
           scheduledTime
         )
       ) {
+        // ⏸️ Si el bingo estuvo pausado durante la ventana, no expirarlo:
+        // el operador ya decidió qué hacer al despausar. Solo esperar
+        // que haya participantes suficientes.
+        if (wasPausedBefore) {
+          console.log(
+            `\n[BINGO ${lastPendingBingo.id}] ⏸️ Despausado con ventana vencida — no se expira, esperando participantes para iniciar`
+          );
+          return;
+        }
         // ⏰ La ventana se cerró sin alcanzar el mínimo → procesar expiración AHORA
         console.log(
           `\n[BINGO ${lastPendingBingo.id}] ⏰ Ventana de inicio cerrada — procesando expiración inmediata`
@@ -234,6 +285,14 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
           scheduledTime
         )
       ) {
+        // ⏸️ Mismo caso: si el bingo estuvo pausado, no finalizar y crear
+        // uno nuevo. Solo esperar participantes (la hora actual manda).
+        if (wasPausedBefore) {
+          console.log(
+            `[BINGO ${lastPendingBingo.id}] ⏸️ Despausado con hora vencida — esperando participantes (${participants}/${minRequired})`
+          );
+          return;
+        }
         // ☠️ Hora de inicio alcanzada sin mínimo → finalizar AHORA
         await prisma.bingo.update({
           where: { id: lastPendingBingo.id },
@@ -305,12 +364,56 @@ export async function startBingoScheduler(io: Server): Promise<void> {
   // Refresh inicial de parámetros
   await refreshParametersCache();
 
+  // 🔄 Recovery: reanudar feeders de bingos en progreso (incluyendo pausados).
+  // Sin esto, un server restart dejaría "stuck" cualquier bingo que ya
+  // estaba iniciado: el feeder moriría con el proceso y nadie lo relanzaría
+  // (los crons solo miran bingos pending). Los pausados también se recuperan
+  // — su feeder arranca, ve is_pause=true en el primer tick, y queda inerte
+  // hasta que el operador despause. Los números ya cantados se preservan
+  // porque el feeder inicializa su `drawn` Set desde state.numbersPlayed.
+  const inProgressBingos = await prisma.bingo.findMany({
+    where: {
+      is_started: true,
+      is_finished: false,
+      deleted_at: null,
+    },
+    select: { id: true, is_pause: true },
+  });
+
+  for (const b of inProgressBingos) {
+    try {
+      await loadBingo(b.id);
+      const state = activeBingos.get(b.id);
+      if (state && state.is_started) {
+        createNumberFeeder(b.id, io);
+        if (b.is_pause) {
+          console.log(
+            `[BINGO ${b.id}] 🔄 Feeder reanudado tras restart (⏸️ pausado, inerte hasta despausar)`
+          );
+        } else {
+          console.log(`[BINGO ${b.id}] 🔄 Feeder reanudado tras restart`);
+        }
+      }
+    } catch (error: any) {
+      console.error(
+        `[BINGO ${b.id}] ❌ Error en recovery del feeder:`,
+        error.message
+      );
+    }
+  }
+
+  if (inProgressBingos.length > 0) {
+    console.log(
+      `🔄 Recovery completado: ${inProgressBingos.length} feeder(s) reanudado(s)\n`
+    );
+  }
+
   // Cron 1: Refrescar parámetros cada 2 minutos
   cron.schedule("*/2 * * * *", async () => {
     const hasChanged = await refreshParametersCache();
     // Si los parámetros cambiaron, actualizar bingos pendientes
     if (hasChanged) {
-      await updatePendingBingosFromParameters();
+      // await updatePendingBingosFromParameters();
     }
   });
 

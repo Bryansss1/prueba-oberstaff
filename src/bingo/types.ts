@@ -49,4 +49,13 @@ export type BingoState = {
   winners: WinnerDTO[];
   is_started: boolean;
   min_number_of_participants: number; // Mínimo de participantes requeridos
+  /** Mirror de la columna `is_pause` en DB. Re-leída por el feeder cada tick. */
+  is_pause: boolean;
+  /**
+   * Sticky: queda en `true` si el bingo estuvo pausado en algún momento del
+   * proceso en memoria. Sirve para que el scheduler NO marque como expirado
+   * un bingo que el operador despausó tarde (start window ya vencida durante
+   * la pausa). Se resetea al crear un nuevo BingoState.
+   */
+  was_paused: boolean;
 };

@@ -73,6 +73,23 @@ export async function loadBingo(bingoId: number): Promise<void> {
   const normalizedWinners = normalizeWinners(b.winners);
   const winners: WinnerDTO[] = normalizedWinners.data;
 
+  // Sticky: si el state ya estaba en memoria con was_paused=true, lo mantenemos
+  // aunque el DB ahora diga is_pause=false (el operador ya despausó).
+  const existing = activeBingos.get(bingoId);
+  const freshIsPause = b.is_pause ?? false;
+  const wasPaused = existing?.was_paused ?? false;
+
+  // 📋 Log de estado de pausa al cargar (visible para el operador)
+  if (freshIsPause) {
+    console.log(
+      `[BINGO ${bingoId}] ⏸️  Cargado en memoria con is_pause=true (operador pausó)`
+    );
+  } else if (wasPaused && !freshIsPause) {
+    console.log(
+      `[BINGO ${bingoId}] ▶️  Cargado en memoria DESPAUSADO (was_paused=true preservado)`
+    );
+  }
+
   const state: BingoState = {
     id: b.id,
     is_started: b.is_started,
@@ -80,6 +97,8 @@ export async function loadBingo(bingoId: number): Promise<void> {
     numbersPlayed,
     winners,
     min_number_of_participants: b.min_number_of_participants || 0,
+    is_pause: freshIsPause,
+    was_paused: wasPaused || freshIsPause,
   };
 
   activeBingos.set(bingoId, state);

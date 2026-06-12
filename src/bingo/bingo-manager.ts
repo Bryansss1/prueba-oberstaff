@@ -6,6 +6,22 @@ import { BingoConfig, getScheduledStartTime } from "../config/bingo.config";
 import { getActiveParticipantsCount } from "./state";
 
 /**
+ * Indica si el sistema está pausado a nivel global: el bingo más reciente
+ * (cualquier estado, excepto soft-deleted) tiene `is_pause=true`.
+ * El operador (vía endpoints externos) flaguea esta columna para detener
+ * toda actividad del bingo más reciente: feeder, auto-start, expiración y
+ * creación de nuevos bingos. Mientras esté en true, el sistema no avanza.
+ */
+export async function isSystemPaused(): Promise<boolean> {
+  const mostRecent = await prisma.bingo.findFirst({
+    where: { deleted_at: null },
+    orderBy: { id: "desc" },
+    select: { is_pause: true },
+  });
+  return mostRecent?.is_pause ?? false;
+}
+
+/**
  * Compara dos valores JSON de manera robusta
  * Maneja null, undefined, y objetos con diferentes órdenes de propiedades
  */
@@ -41,6 +57,12 @@ function compareJsonValues(a: any, b: any): boolean {
  */
 export async function createBingoFromParameters(): Promise<number | null> {
   try {
+    // Si el sistema está pausado (último bingo con is_pause=true), no crear.
+    if (await isSystemPaused()) {
+      console.log("⏸️  Sistema pausado: no se crea nuevo bingo");
+      return null;
+    }
+
     const parameters = await getCurrentParameters();
 
     if (!parameters) {
@@ -71,6 +93,7 @@ export async function createBingoFromParameters(): Promise<number | null> {
         min_number_of_participants: parameters.min_participants_for_bingo,
         bingo_prizes: parameters.bingo_prizes as any,
         start_time: parameters.start_time,
+        maximum_cardboard: parameters.maximum_cardboard,
         is_started: false,
         is_finished: false,
         number_of_participants: 0,
@@ -84,6 +107,9 @@ export async function createBingoFromParameters(): Promise<number | null> {
     console.log(`📋 Cartones por código: ${newBingo.cardboard_by_code}`);
     console.log(
       `👥 Mínimo de participantes: ${newBingo.min_number_of_participants}`
+    );
+    console.log(
+      `🧮 Máximo de cartones: ${newBingo.maximum_cardboard ?? "Sin límite"}`
     );
     console.log(
       `⏰ Hora de inicio: ${newBingo.start_time || "No configurada"}`
@@ -160,6 +186,10 @@ export async function updatePendingBingosFromParameters(): Promise<void> {
         updateData.start_time = parameters.start_time;
       }
 
+      if (bingo.maximum_cardboard !== parameters.maximum_cardboard) {
+        updateData.maximum_cardboard = parameters.maximum_cardboard;
+      }
+
       // Solo actualizar si hay cambios
       if (Object.keys(updateData).length > 0) {
         await prisma.bingo.update({
@@ -181,9 +211,18 @@ export async function updatePendingBingosFromParameters(): Promise<void> {
 /**
  * Verifica si hay bingos finalizados y crea uno nuevo si es necesario
  * IMPORTANTE: No crea un nuevo bingo si hay uno en curso (is_started: true)
+ *              ni si el sistema está pausado (is_pause=true en el más reciente)
  */
 export async function checkAndCreateNewBingo(): Promise<void> {
   try {
+    // Si el sistema está pausado, no crear reemplazo.
+    if (await isSystemPaused()) {
+      console.log(
+        "⏸️  Sistema pausado: no se crea bingo de reemplazo (checkAndCreateNewBingo)"
+      );
+      return;
+    }
+
     // Verificar si hay un bingo en curso
     const activeBingo = await prisma.bingo.findFirst({
       where: {
@@ -369,29 +408,39 @@ export async function getExpiredPendingBingos(): Promise<
     const { scheduledTime } = await getScheduledStartTime();
 
     // Buscar bingos pendientes (incluir created_at para calcular fecha correcta)
-    const pendingBingos = await prisma.bingo.findMany({
-      where: {
-        is_started: false,
-        is_finished: false,
-        deleted_at: null,
-      },
-      select: {
-        id: true,
-        start_time: true,
-        created_at: true,
-      },
-    });
+  const pendingBingos = await prisma.bingo.findMany({
+    where: {
+      is_started: false,
+      is_finished: false,
+      deleted_at: null,
+    },
+    select: {
+      id: true,
+      start_time: true,
+      created_at: true,
+      is_pause: true,
+    },
+  });
 
-    const expiredBingos: Array<{ id: number; start_time: string | null }> = [];
+  const expiredBingos: Array<{ id: number; start_time: string | null }> = [];
 
-    for (const bingo of pendingBingos) {
-      if (isBingoStartWindowExpired(bingo.start_time, bingo.created_at, scheduledTime)) {
-        expiredBingos.push({
-          id: bingo.id,
-          start_time: bingo.start_time,
-        });
-      }
+  for (const bingo of pendingBingos) {
+    // Bingos pausados no se procesan como expirados: la pausa es una señal
+    // explícita del operador de "no toques este bingo". Cuando se despause,
+    // el scheduler los evaluará con la nueva lógica (was_paused).
+    if (bingo.is_pause) {
+      console.log(
+        `[BINGO ${bingo.id}] ⏸️  Bingo pending pausado — se omite de la lista de expirados (esperando despause)`
+      );
+      continue;
     }
+    if (isBingoStartWindowExpired(bingo.start_time, bingo.created_at, scheduledTime)) {
+      expiredBingos.push({
+        id: bingo.id,
+        start_time: bingo.start_time,
+      });
+    }
+  }
 
     return expiredBingos;
   } catch (error: any) {
