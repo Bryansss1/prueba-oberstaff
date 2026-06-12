@@ -10,7 +10,6 @@ const createConfig = () => {
     PORT: Number(process.env.PORT) || 3000,
     VERSION: process.env.VERSION || "v1",
     URL: process.env.URL || "localhost:3000",
-    SOCKET_PATH: process.env.SOCKET_PATH || "/socket.io/",
   };
 
   const onAppEnv = (app: Express) => {
