@@ -296,7 +296,7 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
         // ☠️ Hora de inicio alcanzada sin mínimo → finalizar AHORA
         await prisma.bingo.update({
           where: { id: lastPendingBingo.id },
-          data: { is_finished: true },
+          data: { is_finished: true, is_pause: false },
         });
 
         // Notificar a los sockets conectados que el bingo terminó

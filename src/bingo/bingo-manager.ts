@@ -14,7 +14,10 @@ import { getActiveParticipantsCount } from "./state";
  */
 export async function isSystemPaused(): Promise<boolean> {
   const mostRecent = await prisma.bingo.findFirst({
-    where: { deleted_at: null },
+    where: { 
+      deleted_at: null,
+      is_finished: false, // Solo bingos activos o pendientes
+    },
     orderBy: { id: "desc" },
     select: { is_pause: true },
   });
@@ -543,7 +546,7 @@ export async function processExpiredBingos(): Promise<void> {
       // Marcar bingo como finalizado
       await prisma.bingo.update({
         where: { id: expiredBingo.id },
-        data: { is_finished: true },
+        data: { is_finished: true, is_pause: false },
       });
 
       console.log(`✅ Bingo ${expiredBingo.id} marcado como finalizado`);

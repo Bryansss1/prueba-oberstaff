@@ -87,6 +87,7 @@ export function registerBingoRoutes(app: Express, io: Server): void {
         data: {
           is_started: false,
           is_finished: true,
+          is_pause: false,
         },
       });
 

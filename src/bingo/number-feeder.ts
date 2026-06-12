@@ -21,7 +21,7 @@ export async function finishBingo(
 
   await prisma.bingo.update({
     where: { id: bingoId },
-    data: { is_started: false, is_finished: true },
+    data: { is_started: false, is_finished: true, is_pause: false },
   });
   state.is_started = false;
 
