@@ -53,9 +53,10 @@ export type BingoState = {
   is_pause: boolean;
   /**
    * Sticky: queda en `true` si el bingo estuvo pausado en algún momento del
-   * proceso en memoria. Sirve para que el scheduler NO marque como expirado
-   * un bingo que el operador despausó tarde (start window ya vencida durante
-   * la pausa). Se resetea al crear un nuevo BingoState.
+   * proceso en memoria. Sirve para registrar que el bingo pasó por un estado de pausa.
+   * Tras la actualización del scheduler, si un bingo pendiente que estuvo pausado
+   * supera su ventana de inicio expirada, el scheduler lo finalizará, creará uno nuevo
+   * pausado y transferirá todos los cartones.
    */
   was_paused: boolean;
 };

@@ -13,6 +13,7 @@ import {
   isPastScheduledStartTime,
   createBingoFromParameters,
   transferUnplayedCardboards,
+  transferAllCardboards,
   isSystemPaused,
 } from "./bingo-manager";
 import { getActiveParticipantsCount, loadBingo, activeBingos } from "./state";
@@ -251,13 +252,39 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
           scheduledTime
         )
       ) {
-        // ⏸️ Si el bingo estuvo pausado durante la ventana, no expirarlo:
-        // el operador ya decidió qué hacer al despausar. Solo esperar
-        // que haya participantes suficientes.
+        // ⏸️ Si el bingo estuvo pausado durante la ventana y ya expiró al despausar:
+        // finalizamos el bingo expirado, creamos uno nuevo pausado y transferimos todos los cartones.
         if (wasPausedBefore) {
           console.log(
-            `\n[BINGO ${lastPendingBingo.id}] ⏸️ Despausado con ventana vencida — no se expira, esperando participantes para iniciar`
+            `\n[BINGO ${lastPendingBingo.id}] ⏸️ Despausado con ventana vencida — finalizando y reemplazando con nuevo bingo pausado`
           );
+
+          // 1. Finalizar el bingo expirado en BD
+          await prisma.bingo.update({
+            where: { id: lastPendingBingo.id },
+            data: { is_finished: true, is_pause: false },
+          });
+
+          // 2. Notificar a los sockets conectados
+          const { roomName: getRoomName } = await import("./state.js");
+          io.to(getRoomName(lastPendingBingo.id)).emit("bingo_finished", {
+            reason: "Ventana de inicio expirada tras despausar",
+          });
+
+          // 3. Crear nuevo bingo pausado
+          await refreshParametersCache();
+          const newBingoId = await createBingoFromParameters({ createPaused: true });
+
+          // 4. Transferir TODOS los cartones al nuevo bingo pausado
+          if (newBingoId) {
+            const transferred = await transferAllCardboards(
+              lastPendingBingo.id,
+              newBingoId
+            );
+            console.log(
+              `📊 ${transferred} cartones transferidos al nuevo bingo pausado ${newBingoId}\n`
+            );
+          }
           return;
         }
         // ⏰ La ventana se cerró sin alcanzar el mínimo → procesar expiración AHORA

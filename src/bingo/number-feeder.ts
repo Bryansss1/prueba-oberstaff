@@ -77,6 +77,7 @@ export function createNumberFeeder(
 ): NodeJS.Timeout {
   const pool = Array.from({ length: 75 }, (_, i) => i + 1);
   const drawn = new Set<number>();
+  let accumulatedMs = 0;
 
   const interval = setInterval(async () => {
     const state = activeBingos.get(bingoId);
@@ -128,22 +129,22 @@ export function createNumberFeeder(
       return;
     }
 
-    // Modo REAL (desde ENV BINGO_MODE): al cantar 75 números, detener y programar fin en 5 min
+    // Modo REAL (desde ENV BINGO_MODE): al cantar 75 números, acumular tiempo y finalizar tras 5 min de juego activo
     if (BingoConfig.gameMode === "REAL" && drawn.size === pool.length) {
-      clearInterval(interval);
-      console.log(
-        `[BINGO ${bingoId}] 🎱 75 números cantados (modo REAL). Fin en 5 minutos.`
-      );
-      setTimeout(async () => {
-        const st = activeBingos.get(bingoId);
-        if (st && st.is_started) {
-          await finishBingo(
-            bingoId,
-            io,
-            "75 números cantados - tiempo agotado (modo REAL)"
-          );
-        }
-      }, REAL_MODE_FINISH_DELAY_MS);
+      accumulatedMs += 5000;
+      if (accumulatedMs === 5000) {
+        console.log(
+          `[BINGO ${bingoId}] 🎱 75 números cantados (modo REAL). Fin programado tras 5 minutos de juego activo (excluyendo pausas).`
+        );
+      }
+      if (accumulatedMs >= REAL_MODE_FINISH_DELAY_MS) {
+        clearInterval(interval);
+        await finishBingo(
+          bingoId,
+          io,
+          "75 números cantados - tiempo agotado (modo REAL)"
+        );
+      }
       return;
     }
 

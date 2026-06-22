@@ -58,10 +58,11 @@ function compareJsonValues(a: any, b: any): boolean {
 /**
  * Crea un nuevo bingo usando los últimos parámetros del sistema
  */
-export async function createBingoFromParameters(): Promise<number | null> {
+export async function createBingoFromParameters(options?: { createPaused?: boolean }): Promise<number | null> {
   try {
-    // Si el sistema está pausado (último bingo con is_pause=true), no crear.
-    if (await isSystemPaused()) {
+    const shouldCreatePaused = options?.createPaused ?? false;
+    // Si el sistema está pausado (último bingo con is_pause=true), no crear (salvo si forzamos creación pausada).
+    if (!shouldCreatePaused && await isSystemPaused()) {
       console.log("⏸️  Sistema pausado: no se crea nuevo bingo");
       return null;
     }
@@ -99,6 +100,7 @@ export async function createBingoFromParameters(): Promise<number | null> {
         maximum_cardboard: parameters.maximum_cardboard,
         is_started: false,
         is_finished: false,
+        is_pause: shouldCreatePaused,
         number_of_participants: 0,
         numbers_played: { sequence: [], last5: [] },
         winners: { data: [] },
@@ -516,6 +518,62 @@ export async function transferUnplayedCardboards(
     return unplayedCardboards.length;
   } catch (error: any) {
     console.error(`❌ Error al transferir cartones:`, error.message);
+    return 0;
+  }
+}
+
+/**
+ * Transfiere todos los cartones de un bingo a otro sin filtrar por uso (para bingos no empezados).
+ * @param oldBingoId ID del bingo anterior
+ * @param newBingoId ID del bingo nuevo
+ * @returns Cantidad de cartones transferidos
+ */
+export async function transferAllCardboards(
+  oldBingoId: number,
+  newBingoId: number
+): Promise<number> {
+  try {
+    // Buscar todos los cartones del bingo anterior
+    const cardboards = await prisma.bingoCardboards.findMany({
+      where: {
+        bingo_id: oldBingoId,
+        deleted_at: null,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (cardboards.length === 0) {
+      return 0;
+    }
+
+    const cardboardIds = cardboards.map((c) => c.id);
+
+    await prisma.bingoCardboards.updateMany({
+      where: {
+        id: { in: cardboardIds },
+      },
+      data: {
+        bingo_id: newBingoId,
+        updated_at: new Date(),
+      },
+    });
+
+    // Actualizar number_of_participants del bingo destino
+    const participantCount = await getActiveParticipantsCount(newBingoId);
+    await prisma.bingo.update({
+      where: { id: newBingoId },
+      data: { number_of_participants: participantCount },
+    });
+
+    console.log(
+      `📦 Transferidos todos los ${cardboards.length} cartones del bingo ${oldBingoId} al bingo ${newBingoId}`
+    );
+
+    return cardboards.length;
+  } catch (error: any) {
+    console.error(`❌ Error al transferir todos los cartones:`, error.message);
     return 0;
   }
 }

@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "generated"
+  output   = "./generated"
 }
 
 datasource db {
@@ -35,19 +35,23 @@ model User {
 }
 
 model Codes {
-  id              Int               @id @default(autoincrement())
-  code            String            @unique
-  origin          OriginCodes       @default(DISPONIBLE)
-  used_for        UsedCodeFor       @default(DISPONIBLE)
-  user_id         Int
-  is_used         Boolean           @default(false)
-  cost            Float?            @default(1.0)
-  created_at      DateTime          @default(now())
-  updated_at      DateTime          @updatedAt
-  deleted_at      DateTime?
-  used_date       DateTime?         @db.Timestamp(6)
-  BingoCardboards BingoCardboards[]
-  User            User              @relation(fields: [user_id], references: [id])
+  id                                               Int               @id @default(autoincrement())
+  code                                             String            @unique
+  origin                                           OriginCodes       @default(DISPONIBLE)
+  used_for                                         UsedCodeFor       @default(DISPONIBLE)
+  user_id                                          Int
+  is_used                                          Boolean           @default(false)
+  cost                                             Float?            @default(1.0)
+  created_at                                       DateTime          @default(now())
+  updated_at                                       DateTime          @updatedAt
+  deleted_at                                       DateTime?
+  used_date                                        DateTime?         @db.Timestamp(6)
+  referred_code                                    String?
+  bingo_re_use                                     Int?              @default(1)
+  BingoCardboards                                  BingoCardboards[]
+  source_codes                                     source_codes      @relation(fields: [code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  referred_code_codes_referred_codeToreferred_code referred_code?    @relation("codes_referred_codeToreferred_code", fields: [referred_code], references: [referred_code], onDelete: NoAction, onUpdate: NoAction)
+  User                                             User              @relation(fields: [user_id], references: [id])
 
   @@map("codes")
 }
@@ -63,6 +67,9 @@ model Parameters {
   last_modified_by_id        Int?
   bingo_prizes               Json?
   start_time                 String?
+  bingo_re_use               Int?
+  maximum_referral_use       Int       @default(6)
+  maximum_cardboard          Int?      @default(0)
   last_modified_by           User?     @relation(fields: [last_modified_by_id], references: [id])
 
   @@map("parameters")
@@ -82,6 +89,8 @@ model Bingo {
   numbers_played             Json?
   is_finished                Boolean?          @default(false)
   start_time                 String?
+  is_pause                   Boolean?          @default(false)
+  maximum_cardboard          Int?              @default(0)
   BingoCardboards            BingoCardboards[]
 
   @@map("bingo")
@@ -121,10 +130,13 @@ model live_sessions {
 model source_codes {
   id           Int       @id @default(autoincrement())
   created_at   DateTime  @default(now()) @db.Timestamptz(6)
-  code         String?   @unique
+  code         String    @unique
   is_available Boolean?
   updated_at   DateTime? @default(now()) @db.Timestamp(6)
   deleted_at   DateTime? @db.Timestamp(6)
+  bingo_re_use Int?      @default(1)
+  was_printed  Boolean?  @default(false)
+  codes        Codes?
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -139,10 +151,26 @@ model bingo_prizes {
   bingo_cardboards BingoCardboards[]
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model referred_code {
+  id                                       Int     @id @default(autoincrement())
+  referred_code                            String  @unique
+  campaign_ref                             String
+  vip                                      String
+  state                                    String
+  country_code                             String
+  phone_number                             String
+  maximum_usage                            Int
+  master                                   String?
+  city                                     String?
+  codes_codes_referred_codeToreferred_code Codes[] @relation("codes_referred_codeToreferred_code")
+}
+
 enum Role {
   ADMIN
   USER
   OPERADOR
+  VENDEDOR
 }
 
 enum OriginCodes {
