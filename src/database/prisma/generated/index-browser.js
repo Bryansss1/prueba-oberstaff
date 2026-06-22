@@ -153,7 +153,9 @@ exports.Prisma.CodesScalarFieldEnum = {
   created_at: 'created_at',
   updated_at: 'updated_at',
   deleted_at: 'deleted_at',
-  used_date: 'used_date'
+  used_date: 'used_date',
+  referred_code: 'referred_code',
+  bingo_re_use: 'bingo_re_use'
 };
 
 exports.Prisma.ParametersScalarFieldEnum = {
@@ -166,7 +168,10 @@ exports.Prisma.ParametersScalarFieldEnum = {
   deleted_at: 'deleted_at',
   last_modified_by_id: 'last_modified_by_id',
   bingo_prizes: 'bingo_prizes',
-  start_time: 'start_time'
+  start_time: 'start_time',
+  bingo_re_use: 'bingo_re_use',
+  maximum_referral_use: 'maximum_referral_use',
+  maximum_cardboard: 'maximum_cardboard'
 };
 
 exports.Prisma.BingoScalarFieldEnum = {
@@ -182,7 +187,9 @@ exports.Prisma.BingoScalarFieldEnum = {
   bingo_prizes: 'bingo_prizes',
   numbers_played: 'numbers_played',
   is_finished: 'is_finished',
-  start_time: 'start_time'
+  start_time: 'start_time',
+  is_pause: 'is_pause',
+  maximum_cardboard: 'maximum_cardboard'
 };
 
 exports.Prisma.BingoCardboardsScalarFieldEnum = {
@@ -214,7 +221,9 @@ exports.Prisma.Source_codesScalarFieldEnum = {
   code: 'code',
   is_available: 'is_available',
   updated_at: 'updated_at',
-  deleted_at: 'deleted_at'
+  deleted_at: 'deleted_at',
+  bingo_re_use: 'bingo_re_use',
+  was_printed: 'was_printed'
 };
 
 exports.Prisma.Bingo_prizesScalarFieldEnum = {
@@ -225,6 +234,19 @@ exports.Prisma.Bingo_prizesScalarFieldEnum = {
   prize_image: 'prize_image',
   quantity: 'quantity',
   description: 'description'
+};
+
+exports.Prisma.Referred_codeScalarFieldEnum = {
+  id: 'id',
+  referred_code: 'referred_code',
+  campaign_ref: 'campaign_ref',
+  vip: 'vip',
+  state: 'state',
+  country_code: 'country_code',
+  phone_number: 'phone_number',
+  maximum_usage: 'maximum_usage',
+  master: 'master',
+  city: 'city'
 };
 
 exports.Prisma.SortOrder = {
@@ -259,7 +281,8 @@ exports.Prisma.JsonNullValueFilter = {
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
   USER: 'USER',
-  OPERADOR: 'OPERADOR'
+  OPERADOR: 'OPERADOR',
+  VENDEDOR: 'VENDEDOR'
 };
 
 exports.OriginCodes = exports.$Enums.OriginCodes = {
@@ -297,7 +320,8 @@ exports.Prisma.ModelName = {
   BingoCardboards: 'BingoCardboards',
   live_sessions: 'live_sessions',
   source_codes: 'source_codes',
-  bingo_prizes: 'bingo_prizes'
+  bingo_prizes: 'bingo_prizes',
+  referred_code: 'referred_code'
 };
 
 /**

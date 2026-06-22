@@ -53,6 +53,11 @@ export type source_codes = $Result.DefaultSelection<Prisma.$source_codesPayload>
  * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
  */
 export type bingo_prizes = $Result.DefaultSelection<Prisma.$bingo_prizesPayload>
+/**
+ * Model referred_code
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type referred_code = $Result.DefaultSelection<Prisma.$referred_codePayload>
 
 /**
  * Enums
@@ -61,7 +66,8 @@ export namespace $Enums {
   export const Role: {
   ADMIN: 'ADMIN',
   USER: 'USER',
-  OPERADOR: 'OPERADOR'
+  OPERADOR: 'OPERADOR',
+  VENDEDOR: 'VENDEDOR'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -368,6 +374,16 @@ export class PrismaClient<
     * ```
     */
   get bingo_prizes(): Prisma.bingo_prizesDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.referred_code`: Exposes CRUD operations for the **referred_code** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Referred_codes
+    * const referred_codes = await prisma.referred_code.findMany()
+    * ```
+    */
+  get referred_code(): Prisma.referred_codeDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -816,7 +832,8 @@ export namespace Prisma {
     BingoCardboards: 'BingoCardboards',
     live_sessions: 'live_sessions',
     source_codes: 'source_codes',
-    bingo_prizes: 'bingo_prizes'
+    bingo_prizes: 'bingo_prizes',
+    referred_code: 'referred_code'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -835,7 +852,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "codes" | "parameters" | "bingo" | "bingoCardboards" | "live_sessions" | "source_codes" | "bingo_prizes"
+      modelProps: "user" | "codes" | "parameters" | "bingo" | "bingoCardboards" | "live_sessions" | "source_codes" | "bingo_prizes" | "referred_code"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1431,6 +1448,80 @@ export namespace Prisma {
           }
         }
       }
+      referred_code: {
+        payload: Prisma.$referred_codePayload<ExtArgs>
+        fields: Prisma.referred_codeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.referred_codeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.referred_codeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>
+          }
+          findFirst: {
+            args: Prisma.referred_codeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.referred_codeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>
+          }
+          findMany: {
+            args: Prisma.referred_codeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>[]
+          }
+          create: {
+            args: Prisma.referred_codeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>
+          }
+          createMany: {
+            args: Prisma.referred_codeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.referred_codeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>[]
+          }
+          delete: {
+            args: Prisma.referred_codeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>
+          }
+          update: {
+            args: Prisma.referred_codeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>
+          }
+          deleteMany: {
+            args: Prisma.referred_codeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.referred_codeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.referred_codeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>[]
+          }
+          upsert: {
+            args: Prisma.referred_codeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$referred_codePayload>
+          }
+          aggregate: {
+            args: Prisma.Referred_codeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateReferred_code>
+          }
+          groupBy: {
+            args: Prisma.referred_codeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<Referred_codeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.referred_codeCountArgs<ExtArgs>
+            result: $Utils.Optional<Referred_codeCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1535,6 +1626,7 @@ export namespace Prisma {
     live_sessions?: live_sessionsOmit
     source_codes?: source_codesOmit
     bingo_prizes?: bingo_prizesOmit
+    referred_code?: referred_codeOmit
   }
 
   /* Types for Logging */
@@ -1749,6 +1841,37 @@ export namespace Prisma {
    */
   export type Bingo_prizesCountOutputTypeCountBingo_cardboardsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BingoCardboardsWhereInput
+  }
+
+
+  /**
+   * Count Type Referred_codeCountOutputType
+   */
+
+  export type Referred_codeCountOutputType = {
+    codes_codes_referred_codeToreferred_code: number
+  }
+
+  export type Referred_codeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    codes_codes_referred_codeToreferred_code?: boolean | Referred_codeCountOutputTypeCountCodes_codes_referred_codeToreferred_codeArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * Referred_codeCountOutputType without action
+   */
+  export type Referred_codeCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Referred_codeCountOutputType
+     */
+    select?: Referred_codeCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * Referred_codeCountOutputType without action
+   */
+  export type Referred_codeCountOutputTypeCountCodes_codes_referred_codeToreferred_codeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CodesWhereInput
   }
 
 
@@ -3101,12 +3224,14 @@ export namespace Prisma {
     id: number | null
     user_id: number | null
     cost: number | null
+    bingo_re_use: number | null
   }
 
   export type CodesSumAggregateOutputType = {
     id: number | null
     user_id: number | null
     cost: number | null
+    bingo_re_use: number | null
   }
 
   export type CodesMinAggregateOutputType = {
@@ -3121,6 +3246,8 @@ export namespace Prisma {
     updated_at: Date | null
     deleted_at: Date | null
     used_date: Date | null
+    referred_code: string | null
+    bingo_re_use: number | null
   }
 
   export type CodesMaxAggregateOutputType = {
@@ -3135,6 +3262,8 @@ export namespace Prisma {
     updated_at: Date | null
     deleted_at: Date | null
     used_date: Date | null
+    referred_code: string | null
+    bingo_re_use: number | null
   }
 
   export type CodesCountAggregateOutputType = {
@@ -3149,6 +3278,8 @@ export namespace Prisma {
     updated_at: number
     deleted_at: number
     used_date: number
+    referred_code: number
+    bingo_re_use: number
     _all: number
   }
 
@@ -3157,12 +3288,14 @@ export namespace Prisma {
     id?: true
     user_id?: true
     cost?: true
+    bingo_re_use?: true
   }
 
   export type CodesSumAggregateInputType = {
     id?: true
     user_id?: true
     cost?: true
+    bingo_re_use?: true
   }
 
   export type CodesMinAggregateInputType = {
@@ -3177,6 +3310,8 @@ export namespace Prisma {
     updated_at?: true
     deleted_at?: true
     used_date?: true
+    referred_code?: true
+    bingo_re_use?: true
   }
 
   export type CodesMaxAggregateInputType = {
@@ -3191,6 +3326,8 @@ export namespace Prisma {
     updated_at?: true
     deleted_at?: true
     used_date?: true
+    referred_code?: true
+    bingo_re_use?: true
   }
 
   export type CodesCountAggregateInputType = {
@@ -3205,6 +3342,8 @@ export namespace Prisma {
     updated_at?: true
     deleted_at?: true
     used_date?: true
+    referred_code?: true
+    bingo_re_use?: true
     _all?: true
   }
 
@@ -3306,6 +3445,8 @@ export namespace Prisma {
     updated_at: Date
     deleted_at: Date | null
     used_date: Date | null
+    referred_code: string | null
+    bingo_re_use: number | null
     _count: CodesCountAggregateOutputType | null
     _avg: CodesAvgAggregateOutputType | null
     _sum: CodesSumAggregateOutputType | null
@@ -3339,7 +3480,11 @@ export namespace Prisma {
     updated_at?: boolean
     deleted_at?: boolean
     used_date?: boolean
+    referred_code?: boolean
+    bingo_re_use?: boolean
     BingoCardboards?: boolean | Codes$BingoCardboardsArgs<ExtArgs>
+    source_codes?: boolean | source_codesDefaultArgs<ExtArgs>
+    referred_code_codes_referred_codeToreferred_code?: boolean | Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | CodesCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["codes"]>
@@ -3356,6 +3501,10 @@ export namespace Prisma {
     updated_at?: boolean
     deleted_at?: boolean
     used_date?: boolean
+    referred_code?: boolean
+    bingo_re_use?: boolean
+    source_codes?: boolean | source_codesDefaultArgs<ExtArgs>
+    referred_code_codes_referred_codeToreferred_code?: boolean | Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["codes"]>
 
@@ -3371,6 +3520,10 @@ export namespace Prisma {
     updated_at?: boolean
     deleted_at?: boolean
     used_date?: boolean
+    referred_code?: boolean
+    bingo_re_use?: boolean
+    source_codes?: boolean | source_codesDefaultArgs<ExtArgs>
+    referred_code_codes_referred_codeToreferred_code?: boolean | Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["codes"]>
 
@@ -3386,18 +3539,26 @@ export namespace Prisma {
     updated_at?: boolean
     deleted_at?: boolean
     used_date?: boolean
+    referred_code?: boolean
+    bingo_re_use?: boolean
   }
 
-  export type CodesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "origin" | "used_for" | "user_id" | "is_used" | "cost" | "created_at" | "updated_at" | "deleted_at" | "used_date", ExtArgs["result"]["codes"]>
+  export type CodesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code" | "origin" | "used_for" | "user_id" | "is_used" | "cost" | "created_at" | "updated_at" | "deleted_at" | "used_date" | "referred_code" | "bingo_re_use", ExtArgs["result"]["codes"]>
   export type CodesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     BingoCardboards?: boolean | Codes$BingoCardboardsArgs<ExtArgs>
+    source_codes?: boolean | source_codesDefaultArgs<ExtArgs>
+    referred_code_codes_referred_codeToreferred_code?: boolean | Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
     _count?: boolean | CodesCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type CodesIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    source_codes?: boolean | source_codesDefaultArgs<ExtArgs>
+    referred_code_codes_referred_codeToreferred_code?: boolean | Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type CodesIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    source_codes?: boolean | source_codesDefaultArgs<ExtArgs>
+    referred_code_codes_referred_codeToreferred_code?: boolean | Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs>
     User?: boolean | UserDefaultArgs<ExtArgs>
   }
 
@@ -3405,6 +3566,8 @@ export namespace Prisma {
     name: "Codes"
     objects: {
       BingoCardboards: Prisma.$BingoCardboardsPayload<ExtArgs>[]
+      source_codes: Prisma.$source_codesPayload<ExtArgs>
+      referred_code_codes_referred_codeToreferred_code: Prisma.$referred_codePayload<ExtArgs> | null
       User: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -3419,6 +3582,8 @@ export namespace Prisma {
       updated_at: Date
       deleted_at: Date | null
       used_date: Date | null
+      referred_code: string | null
+      bingo_re_use: number | null
     }, ExtArgs["result"]["codes"]>
     composites: {}
   }
@@ -3814,6 +3979,8 @@ export namespace Prisma {
   export interface Prisma__CodesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     BingoCardboards<T extends Codes$BingoCardboardsArgs<ExtArgs> = {}>(args?: Subset<T, Codes$BingoCardboardsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BingoCardboardsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    source_codes<T extends source_codesDefaultArgs<ExtArgs> = {}>(args?: Subset<T, source_codesDefaultArgs<ExtArgs>>): Prisma__source_codesClient<$Result.GetResult<Prisma.$source_codesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    referred_code_codes_referred_codeToreferred_code<T extends Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs> = {}>(args?: Subset<T, Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     User<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3855,6 +4022,8 @@ export namespace Prisma {
     readonly updated_at: FieldRef<"Codes", 'DateTime'>
     readonly deleted_at: FieldRef<"Codes", 'DateTime'>
     readonly used_date: FieldRef<"Codes", 'DateTime'>
+    readonly referred_code: FieldRef<"Codes", 'String'>
+    readonly bingo_re_use: FieldRef<"Codes", 'Int'>
   }
     
 
@@ -4275,6 +4444,25 @@ export namespace Prisma {
   }
 
   /**
+   * Codes.referred_code_codes_referred_codeToreferred_code
+   */
+  export type Codes$referred_code_codes_referred_codeToreferred_codeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    where?: referred_codeWhereInput
+  }
+
+  /**
    * Codes without action
    */
   export type CodesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4311,6 +4499,9 @@ export namespace Prisma {
     min_participants_for_bingo: number | null
     cardboard_per_code: number | null
     last_modified_by_id: number | null
+    bingo_re_use: number | null
+    maximum_referral_use: number | null
+    maximum_cardboard: number | null
   }
 
   export type ParametersSumAggregateOutputType = {
@@ -4319,6 +4510,9 @@ export namespace Prisma {
     min_participants_for_bingo: number | null
     cardboard_per_code: number | null
     last_modified_by_id: number | null
+    bingo_re_use: number | null
+    maximum_referral_use: number | null
+    maximum_cardboard: number | null
   }
 
   export type ParametersMinAggregateOutputType = {
@@ -4331,6 +4525,9 @@ export namespace Prisma {
     deleted_at: Date | null
     last_modified_by_id: number | null
     start_time: string | null
+    bingo_re_use: number | null
+    maximum_referral_use: number | null
+    maximum_cardboard: number | null
   }
 
   export type ParametersMaxAggregateOutputType = {
@@ -4343,6 +4540,9 @@ export namespace Prisma {
     deleted_at: Date | null
     last_modified_by_id: number | null
     start_time: string | null
+    bingo_re_use: number | null
+    maximum_referral_use: number | null
+    maximum_cardboard: number | null
   }
 
   export type ParametersCountAggregateOutputType = {
@@ -4356,6 +4556,9 @@ export namespace Prisma {
     last_modified_by_id: number
     bingo_prizes: number
     start_time: number
+    bingo_re_use: number
+    maximum_referral_use: number
+    maximum_cardboard: number
     _all: number
   }
 
@@ -4366,6 +4569,9 @@ export namespace Prisma {
     min_participants_for_bingo?: true
     cardboard_per_code?: true
     last_modified_by_id?: true
+    bingo_re_use?: true
+    maximum_referral_use?: true
+    maximum_cardboard?: true
   }
 
   export type ParametersSumAggregateInputType = {
@@ -4374,6 +4580,9 @@ export namespace Prisma {
     min_participants_for_bingo?: true
     cardboard_per_code?: true
     last_modified_by_id?: true
+    bingo_re_use?: true
+    maximum_referral_use?: true
+    maximum_cardboard?: true
   }
 
   export type ParametersMinAggregateInputType = {
@@ -4386,6 +4595,9 @@ export namespace Prisma {
     deleted_at?: true
     last_modified_by_id?: true
     start_time?: true
+    bingo_re_use?: true
+    maximum_referral_use?: true
+    maximum_cardboard?: true
   }
 
   export type ParametersMaxAggregateInputType = {
@@ -4398,6 +4610,9 @@ export namespace Prisma {
     deleted_at?: true
     last_modified_by_id?: true
     start_time?: true
+    bingo_re_use?: true
+    maximum_referral_use?: true
+    maximum_cardboard?: true
   }
 
   export type ParametersCountAggregateInputType = {
@@ -4411,6 +4626,9 @@ export namespace Prisma {
     last_modified_by_id?: true
     bingo_prizes?: true
     start_time?: true
+    bingo_re_use?: true
+    maximum_referral_use?: true
+    maximum_cardboard?: true
     _all?: true
   }
 
@@ -4511,6 +4729,9 @@ export namespace Prisma {
     last_modified_by_id: number | null
     bingo_prizes: JsonValue | null
     start_time: string | null
+    bingo_re_use: number | null
+    maximum_referral_use: number
+    maximum_cardboard: number | null
     _count: ParametersCountAggregateOutputType | null
     _avg: ParametersAvgAggregateOutputType | null
     _sum: ParametersSumAggregateOutputType | null
@@ -4543,6 +4764,9 @@ export namespace Prisma {
     last_modified_by_id?: boolean
     bingo_prizes?: boolean
     start_time?: boolean
+    bingo_re_use?: boolean
+    maximum_referral_use?: boolean
+    maximum_cardboard?: boolean
     last_modified_by?: boolean | Parameters$last_modified_byArgs<ExtArgs>
   }, ExtArgs["result"]["parameters"]>
 
@@ -4557,6 +4781,9 @@ export namespace Prisma {
     last_modified_by_id?: boolean
     bingo_prizes?: boolean
     start_time?: boolean
+    bingo_re_use?: boolean
+    maximum_referral_use?: boolean
+    maximum_cardboard?: boolean
     last_modified_by?: boolean | Parameters$last_modified_byArgs<ExtArgs>
   }, ExtArgs["result"]["parameters"]>
 
@@ -4571,6 +4798,9 @@ export namespace Prisma {
     last_modified_by_id?: boolean
     bingo_prizes?: boolean
     start_time?: boolean
+    bingo_re_use?: boolean
+    maximum_referral_use?: boolean
+    maximum_cardboard?: boolean
     last_modified_by?: boolean | Parameters$last_modified_byArgs<ExtArgs>
   }, ExtArgs["result"]["parameters"]>
 
@@ -4585,9 +4815,12 @@ export namespace Prisma {
     last_modified_by_id?: boolean
     bingo_prizes?: boolean
     start_time?: boolean
+    bingo_re_use?: boolean
+    maximum_referral_use?: boolean
+    maximum_cardboard?: boolean
   }
 
-  export type ParametersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "cost_per_code" | "min_participants_for_bingo" | "cardboard_per_code" | "created_at" | "updated_at" | "deleted_at" | "last_modified_by_id" | "bingo_prizes" | "start_time", ExtArgs["result"]["parameters"]>
+  export type ParametersOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "cost_per_code" | "min_participants_for_bingo" | "cardboard_per_code" | "created_at" | "updated_at" | "deleted_at" | "last_modified_by_id" | "bingo_prizes" | "start_time" | "bingo_re_use" | "maximum_referral_use" | "maximum_cardboard", ExtArgs["result"]["parameters"]>
   export type ParametersInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     last_modified_by?: boolean | Parameters$last_modified_byArgs<ExtArgs>
   }
@@ -4614,6 +4847,9 @@ export namespace Prisma {
       last_modified_by_id: number | null
       bingo_prizes: Prisma.JsonValue | null
       start_time: string | null
+      bingo_re_use: number | null
+      maximum_referral_use: number
+      maximum_cardboard: number | null
     }, ExtArgs["result"]["parameters"]>
     composites: {}
   }
@@ -5048,6 +5284,9 @@ export namespace Prisma {
     readonly last_modified_by_id: FieldRef<"Parameters", 'Int'>
     readonly bingo_prizes: FieldRef<"Parameters", 'Json'>
     readonly start_time: FieldRef<"Parameters", 'String'>
+    readonly bingo_re_use: FieldRef<"Parameters", 'Int'>
+    readonly maximum_referral_use: FieldRef<"Parameters", 'Int'>
+    readonly maximum_cardboard: FieldRef<"Parameters", 'Int'>
   }
     
 
@@ -5498,6 +5737,7 @@ export namespace Prisma {
     number_of_participants: number | null
     cardboard_by_code: number | null
     min_number_of_participants: number | null
+    maximum_cardboard: number | null
   }
 
   export type BingoSumAggregateOutputType = {
@@ -5505,6 +5745,7 @@ export namespace Prisma {
     number_of_participants: number | null
     cardboard_by_code: number | null
     min_number_of_participants: number | null
+    maximum_cardboard: number | null
   }
 
   export type BingoMinAggregateOutputType = {
@@ -5518,6 +5759,8 @@ export namespace Prisma {
     min_number_of_participants: number | null
     is_finished: boolean | null
     start_time: string | null
+    is_pause: boolean | null
+    maximum_cardboard: number | null
   }
 
   export type BingoMaxAggregateOutputType = {
@@ -5531,6 +5774,8 @@ export namespace Prisma {
     min_number_of_participants: number | null
     is_finished: boolean | null
     start_time: string | null
+    is_pause: boolean | null
+    maximum_cardboard: number | null
   }
 
   export type BingoCountAggregateOutputType = {
@@ -5547,6 +5792,8 @@ export namespace Prisma {
     numbers_played: number
     is_finished: number
     start_time: number
+    is_pause: number
+    maximum_cardboard: number
     _all: number
   }
 
@@ -5556,6 +5803,7 @@ export namespace Prisma {
     number_of_participants?: true
     cardboard_by_code?: true
     min_number_of_participants?: true
+    maximum_cardboard?: true
   }
 
   export type BingoSumAggregateInputType = {
@@ -5563,6 +5811,7 @@ export namespace Prisma {
     number_of_participants?: true
     cardboard_by_code?: true
     min_number_of_participants?: true
+    maximum_cardboard?: true
   }
 
   export type BingoMinAggregateInputType = {
@@ -5576,6 +5825,8 @@ export namespace Prisma {
     min_number_of_participants?: true
     is_finished?: true
     start_time?: true
+    is_pause?: true
+    maximum_cardboard?: true
   }
 
   export type BingoMaxAggregateInputType = {
@@ -5589,6 +5840,8 @@ export namespace Prisma {
     min_number_of_participants?: true
     is_finished?: true
     start_time?: true
+    is_pause?: true
+    maximum_cardboard?: true
   }
 
   export type BingoCountAggregateInputType = {
@@ -5605,6 +5858,8 @@ export namespace Prisma {
     numbers_played?: true
     is_finished?: true
     start_time?: true
+    is_pause?: true
+    maximum_cardboard?: true
     _all?: true
   }
 
@@ -5708,6 +5963,8 @@ export namespace Prisma {
     numbers_played: JsonValue | null
     is_finished: boolean | null
     start_time: string | null
+    is_pause: boolean | null
+    maximum_cardboard: number | null
     _count: BingoCountAggregateOutputType | null
     _avg: BingoAvgAggregateOutputType | null
     _sum: BingoSumAggregateOutputType | null
@@ -5743,6 +6000,8 @@ export namespace Prisma {
     numbers_played?: boolean
     is_finished?: boolean
     start_time?: boolean
+    is_pause?: boolean
+    maximum_cardboard?: boolean
     BingoCardboards?: boolean | Bingo$BingoCardboardsArgs<ExtArgs>
     _count?: boolean | BingoCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bingo"]>
@@ -5761,6 +6020,8 @@ export namespace Prisma {
     numbers_played?: boolean
     is_finished?: boolean
     start_time?: boolean
+    is_pause?: boolean
+    maximum_cardboard?: boolean
   }, ExtArgs["result"]["bingo"]>
 
   export type BingoSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5777,6 +6038,8 @@ export namespace Prisma {
     numbers_played?: boolean
     is_finished?: boolean
     start_time?: boolean
+    is_pause?: boolean
+    maximum_cardboard?: boolean
   }, ExtArgs["result"]["bingo"]>
 
   export type BingoSelectScalar = {
@@ -5793,9 +6056,11 @@ export namespace Prisma {
     numbers_played?: boolean
     is_finished?: boolean
     start_time?: boolean
+    is_pause?: boolean
+    maximum_cardboard?: boolean
   }
 
-  export type BingoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number_of_participants" | "cardboard_by_code" | "created_at" | "updated_at" | "deleted_at" | "is_started" | "min_number_of_participants" | "winners" | "bingo_prizes" | "numbers_played" | "is_finished" | "start_time", ExtArgs["result"]["bingo"]>
+  export type BingoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "number_of_participants" | "cardboard_by_code" | "created_at" | "updated_at" | "deleted_at" | "is_started" | "min_number_of_participants" | "winners" | "bingo_prizes" | "numbers_played" | "is_finished" | "start_time" | "is_pause" | "maximum_cardboard", ExtArgs["result"]["bingo"]>
   export type BingoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     BingoCardboards?: boolean | Bingo$BingoCardboardsArgs<ExtArgs>
     _count?: boolean | BingoCountOutputTypeDefaultArgs<ExtArgs>
@@ -5822,6 +6087,8 @@ export namespace Prisma {
       numbers_played: Prisma.JsonValue | null
       is_finished: boolean | null
       start_time: string | null
+      is_pause: boolean | null
+      maximum_cardboard: number | null
     }, ExtArgs["result"]["bingo"]>
     composites: {}
   }
@@ -6259,6 +6526,8 @@ export namespace Prisma {
     readonly numbers_played: FieldRef<"Bingo", 'Json'>
     readonly is_finished: FieldRef<"Bingo", 'Boolean'>
     readonly start_time: FieldRef<"Bingo", 'String'>
+    readonly is_pause: FieldRef<"Bingo", 'Boolean'>
+    readonly maximum_cardboard: FieldRef<"Bingo", 'Int'>
   }
     
 
@@ -8970,10 +9239,12 @@ export namespace Prisma {
 
   export type Source_codesAvgAggregateOutputType = {
     id: number | null
+    bingo_re_use: number | null
   }
 
   export type Source_codesSumAggregateOutputType = {
     id: number | null
+    bingo_re_use: number | null
   }
 
   export type Source_codesMinAggregateOutputType = {
@@ -8983,6 +9254,8 @@ export namespace Prisma {
     is_available: boolean | null
     updated_at: Date | null
     deleted_at: Date | null
+    bingo_re_use: number | null
+    was_printed: boolean | null
   }
 
   export type Source_codesMaxAggregateOutputType = {
@@ -8992,6 +9265,8 @@ export namespace Prisma {
     is_available: boolean | null
     updated_at: Date | null
     deleted_at: Date | null
+    bingo_re_use: number | null
+    was_printed: boolean | null
   }
 
   export type Source_codesCountAggregateOutputType = {
@@ -9001,16 +9276,20 @@ export namespace Prisma {
     is_available: number
     updated_at: number
     deleted_at: number
+    bingo_re_use: number
+    was_printed: number
     _all: number
   }
 
 
   export type Source_codesAvgAggregateInputType = {
     id?: true
+    bingo_re_use?: true
   }
 
   export type Source_codesSumAggregateInputType = {
     id?: true
+    bingo_re_use?: true
   }
 
   export type Source_codesMinAggregateInputType = {
@@ -9020,6 +9299,8 @@ export namespace Prisma {
     is_available?: true
     updated_at?: true
     deleted_at?: true
+    bingo_re_use?: true
+    was_printed?: true
   }
 
   export type Source_codesMaxAggregateInputType = {
@@ -9029,6 +9310,8 @@ export namespace Prisma {
     is_available?: true
     updated_at?: true
     deleted_at?: true
+    bingo_re_use?: true
+    was_printed?: true
   }
 
   export type Source_codesCountAggregateInputType = {
@@ -9038,6 +9321,8 @@ export namespace Prisma {
     is_available?: true
     updated_at?: true
     deleted_at?: true
+    bingo_re_use?: true
+    was_printed?: true
     _all?: true
   }
 
@@ -9130,10 +9415,12 @@ export namespace Prisma {
   export type Source_codesGroupByOutputType = {
     id: number
     created_at: Date
-    code: string | null
+    code: string
     is_available: boolean | null
     updated_at: Date | null
     deleted_at: Date | null
+    bingo_re_use: number | null
+    was_printed: boolean | null
     _count: Source_codesCountAggregateOutputType | null
     _avg: Source_codesAvgAggregateOutputType | null
     _sum: Source_codesSumAggregateOutputType | null
@@ -9162,6 +9449,9 @@ export namespace Prisma {
     is_available?: boolean
     updated_at?: boolean
     deleted_at?: boolean
+    bingo_re_use?: boolean
+    was_printed?: boolean
+    codes?: boolean | source_codes$codesArgs<ExtArgs>
   }, ExtArgs["result"]["source_codes"]>
 
   export type source_codesSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9171,6 +9461,8 @@ export namespace Prisma {
     is_available?: boolean
     updated_at?: boolean
     deleted_at?: boolean
+    bingo_re_use?: boolean
+    was_printed?: boolean
   }, ExtArgs["result"]["source_codes"]>
 
   export type source_codesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9180,6 +9472,8 @@ export namespace Prisma {
     is_available?: boolean
     updated_at?: boolean
     deleted_at?: boolean
+    bingo_re_use?: boolean
+    was_printed?: boolean
   }, ExtArgs["result"]["source_codes"]>
 
   export type source_codesSelectScalar = {
@@ -9189,20 +9483,31 @@ export namespace Prisma {
     is_available?: boolean
     updated_at?: boolean
     deleted_at?: boolean
+    bingo_re_use?: boolean
+    was_printed?: boolean
   }
 
-  export type source_codesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "created_at" | "code" | "is_available" | "updated_at" | "deleted_at", ExtArgs["result"]["source_codes"]>
+  export type source_codesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "created_at" | "code" | "is_available" | "updated_at" | "deleted_at" | "bingo_re_use" | "was_printed", ExtArgs["result"]["source_codes"]>
+  export type source_codesInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    codes?: boolean | source_codes$codesArgs<ExtArgs>
+  }
+  export type source_codesIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type source_codesIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $source_codesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "source_codes"
-    objects: {}
+    objects: {
+      codes: Prisma.$CodesPayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       created_at: Date
-      code: string | null
+      code: string
       is_available: boolean | null
       updated_at: Date | null
       deleted_at: Date | null
+      bingo_re_use: number | null
+      was_printed: boolean | null
     }, ExtArgs["result"]["source_codes"]>
     composites: {}
   }
@@ -9597,6 +9902,7 @@ export namespace Prisma {
    */
   export interface Prisma__source_codesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    codes<T extends source_codes$codesArgs<ExtArgs> = {}>(args?: Subset<T, source_codes$codesArgs<ExtArgs>>): Prisma__CodesClient<$Result.GetResult<Prisma.$CodesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9632,6 +9938,8 @@ export namespace Prisma {
     readonly is_available: FieldRef<"source_codes", 'Boolean'>
     readonly updated_at: FieldRef<"source_codes", 'DateTime'>
     readonly deleted_at: FieldRef<"source_codes", 'DateTime'>
+    readonly bingo_re_use: FieldRef<"source_codes", 'Int'>
+    readonly was_printed: FieldRef<"source_codes", 'Boolean'>
   }
     
 
@@ -9648,6 +9956,10 @@ export namespace Prisma {
      * Omit specific fields from the source_codes
      */
     omit?: source_codesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
     /**
      * Filter, which source_codes to fetch.
      */
@@ -9667,6 +9979,10 @@ export namespace Prisma {
      */
     omit?: source_codesOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
+    /**
      * Filter, which source_codes to fetch.
      */
     where: source_codesWhereUniqueInput
@@ -9684,6 +10000,10 @@ export namespace Prisma {
      * Omit specific fields from the source_codes
      */
     omit?: source_codesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
     /**
      * Filter, which source_codes to fetch.
      */
@@ -9733,6 +10053,10 @@ export namespace Prisma {
      */
     omit?: source_codesOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
+    /**
      * Filter, which source_codes to fetch.
      */
     where?: source_codesWhereInput
@@ -9781,6 +10105,10 @@ export namespace Prisma {
      */
     omit?: source_codesOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
+    /**
      * Filter, which source_codes to fetch.
      */
     where?: source_codesWhereInput
@@ -9824,9 +10152,13 @@ export namespace Prisma {
      */
     omit?: source_codesOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
+    /**
      * The data needed to create a source_codes.
      */
-    data?: XOR<source_codesCreateInput, source_codesUncheckedCreateInput>
+    data: XOR<source_codesCreateInput, source_codesUncheckedCreateInput>
   }
 
   /**
@@ -9871,6 +10203,10 @@ export namespace Prisma {
      * Omit specific fields from the source_codes
      */
     omit?: source_codesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
     /**
      * The data needed to update a source_codes.
      */
@@ -9938,6 +10274,10 @@ export namespace Prisma {
      */
     omit?: source_codesOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
+    /**
      * The filter to search for the source_codes to update in case it exists.
      */
     where: source_codesWhereUniqueInput
@@ -9964,6 +10304,10 @@ export namespace Prisma {
      */
     omit?: source_codesOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
+    /**
      * Filter which source_codes to delete.
      */
     where: source_codesWhereUniqueInput
@@ -9984,6 +10328,25 @@ export namespace Prisma {
   }
 
   /**
+   * source_codes.codes
+   */
+  export type source_codes$codesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Codes
+     */
+    select?: CodesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Codes
+     */
+    omit?: CodesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CodesInclude<ExtArgs> | null
+    where?: CodesWhereInput
+  }
+
+  /**
    * source_codes without action
    */
   export type source_codesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9995,6 +10358,10 @@ export namespace Prisma {
      * Omit specific fields from the source_codes
      */
     omit?: source_codesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: source_codesInclude<ExtArgs> | null
   }
 
 
@@ -11133,6 +11500,1179 @@ export namespace Prisma {
 
 
   /**
+   * Model referred_code
+   */
+
+  export type AggregateReferred_code = {
+    _count: Referred_codeCountAggregateOutputType | null
+    _avg: Referred_codeAvgAggregateOutputType | null
+    _sum: Referred_codeSumAggregateOutputType | null
+    _min: Referred_codeMinAggregateOutputType | null
+    _max: Referred_codeMaxAggregateOutputType | null
+  }
+
+  export type Referred_codeAvgAggregateOutputType = {
+    id: number | null
+    maximum_usage: number | null
+  }
+
+  export type Referred_codeSumAggregateOutputType = {
+    id: number | null
+    maximum_usage: number | null
+  }
+
+  export type Referred_codeMinAggregateOutputType = {
+    id: number | null
+    referred_code: string | null
+    campaign_ref: string | null
+    vip: string | null
+    state: string | null
+    country_code: string | null
+    phone_number: string | null
+    maximum_usage: number | null
+    master: string | null
+    city: string | null
+  }
+
+  export type Referred_codeMaxAggregateOutputType = {
+    id: number | null
+    referred_code: string | null
+    campaign_ref: string | null
+    vip: string | null
+    state: string | null
+    country_code: string | null
+    phone_number: string | null
+    maximum_usage: number | null
+    master: string | null
+    city: string | null
+  }
+
+  export type Referred_codeCountAggregateOutputType = {
+    id: number
+    referred_code: number
+    campaign_ref: number
+    vip: number
+    state: number
+    country_code: number
+    phone_number: number
+    maximum_usage: number
+    master: number
+    city: number
+    _all: number
+  }
+
+
+  export type Referred_codeAvgAggregateInputType = {
+    id?: true
+    maximum_usage?: true
+  }
+
+  export type Referred_codeSumAggregateInputType = {
+    id?: true
+    maximum_usage?: true
+  }
+
+  export type Referred_codeMinAggregateInputType = {
+    id?: true
+    referred_code?: true
+    campaign_ref?: true
+    vip?: true
+    state?: true
+    country_code?: true
+    phone_number?: true
+    maximum_usage?: true
+    master?: true
+    city?: true
+  }
+
+  export type Referred_codeMaxAggregateInputType = {
+    id?: true
+    referred_code?: true
+    campaign_ref?: true
+    vip?: true
+    state?: true
+    country_code?: true
+    phone_number?: true
+    maximum_usage?: true
+    master?: true
+    city?: true
+  }
+
+  export type Referred_codeCountAggregateInputType = {
+    id?: true
+    referred_code?: true
+    campaign_ref?: true
+    vip?: true
+    state?: true
+    country_code?: true
+    phone_number?: true
+    maximum_usage?: true
+    master?: true
+    city?: true
+    _all?: true
+  }
+
+  export type Referred_codeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which referred_code to aggregate.
+     */
+    where?: referred_codeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of referred_codes to fetch.
+     */
+    orderBy?: referred_codeOrderByWithRelationInput | referred_codeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: referred_codeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` referred_codes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` referred_codes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned referred_codes
+    **/
+    _count?: true | Referred_codeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: Referred_codeAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: Referred_codeSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: Referred_codeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: Referred_codeMaxAggregateInputType
+  }
+
+  export type GetReferred_codeAggregateType<T extends Referred_codeAggregateArgs> = {
+        [P in keyof T & keyof AggregateReferred_code]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateReferred_code[P]>
+      : GetScalarType<T[P], AggregateReferred_code[P]>
+  }
+
+
+
+
+  export type referred_codeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: referred_codeWhereInput
+    orderBy?: referred_codeOrderByWithAggregationInput | referred_codeOrderByWithAggregationInput[]
+    by: Referred_codeScalarFieldEnum[] | Referred_codeScalarFieldEnum
+    having?: referred_codeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: Referred_codeCountAggregateInputType | true
+    _avg?: Referred_codeAvgAggregateInputType
+    _sum?: Referred_codeSumAggregateInputType
+    _min?: Referred_codeMinAggregateInputType
+    _max?: Referred_codeMaxAggregateInputType
+  }
+
+  export type Referred_codeGroupByOutputType = {
+    id: number
+    referred_code: string
+    campaign_ref: string
+    vip: string
+    state: string
+    country_code: string
+    phone_number: string
+    maximum_usage: number
+    master: string | null
+    city: string | null
+    _count: Referred_codeCountAggregateOutputType | null
+    _avg: Referred_codeAvgAggregateOutputType | null
+    _sum: Referred_codeSumAggregateOutputType | null
+    _min: Referred_codeMinAggregateOutputType | null
+    _max: Referred_codeMaxAggregateOutputType | null
+  }
+
+  type GetReferred_codeGroupByPayload<T extends referred_codeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<Referred_codeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof Referred_codeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], Referred_codeGroupByOutputType[P]>
+            : GetScalarType<T[P], Referred_codeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type referred_codeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    referred_code?: boolean
+    campaign_ref?: boolean
+    vip?: boolean
+    state?: boolean
+    country_code?: boolean
+    phone_number?: boolean
+    maximum_usage?: boolean
+    master?: boolean
+    city?: boolean
+    codes_codes_referred_codeToreferred_code?: boolean | referred_code$codes_codes_referred_codeToreferred_codeArgs<ExtArgs>
+    _count?: boolean | Referred_codeCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["referred_code"]>
+
+  export type referred_codeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    referred_code?: boolean
+    campaign_ref?: boolean
+    vip?: boolean
+    state?: boolean
+    country_code?: boolean
+    phone_number?: boolean
+    maximum_usage?: boolean
+    master?: boolean
+    city?: boolean
+  }, ExtArgs["result"]["referred_code"]>
+
+  export type referred_codeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    referred_code?: boolean
+    campaign_ref?: boolean
+    vip?: boolean
+    state?: boolean
+    country_code?: boolean
+    phone_number?: boolean
+    maximum_usage?: boolean
+    master?: boolean
+    city?: boolean
+  }, ExtArgs["result"]["referred_code"]>
+
+  export type referred_codeSelectScalar = {
+    id?: boolean
+    referred_code?: boolean
+    campaign_ref?: boolean
+    vip?: boolean
+    state?: boolean
+    country_code?: boolean
+    phone_number?: boolean
+    maximum_usage?: boolean
+    master?: boolean
+    city?: boolean
+  }
+
+  export type referred_codeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "referred_code" | "campaign_ref" | "vip" | "state" | "country_code" | "phone_number" | "maximum_usage" | "master" | "city", ExtArgs["result"]["referred_code"]>
+  export type referred_codeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    codes_codes_referred_codeToreferred_code?: boolean | referred_code$codes_codes_referred_codeToreferred_codeArgs<ExtArgs>
+    _count?: boolean | Referred_codeCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type referred_codeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type referred_codeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $referred_codePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "referred_code"
+    objects: {
+      codes_codes_referred_codeToreferred_code: Prisma.$CodesPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      referred_code: string
+      campaign_ref: string
+      vip: string
+      state: string
+      country_code: string
+      phone_number: string
+      maximum_usage: number
+      master: string | null
+      city: string | null
+    }, ExtArgs["result"]["referred_code"]>
+    composites: {}
+  }
+
+  type referred_codeGetPayload<S extends boolean | null | undefined | referred_codeDefaultArgs> = $Result.GetResult<Prisma.$referred_codePayload, S>
+
+  type referred_codeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<referred_codeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: Referred_codeCountAggregateInputType | true
+    }
+
+  export interface referred_codeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['referred_code'], meta: { name: 'referred_code' } }
+    /**
+     * Find zero or one Referred_code that matches the filter.
+     * @param {referred_codeFindUniqueArgs} args - Arguments to find a Referred_code
+     * @example
+     * // Get one Referred_code
+     * const referred_code = await prisma.referred_code.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends referred_codeFindUniqueArgs>(args: SelectSubset<T, referred_codeFindUniqueArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Referred_code that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {referred_codeFindUniqueOrThrowArgs} args - Arguments to find a Referred_code
+     * @example
+     * // Get one Referred_code
+     * const referred_code = await prisma.referred_code.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends referred_codeFindUniqueOrThrowArgs>(args: SelectSubset<T, referred_codeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Referred_code that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {referred_codeFindFirstArgs} args - Arguments to find a Referred_code
+     * @example
+     * // Get one Referred_code
+     * const referred_code = await prisma.referred_code.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends referred_codeFindFirstArgs>(args?: SelectSubset<T, referred_codeFindFirstArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Referred_code that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {referred_codeFindFirstOrThrowArgs} args - Arguments to find a Referred_code
+     * @example
+     * // Get one Referred_code
+     * const referred_code = await prisma.referred_code.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends referred_codeFindFirstOrThrowArgs>(args?: SelectSubset<T, referred_codeFindFirstOrThrowArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Referred_codes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {referred_codeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Referred_codes
+     * const referred_codes = await prisma.referred_code.findMany()
+     * 
+     * // Get first 10 Referred_codes
+     * const referred_codes = await prisma.referred_code.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const referred_codeWithIdOnly = await prisma.referred_code.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends referred_codeFindManyArgs>(args?: SelectSubset<T, referred_codeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Referred_code.
+     * @param {referred_codeCreateArgs} args - Arguments to create a Referred_code.
+     * @example
+     * // Create one Referred_code
+     * const Referred_code = await prisma.referred_code.create({
+     *   data: {
+     *     // ... data to create a Referred_code
+     *   }
+     * })
+     * 
+     */
+    create<T extends referred_codeCreateArgs>(args: SelectSubset<T, referred_codeCreateArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Referred_codes.
+     * @param {referred_codeCreateManyArgs} args - Arguments to create many Referred_codes.
+     * @example
+     * // Create many Referred_codes
+     * const referred_code = await prisma.referred_code.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends referred_codeCreateManyArgs>(args?: SelectSubset<T, referred_codeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Referred_codes and returns the data saved in the database.
+     * @param {referred_codeCreateManyAndReturnArgs} args - Arguments to create many Referred_codes.
+     * @example
+     * // Create many Referred_codes
+     * const referred_code = await prisma.referred_code.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Referred_codes and only return the `id`
+     * const referred_codeWithIdOnly = await prisma.referred_code.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends referred_codeCreateManyAndReturnArgs>(args?: SelectSubset<T, referred_codeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Referred_code.
+     * @param {referred_codeDeleteArgs} args - Arguments to delete one Referred_code.
+     * @example
+     * // Delete one Referred_code
+     * const Referred_code = await prisma.referred_code.delete({
+     *   where: {
+     *     // ... filter to delete one Referred_code
+     *   }
+     * })
+     * 
+     */
+    delete<T extends referred_codeDeleteArgs>(args: SelectSubset<T, referred_codeDeleteArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Referred_code.
+     * @param {referred_codeUpdateArgs} args - Arguments to update one Referred_code.
+     * @example
+     * // Update one Referred_code
+     * const referred_code = await prisma.referred_code.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends referred_codeUpdateArgs>(args: SelectSubset<T, referred_codeUpdateArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Referred_codes.
+     * @param {referred_codeDeleteManyArgs} args - Arguments to filter Referred_codes to delete.
+     * @example
+     * // Delete a few Referred_codes
+     * const { count } = await prisma.referred_code.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends referred_codeDeleteManyArgs>(args?: SelectSubset<T, referred_codeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Referred_codes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {referred_codeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Referred_codes
+     * const referred_code = await prisma.referred_code.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends referred_codeUpdateManyArgs>(args: SelectSubset<T, referred_codeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Referred_codes and returns the data updated in the database.
+     * @param {referred_codeUpdateManyAndReturnArgs} args - Arguments to update many Referred_codes.
+     * @example
+     * // Update many Referred_codes
+     * const referred_code = await prisma.referred_code.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Referred_codes and only return the `id`
+     * const referred_codeWithIdOnly = await prisma.referred_code.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends referred_codeUpdateManyAndReturnArgs>(args: SelectSubset<T, referred_codeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Referred_code.
+     * @param {referred_codeUpsertArgs} args - Arguments to update or create a Referred_code.
+     * @example
+     * // Update or create a Referred_code
+     * const referred_code = await prisma.referred_code.upsert({
+     *   create: {
+     *     // ... data to create a Referred_code
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Referred_code we want to update
+     *   }
+     * })
+     */
+    upsert<T extends referred_codeUpsertArgs>(args: SelectSubset<T, referred_codeUpsertArgs<ExtArgs>>): Prisma__referred_codeClient<$Result.GetResult<Prisma.$referred_codePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Referred_codes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {referred_codeCountArgs} args - Arguments to filter Referred_codes to count.
+     * @example
+     * // Count the number of Referred_codes
+     * const count = await prisma.referred_code.count({
+     *   where: {
+     *     // ... the filter for the Referred_codes we want to count
+     *   }
+     * })
+    **/
+    count<T extends referred_codeCountArgs>(
+      args?: Subset<T, referred_codeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], Referred_codeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Referred_code.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {Referred_codeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends Referred_codeAggregateArgs>(args: Subset<T, Referred_codeAggregateArgs>): Prisma.PrismaPromise<GetReferred_codeAggregateType<T>>
+
+    /**
+     * Group by Referred_code.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {referred_codeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends referred_codeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: referred_codeGroupByArgs['orderBy'] }
+        : { orderBy?: referred_codeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, referred_codeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetReferred_codeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the referred_code model
+   */
+  readonly fields: referred_codeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for referred_code.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__referred_codeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    codes_codes_referred_codeToreferred_code<T extends referred_code$codes_codes_referred_codeToreferred_codeArgs<ExtArgs> = {}>(args?: Subset<T, referred_code$codes_codes_referred_codeToreferred_codeArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CodesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the referred_code model
+   */
+  interface referred_codeFieldRefs {
+    readonly id: FieldRef<"referred_code", 'Int'>
+    readonly referred_code: FieldRef<"referred_code", 'String'>
+    readonly campaign_ref: FieldRef<"referred_code", 'String'>
+    readonly vip: FieldRef<"referred_code", 'String'>
+    readonly state: FieldRef<"referred_code", 'String'>
+    readonly country_code: FieldRef<"referred_code", 'String'>
+    readonly phone_number: FieldRef<"referred_code", 'String'>
+    readonly maximum_usage: FieldRef<"referred_code", 'Int'>
+    readonly master: FieldRef<"referred_code", 'String'>
+    readonly city: FieldRef<"referred_code", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * referred_code findUnique
+   */
+  export type referred_codeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * Filter, which referred_code to fetch.
+     */
+    where: referred_codeWhereUniqueInput
+  }
+
+  /**
+   * referred_code findUniqueOrThrow
+   */
+  export type referred_codeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * Filter, which referred_code to fetch.
+     */
+    where: referred_codeWhereUniqueInput
+  }
+
+  /**
+   * referred_code findFirst
+   */
+  export type referred_codeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * Filter, which referred_code to fetch.
+     */
+    where?: referred_codeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of referred_codes to fetch.
+     */
+    orderBy?: referred_codeOrderByWithRelationInput | referred_codeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for referred_codes.
+     */
+    cursor?: referred_codeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` referred_codes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` referred_codes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of referred_codes.
+     */
+    distinct?: Referred_codeScalarFieldEnum | Referred_codeScalarFieldEnum[]
+  }
+
+  /**
+   * referred_code findFirstOrThrow
+   */
+  export type referred_codeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * Filter, which referred_code to fetch.
+     */
+    where?: referred_codeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of referred_codes to fetch.
+     */
+    orderBy?: referred_codeOrderByWithRelationInput | referred_codeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for referred_codes.
+     */
+    cursor?: referred_codeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` referred_codes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` referred_codes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of referred_codes.
+     */
+    distinct?: Referred_codeScalarFieldEnum | Referred_codeScalarFieldEnum[]
+  }
+
+  /**
+   * referred_code findMany
+   */
+  export type referred_codeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * Filter, which referred_codes to fetch.
+     */
+    where?: referred_codeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of referred_codes to fetch.
+     */
+    orderBy?: referred_codeOrderByWithRelationInput | referred_codeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing referred_codes.
+     */
+    cursor?: referred_codeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` referred_codes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` referred_codes.
+     */
+    skip?: number
+    distinct?: Referred_codeScalarFieldEnum | Referred_codeScalarFieldEnum[]
+  }
+
+  /**
+   * referred_code create
+   */
+  export type referred_codeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a referred_code.
+     */
+    data: XOR<referred_codeCreateInput, referred_codeUncheckedCreateInput>
+  }
+
+  /**
+   * referred_code createMany
+   */
+  export type referred_codeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many referred_codes.
+     */
+    data: referred_codeCreateManyInput | referred_codeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * referred_code createManyAndReturn
+   */
+  export type referred_codeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * The data used to create many referred_codes.
+     */
+    data: referred_codeCreateManyInput | referred_codeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * referred_code update
+   */
+  export type referred_codeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a referred_code.
+     */
+    data: XOR<referred_codeUpdateInput, referred_codeUncheckedUpdateInput>
+    /**
+     * Choose, which referred_code to update.
+     */
+    where: referred_codeWhereUniqueInput
+  }
+
+  /**
+   * referred_code updateMany
+   */
+  export type referred_codeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update referred_codes.
+     */
+    data: XOR<referred_codeUpdateManyMutationInput, referred_codeUncheckedUpdateManyInput>
+    /**
+     * Filter which referred_codes to update
+     */
+    where?: referred_codeWhereInput
+    /**
+     * Limit how many referred_codes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * referred_code updateManyAndReturn
+   */
+  export type referred_codeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * The data used to update referred_codes.
+     */
+    data: XOR<referred_codeUpdateManyMutationInput, referred_codeUncheckedUpdateManyInput>
+    /**
+     * Filter which referred_codes to update
+     */
+    where?: referred_codeWhereInput
+    /**
+     * Limit how many referred_codes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * referred_code upsert
+   */
+  export type referred_codeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the referred_code to update in case it exists.
+     */
+    where: referred_codeWhereUniqueInput
+    /**
+     * In case the referred_code found by the `where` argument doesn't exist, create a new referred_code with this data.
+     */
+    create: XOR<referred_codeCreateInput, referred_codeUncheckedCreateInput>
+    /**
+     * In case the referred_code was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<referred_codeUpdateInput, referred_codeUncheckedUpdateInput>
+  }
+
+  /**
+   * referred_code delete
+   */
+  export type referred_codeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+    /**
+     * Filter which referred_code to delete.
+     */
+    where: referred_codeWhereUniqueInput
+  }
+
+  /**
+   * referred_code deleteMany
+   */
+  export type referred_codeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which referred_codes to delete
+     */
+    where?: referred_codeWhereInput
+    /**
+     * Limit how many referred_codes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * referred_code.codes_codes_referred_codeToreferred_code
+   */
+  export type referred_code$codes_codes_referred_codeToreferred_codeArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Codes
+     */
+    select?: CodesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Codes
+     */
+    omit?: CodesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CodesInclude<ExtArgs> | null
+    where?: CodesWhereInput
+    orderBy?: CodesOrderByWithRelationInput | CodesOrderByWithRelationInput[]
+    cursor?: CodesWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CodesScalarFieldEnum | CodesScalarFieldEnum[]
+  }
+
+  /**
+   * referred_code without action
+   */
+  export type referred_codeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the referred_code
+     */
+    select?: referred_codeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the referred_code
+     */
+    omit?: referred_codeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: referred_codeInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -11181,7 +12721,9 @@ export namespace Prisma {
     created_at: 'created_at',
     updated_at: 'updated_at',
     deleted_at: 'deleted_at',
-    used_date: 'used_date'
+    used_date: 'used_date',
+    referred_code: 'referred_code',
+    bingo_re_use: 'bingo_re_use'
   };
 
   export type CodesScalarFieldEnum = (typeof CodesScalarFieldEnum)[keyof typeof CodesScalarFieldEnum]
@@ -11197,7 +12739,10 @@ export namespace Prisma {
     deleted_at: 'deleted_at',
     last_modified_by_id: 'last_modified_by_id',
     bingo_prizes: 'bingo_prizes',
-    start_time: 'start_time'
+    start_time: 'start_time',
+    bingo_re_use: 'bingo_re_use',
+    maximum_referral_use: 'maximum_referral_use',
+    maximum_cardboard: 'maximum_cardboard'
   };
 
   export type ParametersScalarFieldEnum = (typeof ParametersScalarFieldEnum)[keyof typeof ParametersScalarFieldEnum]
@@ -11216,7 +12761,9 @@ export namespace Prisma {
     bingo_prizes: 'bingo_prizes',
     numbers_played: 'numbers_played',
     is_finished: 'is_finished',
-    start_time: 'start_time'
+    start_time: 'start_time',
+    is_pause: 'is_pause',
+    maximum_cardboard: 'maximum_cardboard'
   };
 
   export type BingoScalarFieldEnum = (typeof BingoScalarFieldEnum)[keyof typeof BingoScalarFieldEnum]
@@ -11257,7 +12804,9 @@ export namespace Prisma {
     code: 'code',
     is_available: 'is_available',
     updated_at: 'updated_at',
-    deleted_at: 'deleted_at'
+    deleted_at: 'deleted_at',
+    bingo_re_use: 'bingo_re_use',
+    was_printed: 'was_printed'
   };
 
   export type Source_codesScalarFieldEnum = (typeof Source_codesScalarFieldEnum)[keyof typeof Source_codesScalarFieldEnum]
@@ -11274,6 +12823,22 @@ export namespace Prisma {
   };
 
   export type Bingo_prizesScalarFieldEnum = (typeof Bingo_prizesScalarFieldEnum)[keyof typeof Bingo_prizesScalarFieldEnum]
+
+
+  export const Referred_codeScalarFieldEnum: {
+    id: 'id',
+    referred_code: 'referred_code',
+    campaign_ref: 'campaign_ref',
+    vip: 'vip',
+    state: 'state',
+    country_code: 'country_code',
+    phone_number: 'phone_number',
+    maximum_usage: 'maximum_usage',
+    master: 'master',
+    city: 'city'
+  };
+
+  export type Referred_codeScalarFieldEnum = (typeof Referred_codeScalarFieldEnum)[keyof typeof Referred_codeScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -11636,7 +13201,11 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"Codes"> | Date | string
     deleted_at?: DateTimeNullableFilter<"Codes"> | Date | string | null
     used_date?: DateTimeNullableFilter<"Codes"> | Date | string | null
+    referred_code?: StringNullableFilter<"Codes"> | string | null
+    bingo_re_use?: IntNullableFilter<"Codes"> | number | null
     BingoCardboards?: BingoCardboardsListRelationFilter
+    source_codes?: XOR<Source_codesScalarRelationFilter, source_codesWhereInput>
+    referred_code_codes_referred_codeToreferred_code?: XOR<Referred_codeNullableScalarRelationFilter, referred_codeWhereInput> | null
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -11652,7 +13221,11 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrderInput | SortOrder
     used_date?: SortOrderInput | SortOrder
+    referred_code?: SortOrderInput | SortOrder
+    bingo_re_use?: SortOrderInput | SortOrder
     BingoCardboards?: BingoCardboardsOrderByRelationAggregateInput
+    source_codes?: source_codesOrderByWithRelationInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeOrderByWithRelationInput
     User?: UserOrderByWithRelationInput
   }
 
@@ -11671,7 +13244,11 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"Codes"> | Date | string
     deleted_at?: DateTimeNullableFilter<"Codes"> | Date | string | null
     used_date?: DateTimeNullableFilter<"Codes"> | Date | string | null
+    referred_code?: StringNullableFilter<"Codes"> | string | null
+    bingo_re_use?: IntNullableFilter<"Codes"> | number | null
     BingoCardboards?: BingoCardboardsListRelationFilter
+    source_codes?: XOR<Source_codesScalarRelationFilter, source_codesWhereInput>
+    referred_code_codes_referred_codeToreferred_code?: XOR<Referred_codeNullableScalarRelationFilter, referred_codeWhereInput> | null
     User?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id" | "code">
 
@@ -11687,6 +13264,8 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrderInput | SortOrder
     used_date?: SortOrderInput | SortOrder
+    referred_code?: SortOrderInput | SortOrder
+    bingo_re_use?: SortOrderInput | SortOrder
     _count?: CodesCountOrderByAggregateInput
     _avg?: CodesAvgOrderByAggregateInput
     _max?: CodesMaxOrderByAggregateInput
@@ -11709,6 +13288,8 @@ export namespace Prisma {
     updated_at?: DateTimeWithAggregatesFilter<"Codes"> | Date | string
     deleted_at?: DateTimeNullableWithAggregatesFilter<"Codes"> | Date | string | null
     used_date?: DateTimeNullableWithAggregatesFilter<"Codes"> | Date | string | null
+    referred_code?: StringNullableWithAggregatesFilter<"Codes"> | string | null
+    bingo_re_use?: IntNullableWithAggregatesFilter<"Codes"> | number | null
   }
 
   export type ParametersWhereInput = {
@@ -11725,6 +13306,9 @@ export namespace Prisma {
     last_modified_by_id?: IntNullableFilter<"Parameters"> | number | null
     bingo_prizes?: JsonNullableFilter<"Parameters">
     start_time?: StringNullableFilter<"Parameters"> | string | null
+    bingo_re_use?: IntNullableFilter<"Parameters"> | number | null
+    maximum_referral_use?: IntFilter<"Parameters"> | number
+    maximum_cardboard?: IntNullableFilter<"Parameters"> | number | null
     last_modified_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }
 
@@ -11739,6 +13323,9 @@ export namespace Prisma {
     last_modified_by_id?: SortOrderInput | SortOrder
     bingo_prizes?: SortOrderInput | SortOrder
     start_time?: SortOrderInput | SortOrder
+    bingo_re_use?: SortOrderInput | SortOrder
+    maximum_referral_use?: SortOrder
+    maximum_cardboard?: SortOrderInput | SortOrder
     last_modified_by?: UserOrderByWithRelationInput
   }
 
@@ -11756,6 +13343,9 @@ export namespace Prisma {
     last_modified_by_id?: IntNullableFilter<"Parameters"> | number | null
     bingo_prizes?: JsonNullableFilter<"Parameters">
     start_time?: StringNullableFilter<"Parameters"> | string | null
+    bingo_re_use?: IntNullableFilter<"Parameters"> | number | null
+    maximum_referral_use?: IntFilter<"Parameters"> | number
+    maximum_cardboard?: IntNullableFilter<"Parameters"> | number | null
     last_modified_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
   }, "id">
 
@@ -11770,6 +13360,9 @@ export namespace Prisma {
     last_modified_by_id?: SortOrderInput | SortOrder
     bingo_prizes?: SortOrderInput | SortOrder
     start_time?: SortOrderInput | SortOrder
+    bingo_re_use?: SortOrderInput | SortOrder
+    maximum_referral_use?: SortOrder
+    maximum_cardboard?: SortOrderInput | SortOrder
     _count?: ParametersCountOrderByAggregateInput
     _avg?: ParametersAvgOrderByAggregateInput
     _max?: ParametersMaxOrderByAggregateInput
@@ -11791,6 +13384,9 @@ export namespace Prisma {
     last_modified_by_id?: IntNullableWithAggregatesFilter<"Parameters"> | number | null
     bingo_prizes?: JsonNullableWithAggregatesFilter<"Parameters">
     start_time?: StringNullableWithAggregatesFilter<"Parameters"> | string | null
+    bingo_re_use?: IntNullableWithAggregatesFilter<"Parameters"> | number | null
+    maximum_referral_use?: IntWithAggregatesFilter<"Parameters"> | number
+    maximum_cardboard?: IntNullableWithAggregatesFilter<"Parameters"> | number | null
   }
 
   export type BingoWhereInput = {
@@ -11810,6 +13406,8 @@ export namespace Prisma {
     numbers_played?: JsonNullableFilter<"Bingo">
     is_finished?: BoolNullableFilter<"Bingo"> | boolean | null
     start_time?: StringNullableFilter<"Bingo"> | string | null
+    is_pause?: BoolNullableFilter<"Bingo"> | boolean | null
+    maximum_cardboard?: IntNullableFilter<"Bingo"> | number | null
     BingoCardboards?: BingoCardboardsListRelationFilter
   }
 
@@ -11827,6 +13425,8 @@ export namespace Prisma {
     numbers_played?: SortOrderInput | SortOrder
     is_finished?: SortOrderInput | SortOrder
     start_time?: SortOrderInput | SortOrder
+    is_pause?: SortOrderInput | SortOrder
+    maximum_cardboard?: SortOrderInput | SortOrder
     BingoCardboards?: BingoCardboardsOrderByRelationAggregateInput
   }
 
@@ -11847,6 +13447,8 @@ export namespace Prisma {
     numbers_played?: JsonNullableFilter<"Bingo">
     is_finished?: BoolNullableFilter<"Bingo"> | boolean | null
     start_time?: StringNullableFilter<"Bingo"> | string | null
+    is_pause?: BoolNullableFilter<"Bingo"> | boolean | null
+    maximum_cardboard?: IntNullableFilter<"Bingo"> | number | null
     BingoCardboards?: BingoCardboardsListRelationFilter
   }, "id">
 
@@ -11864,6 +13466,8 @@ export namespace Prisma {
     numbers_played?: SortOrderInput | SortOrder
     is_finished?: SortOrderInput | SortOrder
     start_time?: SortOrderInput | SortOrder
+    is_pause?: SortOrderInput | SortOrder
+    maximum_cardboard?: SortOrderInput | SortOrder
     _count?: BingoCountOrderByAggregateInput
     _avg?: BingoAvgOrderByAggregateInput
     _max?: BingoMaxOrderByAggregateInput
@@ -11888,6 +13492,8 @@ export namespace Prisma {
     numbers_played?: JsonNullableWithAggregatesFilter<"Bingo">
     is_finished?: BoolNullableWithAggregatesFilter<"Bingo"> | boolean | null
     start_time?: StringNullableWithAggregatesFilter<"Bingo"> | string | null
+    is_pause?: BoolNullableWithAggregatesFilter<"Bingo"> | boolean | null
+    maximum_cardboard?: IntNullableWithAggregatesFilter<"Bingo"> | number | null
   }
 
   export type BingoCardboardsWhereInput = {
@@ -12051,19 +13657,25 @@ export namespace Prisma {
     NOT?: source_codesWhereInput | source_codesWhereInput[]
     id?: IntFilter<"source_codes"> | number
     created_at?: DateTimeFilter<"source_codes"> | Date | string
-    code?: StringNullableFilter<"source_codes"> | string | null
+    code?: StringFilter<"source_codes"> | string
     is_available?: BoolNullableFilter<"source_codes"> | boolean | null
     updated_at?: DateTimeNullableFilter<"source_codes"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"source_codes"> | Date | string | null
+    bingo_re_use?: IntNullableFilter<"source_codes"> | number | null
+    was_printed?: BoolNullableFilter<"source_codes"> | boolean | null
+    codes?: XOR<CodesNullableScalarRelationFilter, CodesWhereInput> | null
   }
 
   export type source_codesOrderByWithRelationInput = {
     id?: SortOrder
     created_at?: SortOrder
-    code?: SortOrderInput | SortOrder
+    code?: SortOrder
     is_available?: SortOrderInput | SortOrder
     updated_at?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
+    bingo_re_use?: SortOrderInput | SortOrder
+    was_printed?: SortOrderInput | SortOrder
+    codes?: CodesOrderByWithRelationInput
   }
 
   export type source_codesWhereUniqueInput = Prisma.AtLeast<{
@@ -12076,15 +13688,20 @@ export namespace Prisma {
     is_available?: BoolNullableFilter<"source_codes"> | boolean | null
     updated_at?: DateTimeNullableFilter<"source_codes"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"source_codes"> | Date | string | null
+    bingo_re_use?: IntNullableFilter<"source_codes"> | number | null
+    was_printed?: BoolNullableFilter<"source_codes"> | boolean | null
+    codes?: XOR<CodesNullableScalarRelationFilter, CodesWhereInput> | null
   }, "id" | "code">
 
   export type source_codesOrderByWithAggregationInput = {
     id?: SortOrder
     created_at?: SortOrder
-    code?: SortOrderInput | SortOrder
+    code?: SortOrder
     is_available?: SortOrderInput | SortOrder
     updated_at?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
+    bingo_re_use?: SortOrderInput | SortOrder
+    was_printed?: SortOrderInput | SortOrder
     _count?: source_codesCountOrderByAggregateInput
     _avg?: source_codesAvgOrderByAggregateInput
     _max?: source_codesMaxOrderByAggregateInput
@@ -12098,10 +13715,12 @@ export namespace Prisma {
     NOT?: source_codesScalarWhereWithAggregatesInput | source_codesScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"source_codes"> | number
     created_at?: DateTimeWithAggregatesFilter<"source_codes"> | Date | string
-    code?: StringNullableWithAggregatesFilter<"source_codes"> | string | null
+    code?: StringWithAggregatesFilter<"source_codes"> | string
     is_available?: BoolNullableWithAggregatesFilter<"source_codes"> | boolean | null
     updated_at?: DateTimeNullableWithAggregatesFilter<"source_codes"> | Date | string | null
     deleted_at?: DateTimeNullableWithAggregatesFilter<"source_codes"> | Date | string | null
+    bingo_re_use?: IntNullableWithAggregatesFilter<"source_codes"> | number | null
+    was_printed?: BoolNullableWithAggregatesFilter<"source_codes"> | boolean | null
   }
 
   export type bingo_prizesWhereInput = {
@@ -12169,6 +13788,88 @@ export namespace Prisma {
     prize_image?: StringNullableWithAggregatesFilter<"bingo_prizes"> | string | null
     quantity?: IntNullableWithAggregatesFilter<"bingo_prizes"> | number | null
     description?: StringNullableWithAggregatesFilter<"bingo_prizes"> | string | null
+  }
+
+  export type referred_codeWhereInput = {
+    AND?: referred_codeWhereInput | referred_codeWhereInput[]
+    OR?: referred_codeWhereInput[]
+    NOT?: referred_codeWhereInput | referred_codeWhereInput[]
+    id?: IntFilter<"referred_code"> | number
+    referred_code?: StringFilter<"referred_code"> | string
+    campaign_ref?: StringFilter<"referred_code"> | string
+    vip?: StringFilter<"referred_code"> | string
+    state?: StringFilter<"referred_code"> | string
+    country_code?: StringFilter<"referred_code"> | string
+    phone_number?: StringFilter<"referred_code"> | string
+    maximum_usage?: IntFilter<"referred_code"> | number
+    master?: StringNullableFilter<"referred_code"> | string | null
+    city?: StringNullableFilter<"referred_code"> | string | null
+    codes_codes_referred_codeToreferred_code?: CodesListRelationFilter
+  }
+
+  export type referred_codeOrderByWithRelationInput = {
+    id?: SortOrder
+    referred_code?: SortOrder
+    campaign_ref?: SortOrder
+    vip?: SortOrder
+    state?: SortOrder
+    country_code?: SortOrder
+    phone_number?: SortOrder
+    maximum_usage?: SortOrder
+    master?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    codes_codes_referred_codeToreferred_code?: CodesOrderByRelationAggregateInput
+  }
+
+  export type referred_codeWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    referred_code?: string
+    AND?: referred_codeWhereInput | referred_codeWhereInput[]
+    OR?: referred_codeWhereInput[]
+    NOT?: referred_codeWhereInput | referred_codeWhereInput[]
+    campaign_ref?: StringFilter<"referred_code"> | string
+    vip?: StringFilter<"referred_code"> | string
+    state?: StringFilter<"referred_code"> | string
+    country_code?: StringFilter<"referred_code"> | string
+    phone_number?: StringFilter<"referred_code"> | string
+    maximum_usage?: IntFilter<"referred_code"> | number
+    master?: StringNullableFilter<"referred_code"> | string | null
+    city?: StringNullableFilter<"referred_code"> | string | null
+    codes_codes_referred_codeToreferred_code?: CodesListRelationFilter
+  }, "id" | "referred_code">
+
+  export type referred_codeOrderByWithAggregationInput = {
+    id?: SortOrder
+    referred_code?: SortOrder
+    campaign_ref?: SortOrder
+    vip?: SortOrder
+    state?: SortOrder
+    country_code?: SortOrder
+    phone_number?: SortOrder
+    maximum_usage?: SortOrder
+    master?: SortOrderInput | SortOrder
+    city?: SortOrderInput | SortOrder
+    _count?: referred_codeCountOrderByAggregateInput
+    _avg?: referred_codeAvgOrderByAggregateInput
+    _max?: referred_codeMaxOrderByAggregateInput
+    _min?: referred_codeMinOrderByAggregateInput
+    _sum?: referred_codeSumOrderByAggregateInput
+  }
+
+  export type referred_codeScalarWhereWithAggregatesInput = {
+    AND?: referred_codeScalarWhereWithAggregatesInput | referred_codeScalarWhereWithAggregatesInput[]
+    OR?: referred_codeScalarWhereWithAggregatesInput[]
+    NOT?: referred_codeScalarWhereWithAggregatesInput | referred_codeScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"referred_code"> | number
+    referred_code?: StringWithAggregatesFilter<"referred_code"> | string
+    campaign_ref?: StringWithAggregatesFilter<"referred_code"> | string
+    vip?: StringWithAggregatesFilter<"referred_code"> | string
+    state?: StringWithAggregatesFilter<"referred_code"> | string
+    country_code?: StringWithAggregatesFilter<"referred_code"> | string
+    phone_number?: StringWithAggregatesFilter<"referred_code"> | string
+    maximum_usage?: IntWithAggregatesFilter<"referred_code"> | number
+    master?: StringNullableWithAggregatesFilter<"referred_code"> | string | null
+    city?: StringNullableWithAggregatesFilter<"referred_code"> | string | null
   }
 
   export type UserCreateInput = {
@@ -12328,7 +14029,6 @@ export namespace Prisma {
   }
 
   export type CodesCreateInput = {
-    code: string
     origin?: $Enums.OriginCodes
     used_for?: $Enums.UsedCodeFor
     is_used?: boolean
@@ -12337,7 +14037,10 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     used_date?: Date | string | null
+    bingo_re_use?: number | null
     BingoCardboards?: BingoCardboardsCreateNestedManyWithoutCodesInput
+    source_codes: source_codesCreateNestedOneWithoutCodesInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeCreateNestedOneWithoutCodes_codes_referred_codeToreferred_codeInput
     User: UserCreateNestedOneWithoutCodesInput
   }
 
@@ -12353,11 +14056,12 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     used_date?: Date | string | null
+    referred_code?: string | null
+    bingo_re_use?: number | null
     BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutCodesInput
   }
 
   export type CodesUpdateInput = {
-    code?: StringFieldUpdateOperationsInput | string
     origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
     used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
     is_used?: BoolFieldUpdateOperationsInput | boolean
@@ -12366,7 +14070,10 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
     BingoCardboards?: BingoCardboardsUpdateManyWithoutCodesNestedInput
+    source_codes?: source_codesUpdateOneRequiredWithoutCodesNestedInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeUpdateOneWithoutCodes_codes_referred_codeToreferred_codeNestedInput
     User?: UserUpdateOneRequiredWithoutCodesNestedInput
   }
 
@@ -12382,6 +14089,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    referred_code?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
     BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutCodesNestedInput
   }
 
@@ -12397,10 +14106,11 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     used_date?: Date | string | null
+    referred_code?: string | null
+    bingo_re_use?: number | null
   }
 
   export type CodesUpdateManyMutationInput = {
-    code?: StringFieldUpdateOperationsInput | string
     origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
     used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
     is_used?: BoolFieldUpdateOperationsInput | boolean
@@ -12409,6 +14119,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type CodesUncheckedUpdateManyInput = {
@@ -12423,6 +14134,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    referred_code?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ParametersCreateInput = {
@@ -12434,6 +14147,9 @@ export namespace Prisma {
     deleted_at?: Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: string | null
+    bingo_re_use?: number | null
+    maximum_referral_use?: number
+    maximum_cardboard?: number | null
     last_modified_by?: UserCreateNestedOneWithoutParametersInput
   }
 
@@ -12448,6 +14164,9 @@ export namespace Prisma {
     last_modified_by_id?: number | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: string | null
+    bingo_re_use?: number | null
+    maximum_referral_use?: number
+    maximum_cardboard?: number | null
   }
 
   export type ParametersUpdateInput = {
@@ -12459,6 +14178,9 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    maximum_referral_use?: IntFieldUpdateOperationsInput | number
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
     last_modified_by?: UserUpdateOneWithoutParametersNestedInput
   }
 
@@ -12473,6 +14195,9 @@ export namespace Prisma {
     last_modified_by_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    maximum_referral_use?: IntFieldUpdateOperationsInput | number
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ParametersCreateManyInput = {
@@ -12486,6 +14211,9 @@ export namespace Prisma {
     last_modified_by_id?: number | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: string | null
+    bingo_re_use?: number | null
+    maximum_referral_use?: number
+    maximum_cardboard?: number | null
   }
 
   export type ParametersUpdateManyMutationInput = {
@@ -12497,6 +14225,9 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    maximum_referral_use?: IntFieldUpdateOperationsInput | number
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ParametersUncheckedUpdateManyInput = {
@@ -12510,6 +14241,9 @@ export namespace Prisma {
     last_modified_by_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    maximum_referral_use?: IntFieldUpdateOperationsInput | number
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type BingoCreateInput = {
@@ -12525,6 +14259,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
     start_time?: string | null
+    is_pause?: boolean | null
+    maximum_cardboard?: number | null
     BingoCardboards?: BingoCardboardsCreateNestedManyWithoutBingoInput
   }
 
@@ -12542,6 +14278,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
     start_time?: string | null
+    is_pause?: boolean | null
+    maximum_cardboard?: number | null
     BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutBingoInput
   }
 
@@ -12558,6 +14296,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pause?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
     BingoCardboards?: BingoCardboardsUpdateManyWithoutBingoNestedInput
   }
 
@@ -12575,6 +14315,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pause?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
     BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutBingoNestedInput
   }
 
@@ -12592,6 +14334,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
     start_time?: string | null
+    is_pause?: boolean | null
+    maximum_cardboard?: number | null
   }
 
   export type BingoUpdateManyMutationInput = {
@@ -12607,6 +14351,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pause?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type BingoUncheckedUpdateManyInput = {
@@ -12623,6 +14369,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pause?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type BingoCardboardsCreateInput = {
@@ -12778,62 +14526,80 @@ export namespace Prisma {
 
   export type source_codesCreateInput = {
     created_at?: Date | string
-    code?: string | null
+    code: string
     is_available?: boolean | null
     updated_at?: Date | string | null
     deleted_at?: Date | string | null
+    bingo_re_use?: number | null
+    was_printed?: boolean | null
+    codes?: CodesCreateNestedOneWithoutSource_codesInput
   }
 
   export type source_codesUncheckedCreateInput = {
     id?: number
     created_at?: Date | string
-    code?: string | null
+    code: string
     is_available?: boolean | null
     updated_at?: Date | string | null
     deleted_at?: Date | string | null
+    bingo_re_use?: number | null
+    was_printed?: boolean | null
+    codes?: CodesUncheckedCreateNestedOneWithoutSource_codesInput
   }
 
   export type source_codesUpdateInput = {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: StringFieldUpdateOperationsInput | string
     is_available?: NullableBoolFieldUpdateOperationsInput | boolean | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    was_printed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    codes?: CodesUpdateOneWithoutSource_codesNestedInput
   }
 
   export type source_codesUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: StringFieldUpdateOperationsInput | string
     is_available?: NullableBoolFieldUpdateOperationsInput | boolean | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    was_printed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    codes?: CodesUncheckedUpdateOneWithoutSource_codesNestedInput
   }
 
   export type source_codesCreateManyInput = {
     id?: number
     created_at?: Date | string
-    code?: string | null
+    code: string
     is_available?: boolean | null
     updated_at?: Date | string | null
     deleted_at?: Date | string | null
+    bingo_re_use?: number | null
+    was_printed?: boolean | null
   }
 
   export type source_codesUpdateManyMutationInput = {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: StringFieldUpdateOperationsInput | string
     is_available?: NullableBoolFieldUpdateOperationsInput | boolean | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    was_printed?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type source_codesUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    code?: NullableStringFieldUpdateOperationsInput | string | null
+    code?: StringFieldUpdateOperationsInput | string
     is_available?: NullableBoolFieldUpdateOperationsInput | boolean | null
     updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    was_printed?: NullableBoolFieldUpdateOperationsInput | boolean | null
   }
 
   export type bingo_prizesCreateInput = {
@@ -12905,6 +14671,98 @@ export namespace Prisma {
     prize_image?: NullableStringFieldUpdateOperationsInput | string | null
     quantity?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type referred_codeCreateInput = {
+    referred_code: string
+    campaign_ref: string
+    vip: string
+    state: string
+    country_code: string
+    phone_number: string
+    maximum_usage: number
+    master?: string | null
+    city?: string | null
+    codes_codes_referred_codeToreferred_code?: CodesCreateNestedManyWithoutReferred_code_codes_referred_codeToreferred_codeInput
+  }
+
+  export type referred_codeUncheckedCreateInput = {
+    id?: number
+    referred_code: string
+    campaign_ref: string
+    vip: string
+    state: string
+    country_code: string
+    phone_number: string
+    maximum_usage: number
+    master?: string | null
+    city?: string | null
+    codes_codes_referred_codeToreferred_code?: CodesUncheckedCreateNestedManyWithoutReferred_code_codes_referred_codeToreferred_codeInput
+  }
+
+  export type referred_codeUpdateInput = {
+    referred_code?: StringFieldUpdateOperationsInput | string
+    campaign_ref?: StringFieldUpdateOperationsInput | string
+    vip?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    country_code?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    maximum_usage?: IntFieldUpdateOperationsInput | number
+    master?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    codes_codes_referred_codeToreferred_code?: CodesUpdateManyWithoutReferred_code_codes_referred_codeToreferred_codeNestedInput
+  }
+
+  export type referred_codeUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    referred_code?: StringFieldUpdateOperationsInput | string
+    campaign_ref?: StringFieldUpdateOperationsInput | string
+    vip?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    country_code?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    maximum_usage?: IntFieldUpdateOperationsInput | number
+    master?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+    codes_codes_referred_codeToreferred_code?: CodesUncheckedUpdateManyWithoutReferred_code_codes_referred_codeToreferred_codeNestedInput
+  }
+
+  export type referred_codeCreateManyInput = {
+    id?: number
+    referred_code: string
+    campaign_ref: string
+    vip: string
+    state: string
+    country_code: string
+    phone_number: string
+    maximum_usage: number
+    master?: string | null
+    city?: string | null
+  }
+
+  export type referred_codeUpdateManyMutationInput = {
+    referred_code?: StringFieldUpdateOperationsInput | string
+    campaign_ref?: StringFieldUpdateOperationsInput | string
+    vip?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    country_code?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    maximum_usage?: IntFieldUpdateOperationsInput | number
+    master?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type referred_codeUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    referred_code?: StringFieldUpdateOperationsInput | string
+    campaign_ref?: StringFieldUpdateOperationsInput | string
+    vip?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    country_code?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    maximum_usage?: IntFieldUpdateOperationsInput | number
+    master?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -13216,6 +15074,27 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type Source_codesScalarRelationFilter = {
+    is?: source_codesWhereInput
+    isNot?: source_codesWhereInput
+  }
+
+  export type Referred_codeNullableScalarRelationFilter = {
+    is?: referred_codeWhereInput | null
+    isNot?: referred_codeWhereInput | null
+  }
+
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
@@ -13233,12 +15112,15 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrder
     used_date?: SortOrder
+    referred_code?: SortOrder
+    bingo_re_use?: SortOrder
   }
 
   export type CodesAvgOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
     cost?: SortOrder
+    bingo_re_use?: SortOrder
   }
 
   export type CodesMaxOrderByAggregateInput = {
@@ -13253,6 +15135,8 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrder
     used_date?: SortOrder
+    referred_code?: SortOrder
+    bingo_re_use?: SortOrder
   }
 
   export type CodesMinOrderByAggregateInput = {
@@ -13267,12 +15151,15 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrder
     used_date?: SortOrder
+    referred_code?: SortOrder
+    bingo_re_use?: SortOrder
   }
 
   export type CodesSumOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
     cost?: SortOrder
+    bingo_re_use?: SortOrder
   }
 
   export type EnumOriginCodesWithAggregatesFilter<$PrismaModel = never> = {
@@ -13319,6 +15206,22 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type FloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
     in?: number[] | ListFloatFieldRefInput<$PrismaModel>
@@ -13328,17 +15231,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -13380,6 +15272,9 @@ export namespace Prisma {
     last_modified_by_id?: SortOrder
     bingo_prizes?: SortOrder
     start_time?: SortOrder
+    bingo_re_use?: SortOrder
+    maximum_referral_use?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type ParametersAvgOrderByAggregateInput = {
@@ -13388,6 +15283,9 @@ export namespace Prisma {
     min_participants_for_bingo?: SortOrder
     cardboard_per_code?: SortOrder
     last_modified_by_id?: SortOrder
+    bingo_re_use?: SortOrder
+    maximum_referral_use?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type ParametersMaxOrderByAggregateInput = {
@@ -13400,6 +15298,9 @@ export namespace Prisma {
     deleted_at?: SortOrder
     last_modified_by_id?: SortOrder
     start_time?: SortOrder
+    bingo_re_use?: SortOrder
+    maximum_referral_use?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type ParametersMinOrderByAggregateInput = {
@@ -13412,6 +15313,9 @@ export namespace Prisma {
     deleted_at?: SortOrder
     last_modified_by_id?: SortOrder
     start_time?: SortOrder
+    bingo_re_use?: SortOrder
+    maximum_referral_use?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type ParametersSumOrderByAggregateInput = {
@@ -13420,6 +15324,9 @@ export namespace Prisma {
     min_participants_for_bingo?: SortOrder
     cardboard_per_code?: SortOrder
     last_modified_by_id?: SortOrder
+    bingo_re_use?: SortOrder
+    maximum_referral_use?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type FloatWithAggregatesFilter<$PrismaModel = never> = {
@@ -13436,22 +15343,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -13494,6 +15385,8 @@ export namespace Prisma {
     numbers_played?: SortOrder
     is_finished?: SortOrder
     start_time?: SortOrder
+    is_pause?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type BingoAvgOrderByAggregateInput = {
@@ -13501,6 +15394,7 @@ export namespace Prisma {
     number_of_participants?: SortOrder
     cardboard_by_code?: SortOrder
     min_number_of_participants?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type BingoMaxOrderByAggregateInput = {
@@ -13514,6 +15408,8 @@ export namespace Prisma {
     min_number_of_participants?: SortOrder
     is_finished?: SortOrder
     start_time?: SortOrder
+    is_pause?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type BingoMinOrderByAggregateInput = {
@@ -13527,6 +15423,8 @@ export namespace Prisma {
     min_number_of_participants?: SortOrder
     is_finished?: SortOrder
     start_time?: SortOrder
+    is_pause?: SortOrder
+    maximum_cardboard?: SortOrder
   }
 
   export type BingoSumOrderByAggregateInput = {
@@ -13534,6 +15432,7 @@ export namespace Prisma {
     number_of_participants?: SortOrder
     cardboard_by_code?: SortOrder
     min_number_of_participants?: SortOrder
+    maximum_cardboard?: SortOrder
   }
   export type JsonFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -13725,6 +15624,11 @@ export namespace Prisma {
     _max?: NestedEnumBingoPrizeFilter<$PrismaModel>
   }
 
+  export type CodesNullableScalarRelationFilter = {
+    is?: CodesWhereInput | null
+    isNot?: CodesWhereInput | null
+  }
+
   export type source_codesCountOrderByAggregateInput = {
     id?: SortOrder
     created_at?: SortOrder
@@ -13732,10 +15636,13 @@ export namespace Prisma {
     is_available?: SortOrder
     updated_at?: SortOrder
     deleted_at?: SortOrder
+    bingo_re_use?: SortOrder
+    was_printed?: SortOrder
   }
 
   export type source_codesAvgOrderByAggregateInput = {
     id?: SortOrder
+    bingo_re_use?: SortOrder
   }
 
   export type source_codesMaxOrderByAggregateInput = {
@@ -13745,6 +15652,8 @@ export namespace Prisma {
     is_available?: SortOrder
     updated_at?: SortOrder
     deleted_at?: SortOrder
+    bingo_re_use?: SortOrder
+    was_printed?: SortOrder
   }
 
   export type source_codesMinOrderByAggregateInput = {
@@ -13754,10 +15663,13 @@ export namespace Prisma {
     is_available?: SortOrder
     updated_at?: SortOrder
     deleted_at?: SortOrder
+    bingo_re_use?: SortOrder
+    was_printed?: SortOrder
   }
 
   export type source_codesSumOrderByAggregateInput = {
     id?: SortOrder
+    bingo_re_use?: SortOrder
   }
 
   export type EnumstatusNullableFilter<$PrismaModel = never> = {
@@ -13815,6 +15727,55 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedEnumstatusNullableFilter<$PrismaModel>
     _max?: NestedEnumstatusNullableFilter<$PrismaModel>
+  }
+
+  export type referred_codeCountOrderByAggregateInput = {
+    id?: SortOrder
+    referred_code?: SortOrder
+    campaign_ref?: SortOrder
+    vip?: SortOrder
+    state?: SortOrder
+    country_code?: SortOrder
+    phone_number?: SortOrder
+    maximum_usage?: SortOrder
+    master?: SortOrder
+    city?: SortOrder
+  }
+
+  export type referred_codeAvgOrderByAggregateInput = {
+    id?: SortOrder
+    maximum_usage?: SortOrder
+  }
+
+  export type referred_codeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    referred_code?: SortOrder
+    campaign_ref?: SortOrder
+    vip?: SortOrder
+    state?: SortOrder
+    country_code?: SortOrder
+    phone_number?: SortOrder
+    maximum_usage?: SortOrder
+    master?: SortOrder
+    city?: SortOrder
+  }
+
+  export type referred_codeMinOrderByAggregateInput = {
+    id?: SortOrder
+    referred_code?: SortOrder
+    campaign_ref?: SortOrder
+    vip?: SortOrder
+    state?: SortOrder
+    country_code?: SortOrder
+    phone_number?: SortOrder
+    maximum_usage?: SortOrder
+    master?: SortOrder
+    city?: SortOrder
+  }
+
+  export type referred_codeSumOrderByAggregateInput = {
+    id?: SortOrder
+    maximum_usage?: SortOrder
   }
 
   export type BingoCardboardsCreateNestedManyWithoutUserInput = {
@@ -13982,6 +15943,18 @@ export namespace Prisma {
     connect?: BingoCardboardsWhereUniqueInput | BingoCardboardsWhereUniqueInput[]
   }
 
+  export type source_codesCreateNestedOneWithoutCodesInput = {
+    create?: XOR<source_codesCreateWithoutCodesInput, source_codesUncheckedCreateWithoutCodesInput>
+    connectOrCreate?: source_codesCreateOrConnectWithoutCodesInput
+    connect?: source_codesWhereUniqueInput
+  }
+
+  export type referred_codeCreateNestedOneWithoutCodes_codes_referred_codeToreferred_codeInput = {
+    create?: XOR<referred_codeCreateWithoutCodes_codes_referred_codeToreferred_codeInput, referred_codeUncheckedCreateWithoutCodes_codes_referred_codeToreferred_codeInput>
+    connectOrCreate?: referred_codeCreateOrConnectWithoutCodes_codes_referred_codeToreferred_codeInput
+    connect?: referred_codeWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutCodesInput = {
     create?: XOR<UserCreateWithoutCodesInput, UserUncheckedCreateWithoutCodesInput>
     connectOrCreate?: UserCreateOrConnectWithoutCodesInput
@@ -14015,6 +15988,14 @@ export namespace Prisma {
     divide?: number
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type BingoCardboardsUpdateManyWithoutCodesNestedInput = {
     create?: XOR<BingoCardboardsCreateWithoutCodesInput, BingoCardboardsUncheckedCreateWithoutCodesInput> | BingoCardboardsCreateWithoutCodesInput[] | BingoCardboardsUncheckedCreateWithoutCodesInput[]
     connectOrCreate?: BingoCardboardsCreateOrConnectWithoutCodesInput | BingoCardboardsCreateOrConnectWithoutCodesInput[]
@@ -14027,6 +16008,24 @@ export namespace Prisma {
     update?: BingoCardboardsUpdateWithWhereUniqueWithoutCodesInput | BingoCardboardsUpdateWithWhereUniqueWithoutCodesInput[]
     updateMany?: BingoCardboardsUpdateManyWithWhereWithoutCodesInput | BingoCardboardsUpdateManyWithWhereWithoutCodesInput[]
     deleteMany?: BingoCardboardsScalarWhereInput | BingoCardboardsScalarWhereInput[]
+  }
+
+  export type source_codesUpdateOneRequiredWithoutCodesNestedInput = {
+    create?: XOR<source_codesCreateWithoutCodesInput, source_codesUncheckedCreateWithoutCodesInput>
+    connectOrCreate?: source_codesCreateOrConnectWithoutCodesInput
+    upsert?: source_codesUpsertWithoutCodesInput
+    connect?: source_codesWhereUniqueInput
+    update?: XOR<XOR<source_codesUpdateToOneWithWhereWithoutCodesInput, source_codesUpdateWithoutCodesInput>, source_codesUncheckedUpdateWithoutCodesInput>
+  }
+
+  export type referred_codeUpdateOneWithoutCodes_codes_referred_codeToreferred_codeNestedInput = {
+    create?: XOR<referred_codeCreateWithoutCodes_codes_referred_codeToreferred_codeInput, referred_codeUncheckedCreateWithoutCodes_codes_referred_codeToreferred_codeInput>
+    connectOrCreate?: referred_codeCreateOrConnectWithoutCodes_codes_referred_codeToreferred_codeInput
+    upsert?: referred_codeUpsertWithoutCodes_codes_referred_codeToreferred_codeInput
+    disconnect?: referred_codeWhereInput | boolean
+    delete?: referred_codeWhereInput | boolean
+    connect?: referred_codeWhereUniqueInput
+    update?: XOR<XOR<referred_codeUpdateToOneWithWhereWithoutCodes_codes_referred_codeToreferred_codeInput, referred_codeUpdateWithoutCodes_codes_referred_codeToreferred_codeInput>, referred_codeUncheckedUpdateWithoutCodes_codes_referred_codeToreferred_codeInput>
   }
 
   export type UserUpdateOneRequiredWithoutCodesNestedInput = {
@@ -14073,14 +16072,6 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutParametersInput, UserUpdateWithoutParametersInput>, UserUncheckedUpdateWithoutParametersInput>
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type BingoCardboardsCreateNestedManyWithoutBingoInput = {
@@ -14191,6 +16182,38 @@ export namespace Prisma {
     set?: $Enums.BingoPrize
   }
 
+  export type CodesCreateNestedOneWithoutSource_codesInput = {
+    create?: XOR<CodesCreateWithoutSource_codesInput, CodesUncheckedCreateWithoutSource_codesInput>
+    connectOrCreate?: CodesCreateOrConnectWithoutSource_codesInput
+    connect?: CodesWhereUniqueInput
+  }
+
+  export type CodesUncheckedCreateNestedOneWithoutSource_codesInput = {
+    create?: XOR<CodesCreateWithoutSource_codesInput, CodesUncheckedCreateWithoutSource_codesInput>
+    connectOrCreate?: CodesCreateOrConnectWithoutSource_codesInput
+    connect?: CodesWhereUniqueInput
+  }
+
+  export type CodesUpdateOneWithoutSource_codesNestedInput = {
+    create?: XOR<CodesCreateWithoutSource_codesInput, CodesUncheckedCreateWithoutSource_codesInput>
+    connectOrCreate?: CodesCreateOrConnectWithoutSource_codesInput
+    upsert?: CodesUpsertWithoutSource_codesInput
+    disconnect?: CodesWhereInput | boolean
+    delete?: CodesWhereInput | boolean
+    connect?: CodesWhereUniqueInput
+    update?: XOR<XOR<CodesUpdateToOneWithWhereWithoutSource_codesInput, CodesUpdateWithoutSource_codesInput>, CodesUncheckedUpdateWithoutSource_codesInput>
+  }
+
+  export type CodesUncheckedUpdateOneWithoutSource_codesNestedInput = {
+    create?: XOR<CodesCreateWithoutSource_codesInput, CodesUncheckedCreateWithoutSource_codesInput>
+    connectOrCreate?: CodesCreateOrConnectWithoutSource_codesInput
+    upsert?: CodesUpsertWithoutSource_codesInput
+    disconnect?: CodesWhereInput | boolean
+    delete?: CodesWhereInput | boolean
+    connect?: CodesWhereUniqueInput
+    update?: XOR<XOR<CodesUpdateToOneWithWhereWithoutSource_codesInput, CodesUpdateWithoutSource_codesInput>, CodesUncheckedUpdateWithoutSource_codesInput>
+  }
+
   export type BingoCardboardsCreateNestedManyWithoutBingo_prizesInput = {
     create?: XOR<BingoCardboardsCreateWithoutBingo_prizesInput, BingoCardboardsUncheckedCreateWithoutBingo_prizesInput> | BingoCardboardsCreateWithoutBingo_prizesInput[] | BingoCardboardsUncheckedCreateWithoutBingo_prizesInput[]
     connectOrCreate?: BingoCardboardsCreateOrConnectWithoutBingo_prizesInput | BingoCardboardsCreateOrConnectWithoutBingo_prizesInput[]
@@ -14235,6 +16258,48 @@ export namespace Prisma {
     update?: BingoCardboardsUpdateWithWhereUniqueWithoutBingo_prizesInput | BingoCardboardsUpdateWithWhereUniqueWithoutBingo_prizesInput[]
     updateMany?: BingoCardboardsUpdateManyWithWhereWithoutBingo_prizesInput | BingoCardboardsUpdateManyWithWhereWithoutBingo_prizesInput[]
     deleteMany?: BingoCardboardsScalarWhereInput | BingoCardboardsScalarWhereInput[]
+  }
+
+  export type CodesCreateNestedManyWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    create?: XOR<CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput, CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput> | CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput[] | CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    connectOrCreate?: CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    createMany?: CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInputEnvelope
+    connect?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+  }
+
+  export type CodesUncheckedCreateNestedManyWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    create?: XOR<CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput, CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput> | CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput[] | CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    connectOrCreate?: CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    createMany?: CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInputEnvelope
+    connect?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+  }
+
+  export type CodesUpdateManyWithoutReferred_code_codes_referred_codeToreferred_codeNestedInput = {
+    create?: XOR<CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput, CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput> | CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput[] | CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    connectOrCreate?: CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    upsert?: CodesUpsertWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesUpsertWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    createMany?: CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInputEnvelope
+    set?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+    disconnect?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+    delete?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+    connect?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+    update?: CodesUpdateWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesUpdateWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    updateMany?: CodesUpdateManyWithWhereWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesUpdateManyWithWhereWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    deleteMany?: CodesScalarWhereInput | CodesScalarWhereInput[]
+  }
+
+  export type CodesUncheckedUpdateManyWithoutReferred_code_codes_referred_codeToreferred_codeNestedInput = {
+    create?: XOR<CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput, CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput> | CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput[] | CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    connectOrCreate?: CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    upsert?: CodesUpsertWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesUpsertWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    createMany?: CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInputEnvelope
+    set?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+    disconnect?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+    delete?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+    connect?: CodesWhereUniqueInput | CodesWhereUniqueInput[]
+    update?: CodesUpdateWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesUpdateWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    updateMany?: CodesUpdateManyWithWhereWithoutReferred_code_codes_referred_codeToreferred_codeInput | CodesUpdateManyWithWhereWithoutReferred_code_codes_referred_codeToreferred_codeInput[]
+    deleteMany?: CodesScalarWhereInput | CodesScalarWhereInput[]
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -14502,22 +16567,6 @@ export namespace Prisma {
     _max?: NestedFloatNullableFilter<$PrismaModel>
   }
 
-  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedFloatFilter<$PrismaModel>
-    _min?: NestedFloatFilter<$PrismaModel>
-    _max?: NestedFloatFilter<$PrismaModel>
-  }
-
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -14532,6 +16581,22 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedFloatFilter<$PrismaModel>
+    _min?: NestedFloatFilter<$PrismaModel>
+    _max?: NestedFloatFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -14665,7 +16730,6 @@ export namespace Prisma {
   }
 
   export type CodesCreateWithoutUserInput = {
-    code: string
     origin?: $Enums.OriginCodes
     used_for?: $Enums.UsedCodeFor
     is_used?: boolean
@@ -14674,7 +16738,10 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     used_date?: Date | string | null
+    bingo_re_use?: number | null
     BingoCardboards?: BingoCardboardsCreateNestedManyWithoutCodesInput
+    source_codes: source_codesCreateNestedOneWithoutCodesInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeCreateNestedOneWithoutCodes_codes_referred_codeToreferred_codeInput
   }
 
   export type CodesUncheckedCreateWithoutUserInput = {
@@ -14688,6 +16755,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     used_date?: Date | string | null
+    referred_code?: string | null
+    bingo_re_use?: number | null
     BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutCodesInput
   }
 
@@ -14710,6 +16779,9 @@ export namespace Prisma {
     deleted_at?: Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: string | null
+    bingo_re_use?: number | null
+    maximum_referral_use?: number
+    maximum_cardboard?: number | null
   }
 
   export type ParametersUncheckedCreateWithoutLast_modified_byInput = {
@@ -14722,6 +16794,9 @@ export namespace Prisma {
     deleted_at?: Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: string | null
+    bingo_re_use?: number | null
+    maximum_referral_use?: number
+    maximum_cardboard?: number | null
   }
 
   export type ParametersCreateOrConnectWithoutLast_modified_byInput = {
@@ -14797,6 +16872,8 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"Codes"> | Date | string
     deleted_at?: DateTimeNullableFilter<"Codes"> | Date | string | null
     used_date?: DateTimeNullableFilter<"Codes"> | Date | string | null
+    referred_code?: StringNullableFilter<"Codes"> | string | null
+    bingo_re_use?: IntNullableFilter<"Codes"> | number | null
   }
 
   export type ParametersUpsertWithWhereUniqueWithoutLast_modified_byInput = {
@@ -14829,6 +16906,9 @@ export namespace Prisma {
     last_modified_by_id?: IntNullableFilter<"Parameters"> | number | null
     bingo_prizes?: JsonNullableFilter<"Parameters">
     start_time?: StringNullableFilter<"Parameters"> | string | null
+    bingo_re_use?: IntNullableFilter<"Parameters"> | number | null
+    maximum_referral_use?: IntFilter<"Parameters"> | number
+    maximum_cardboard?: IntNullableFilter<"Parameters"> | number | null
   }
 
   export type BingoCardboardsCreateWithoutCodesInput = {
@@ -14862,6 +16942,62 @@ export namespace Prisma {
   export type BingoCardboardsCreateManyCodesInputEnvelope = {
     data: BingoCardboardsCreateManyCodesInput | BingoCardboardsCreateManyCodesInput[]
     skipDuplicates?: boolean
+  }
+
+  export type source_codesCreateWithoutCodesInput = {
+    created_at?: Date | string
+    code: string
+    is_available?: boolean | null
+    updated_at?: Date | string | null
+    deleted_at?: Date | string | null
+    bingo_re_use?: number | null
+    was_printed?: boolean | null
+  }
+
+  export type source_codesUncheckedCreateWithoutCodesInput = {
+    id?: number
+    created_at?: Date | string
+    code: string
+    is_available?: boolean | null
+    updated_at?: Date | string | null
+    deleted_at?: Date | string | null
+    bingo_re_use?: number | null
+    was_printed?: boolean | null
+  }
+
+  export type source_codesCreateOrConnectWithoutCodesInput = {
+    where: source_codesWhereUniqueInput
+    create: XOR<source_codesCreateWithoutCodesInput, source_codesUncheckedCreateWithoutCodesInput>
+  }
+
+  export type referred_codeCreateWithoutCodes_codes_referred_codeToreferred_codeInput = {
+    referred_code: string
+    campaign_ref: string
+    vip: string
+    state: string
+    country_code: string
+    phone_number: string
+    maximum_usage: number
+    master?: string | null
+    city?: string | null
+  }
+
+  export type referred_codeUncheckedCreateWithoutCodes_codes_referred_codeToreferred_codeInput = {
+    id?: number
+    referred_code: string
+    campaign_ref: string
+    vip: string
+    state: string
+    country_code: string
+    phone_number: string
+    maximum_usage: number
+    master?: string | null
+    city?: string | null
+  }
+
+  export type referred_codeCreateOrConnectWithoutCodes_codes_referred_codeToreferred_codeInput = {
+    where: referred_codeWhereUniqueInput
+    create: XOR<referred_codeCreateWithoutCodes_codes_referred_codeToreferred_codeInput, referred_codeUncheckedCreateWithoutCodes_codes_referred_codeToreferred_codeInput>
   }
 
   export type UserCreateWithoutCodesInput = {
@@ -14928,6 +17064,74 @@ export namespace Prisma {
   export type BingoCardboardsUpdateManyWithWhereWithoutCodesInput = {
     where: BingoCardboardsScalarWhereInput
     data: XOR<BingoCardboardsUpdateManyMutationInput, BingoCardboardsUncheckedUpdateManyWithoutCodesInput>
+  }
+
+  export type source_codesUpsertWithoutCodesInput = {
+    update: XOR<source_codesUpdateWithoutCodesInput, source_codesUncheckedUpdateWithoutCodesInput>
+    create: XOR<source_codesCreateWithoutCodesInput, source_codesUncheckedCreateWithoutCodesInput>
+    where?: source_codesWhereInput
+  }
+
+  export type source_codesUpdateToOneWithWhereWithoutCodesInput = {
+    where?: source_codesWhereInput
+    data: XOR<source_codesUpdateWithoutCodesInput, source_codesUncheckedUpdateWithoutCodesInput>
+  }
+
+  export type source_codesUpdateWithoutCodesInput = {
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    code?: StringFieldUpdateOperationsInput | string
+    is_available?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    was_printed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+  }
+
+  export type source_codesUncheckedUpdateWithoutCodesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    code?: StringFieldUpdateOperationsInput | string
+    is_available?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    was_printed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+  }
+
+  export type referred_codeUpsertWithoutCodes_codes_referred_codeToreferred_codeInput = {
+    update: XOR<referred_codeUpdateWithoutCodes_codes_referred_codeToreferred_codeInput, referred_codeUncheckedUpdateWithoutCodes_codes_referred_codeToreferred_codeInput>
+    create: XOR<referred_codeCreateWithoutCodes_codes_referred_codeToreferred_codeInput, referred_codeUncheckedCreateWithoutCodes_codes_referred_codeToreferred_codeInput>
+    where?: referred_codeWhereInput
+  }
+
+  export type referred_codeUpdateToOneWithWhereWithoutCodes_codes_referred_codeToreferred_codeInput = {
+    where?: referred_codeWhereInput
+    data: XOR<referred_codeUpdateWithoutCodes_codes_referred_codeToreferred_codeInput, referred_codeUncheckedUpdateWithoutCodes_codes_referred_codeToreferred_codeInput>
+  }
+
+  export type referred_codeUpdateWithoutCodes_codes_referred_codeToreferred_codeInput = {
+    referred_code?: StringFieldUpdateOperationsInput | string
+    campaign_ref?: StringFieldUpdateOperationsInput | string
+    vip?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    country_code?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    maximum_usage?: IntFieldUpdateOperationsInput | number
+    master?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type referred_codeUncheckedUpdateWithoutCodes_codes_referred_codeToreferred_codeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    referred_code?: StringFieldUpdateOperationsInput | string
+    campaign_ref?: StringFieldUpdateOperationsInput | string
+    vip?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    country_code?: StringFieldUpdateOperationsInput | string
+    phone_number?: StringFieldUpdateOperationsInput | string
+    maximum_usage?: IntFieldUpdateOperationsInput | number
+    master?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUpsertWithoutCodesInput = {
@@ -15154,6 +17358,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
     start_time?: string | null
+    is_pause?: boolean | null
+    maximum_cardboard?: number | null
   }
 
   export type BingoUncheckedCreateWithoutBingoCardboardsInput = {
@@ -15170,6 +17376,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: boolean | null
     start_time?: string | null
+    is_pause?: boolean | null
+    maximum_cardboard?: number | null
   }
 
   export type BingoCreateOrConnectWithoutBingoCardboardsInput = {
@@ -15178,7 +17386,6 @@ export namespace Prisma {
   }
 
   export type CodesCreateWithoutBingoCardboardsInput = {
-    code: string
     origin?: $Enums.OriginCodes
     used_for?: $Enums.UsedCodeFor
     is_used?: boolean
@@ -15187,6 +17394,9 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     used_date?: Date | string | null
+    bingo_re_use?: number | null
+    source_codes: source_codesCreateNestedOneWithoutCodesInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeCreateNestedOneWithoutCodes_codes_referred_codeToreferred_codeInput
     User: UserCreateNestedOneWithoutCodesInput
   }
 
@@ -15202,6 +17412,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     used_date?: Date | string | null
+    referred_code?: string | null
+    bingo_re_use?: number | null
   }
 
   export type CodesCreateOrConnectWithoutBingoCardboardsInput = {
@@ -15307,6 +17519,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pause?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type BingoUncheckedUpdateWithoutBingoCardboardsInput = {
@@ -15323,6 +17537,8 @@ export namespace Prisma {
     numbers_played?: NullableJsonNullValueInput | InputJsonValue
     is_finished?: NullableBoolFieldUpdateOperationsInput | boolean | null
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pause?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type CodesUpsertWithoutBingoCardboardsInput = {
@@ -15337,7 +17553,6 @@ export namespace Prisma {
   }
 
   export type CodesUpdateWithoutBingoCardboardsInput = {
-    code?: StringFieldUpdateOperationsInput | string
     origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
     used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
     is_used?: BoolFieldUpdateOperationsInput | boolean
@@ -15346,6 +17561,9 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    source_codes?: source_codesUpdateOneRequiredWithoutCodesNestedInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeUpdateOneWithoutCodes_codes_referred_codeToreferred_codeNestedInput
     User?: UserUpdateOneRequiredWithoutCodesNestedInput
   }
 
@@ -15361,6 +17579,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    referred_code?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type bingo_prizesUpsertWithoutBingo_cardboardsInput = {
@@ -15449,6 +17669,84 @@ export namespace Prisma {
     Parameters?: ParametersUncheckedUpdateManyWithoutLast_modified_byNestedInput
   }
 
+  export type CodesCreateWithoutSource_codesInput = {
+    origin?: $Enums.OriginCodes
+    used_for?: $Enums.UsedCodeFor
+    is_used?: boolean
+    cost?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    deleted_at?: Date | string | null
+    used_date?: Date | string | null
+    bingo_re_use?: number | null
+    BingoCardboards?: BingoCardboardsCreateNestedManyWithoutCodesInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeCreateNestedOneWithoutCodes_codes_referred_codeToreferred_codeInput
+    User: UserCreateNestedOneWithoutCodesInput
+  }
+
+  export type CodesUncheckedCreateWithoutSource_codesInput = {
+    id?: number
+    origin?: $Enums.OriginCodes
+    used_for?: $Enums.UsedCodeFor
+    user_id: number
+    is_used?: boolean
+    cost?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    deleted_at?: Date | string | null
+    used_date?: Date | string | null
+    referred_code?: string | null
+    bingo_re_use?: number | null
+    BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutCodesInput
+  }
+
+  export type CodesCreateOrConnectWithoutSource_codesInput = {
+    where: CodesWhereUniqueInput
+    create: XOR<CodesCreateWithoutSource_codesInput, CodesUncheckedCreateWithoutSource_codesInput>
+  }
+
+  export type CodesUpsertWithoutSource_codesInput = {
+    update: XOR<CodesUpdateWithoutSource_codesInput, CodesUncheckedUpdateWithoutSource_codesInput>
+    create: XOR<CodesCreateWithoutSource_codesInput, CodesUncheckedCreateWithoutSource_codesInput>
+    where?: CodesWhereInput
+  }
+
+  export type CodesUpdateToOneWithWhereWithoutSource_codesInput = {
+    where?: CodesWhereInput
+    data: XOR<CodesUpdateWithoutSource_codesInput, CodesUncheckedUpdateWithoutSource_codesInput>
+  }
+
+  export type CodesUpdateWithoutSource_codesInput = {
+    origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
+    used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
+    is_used?: BoolFieldUpdateOperationsInput | boolean
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    BingoCardboards?: BingoCardboardsUpdateManyWithoutCodesNestedInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeUpdateOneWithoutCodes_codes_referred_codeToreferred_codeNestedInput
+    User?: UserUpdateOneRequiredWithoutCodesNestedInput
+  }
+
+  export type CodesUncheckedUpdateWithoutSource_codesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
+    used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
+    user_id?: IntFieldUpdateOperationsInput | number
+    is_used?: BoolFieldUpdateOperationsInput | boolean
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    referred_code?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutCodesNestedInput
+  }
+
   export type BingoCardboardsCreateWithoutBingo_prizesInput = {
     is_winner?: boolean
     bingo_data_json: JsonNullValueInput | InputJsonValue
@@ -15498,6 +17796,63 @@ export namespace Prisma {
     data: XOR<BingoCardboardsUpdateManyMutationInput, BingoCardboardsUncheckedUpdateManyWithoutBingo_prizesInput>
   }
 
+  export type CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    origin?: $Enums.OriginCodes
+    used_for?: $Enums.UsedCodeFor
+    is_used?: boolean
+    cost?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    deleted_at?: Date | string | null
+    used_date?: Date | string | null
+    bingo_re_use?: number | null
+    BingoCardboards?: BingoCardboardsCreateNestedManyWithoutCodesInput
+    source_codes: source_codesCreateNestedOneWithoutCodesInput
+    User: UserCreateNestedOneWithoutCodesInput
+  }
+
+  export type CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    id?: number
+    code: string
+    origin?: $Enums.OriginCodes
+    used_for?: $Enums.UsedCodeFor
+    user_id: number
+    is_used?: boolean
+    cost?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    deleted_at?: Date | string | null
+    used_date?: Date | string | null
+    bingo_re_use?: number | null
+    BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutCodesInput
+  }
+
+  export type CodesCreateOrConnectWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    where: CodesWhereUniqueInput
+    create: XOR<CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput, CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput>
+  }
+
+  export type CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInputEnvelope = {
+    data: CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInput | CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CodesUpsertWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    where: CodesWhereUniqueInput
+    update: XOR<CodesUpdateWithoutReferred_code_codes_referred_codeToreferred_codeInput, CodesUncheckedUpdateWithoutReferred_code_codes_referred_codeToreferred_codeInput>
+    create: XOR<CodesCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput, CodesUncheckedCreateWithoutReferred_code_codes_referred_codeToreferred_codeInput>
+  }
+
+  export type CodesUpdateWithWhereUniqueWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    where: CodesWhereUniqueInput
+    data: XOR<CodesUpdateWithoutReferred_code_codes_referred_codeToreferred_codeInput, CodesUncheckedUpdateWithoutReferred_code_codes_referred_codeToreferred_codeInput>
+  }
+
+  export type CodesUpdateManyWithWhereWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    where: CodesScalarWhereInput
+    data: XOR<CodesUpdateManyMutationInput, CodesUncheckedUpdateManyWithoutReferred_code_codes_referred_codeToreferred_codeInput>
+  }
+
   export type BingoCardboardsCreateManyUserInput = {
     id?: number
     code_id: number
@@ -15521,6 +17876,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     used_date?: Date | string | null
+    referred_code?: string | null
+    bingo_re_use?: number | null
   }
 
   export type ParametersCreateManyLast_modified_byInput = {
@@ -15533,6 +17890,9 @@ export namespace Prisma {
     deleted_at?: Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: string | null
+    bingo_re_use?: number | null
+    maximum_referral_use?: number
+    maximum_cardboard?: number | null
   }
 
   export type BingoCardboardsUpdateWithoutUserInput = {
@@ -15571,7 +17931,6 @@ export namespace Prisma {
   }
 
   export type CodesUpdateWithoutUserInput = {
-    code?: StringFieldUpdateOperationsInput | string
     origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
     used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
     is_used?: BoolFieldUpdateOperationsInput | boolean
@@ -15580,7 +17939,10 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
     BingoCardboards?: BingoCardboardsUpdateManyWithoutCodesNestedInput
+    source_codes?: source_codesUpdateOneRequiredWithoutCodesNestedInput
+    referred_code_codes_referred_codeToreferred_code?: referred_codeUpdateOneWithoutCodes_codes_referred_codeToreferred_codeNestedInput
   }
 
   export type CodesUncheckedUpdateWithoutUserInput = {
@@ -15594,6 +17956,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    referred_code?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
     BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutCodesNestedInput
   }
 
@@ -15608,6 +17972,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    referred_code?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ParametersUpdateWithoutLast_modified_byInput = {
@@ -15619,6 +17985,9 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    maximum_referral_use?: IntFieldUpdateOperationsInput | number
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ParametersUncheckedUpdateWithoutLast_modified_byInput = {
@@ -15631,6 +18000,9 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    maximum_referral_use?: IntFieldUpdateOperationsInput | number
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type ParametersUncheckedUpdateManyWithoutLast_modified_byInput = {
@@ -15643,6 +18015,9 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo_prizes?: NullableJsonNullValueInput | InputJsonValue
     start_time?: NullableStringFieldUpdateOperationsInput | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    maximum_referral_use?: IntFieldUpdateOperationsInput | number
+    maximum_cardboard?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type BingoCardboardsCreateManyCodesInput = {
@@ -15784,6 +18159,67 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInput = {
+    id?: number
+    code: string
+    origin?: $Enums.OriginCodes
+    used_for?: $Enums.UsedCodeFor
+    user_id: number
+    is_used?: boolean
+    cost?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    deleted_at?: Date | string | null
+    used_date?: Date | string | null
+    bingo_re_use?: number | null
+  }
+
+  export type CodesUpdateWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
+    used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
+    is_used?: BoolFieldUpdateOperationsInput | boolean
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    BingoCardboards?: BingoCardboardsUpdateManyWithoutCodesNestedInput
+    source_codes?: source_codesUpdateOneRequiredWithoutCodesNestedInput
+    User?: UserUpdateOneRequiredWithoutCodesNestedInput
+  }
+
+  export type CodesUncheckedUpdateWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
+    used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
+    user_id?: IntFieldUpdateOperationsInput | number
+    is_used?: BoolFieldUpdateOperationsInput | boolean
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
+    BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutCodesNestedInput
+  }
+
+  export type CodesUncheckedUpdateManyWithoutReferred_code_codes_referred_codeToreferred_codeInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    code?: StringFieldUpdateOperationsInput | string
+    origin?: EnumOriginCodesFieldUpdateOperationsInput | $Enums.OriginCodes
+    used_for?: EnumUsedCodeForFieldUpdateOperationsInput | $Enums.UsedCodeFor
+    user_id?: IntFieldUpdateOperationsInput | number
+    is_used?: BoolFieldUpdateOperationsInput | boolean
+    cost?: NullableFloatFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    used_date?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    bingo_re_use?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
 
