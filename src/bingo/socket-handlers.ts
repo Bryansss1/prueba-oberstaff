@@ -21,8 +21,13 @@ const CLAIM_COOLDOWN_MS = 2000; // 2 segundos entre claims del mismo socket
 export function registerSocketHandlers(io: Server): void {
   io.on("connection", (socket: Socket) => {
     // Evento: join_bingo - Unirse a una sala de bingo
-    socket.on("join_bingo", async ({ bingoId }: { bingoId: number }) => {
+    socket.on("join_bingo", async (payload: { bingoId: number }) => {
       try {
+        const bingoId = Number(payload?.bingoId);
+        if (!bingoId || isNaN(bingoId)) {
+          socket.emit("error", { message: "bingoId inválido" });
+          return;
+        }
         await loadBingo(bingoId);
         socket.join(roomName(bingoId));
         const state = activeBingos.get(bingoId)!;
@@ -50,7 +55,18 @@ export function registerSocketHandlers(io: Server): void {
         boardSnapshot?: any;
       }) => {
         try {
-          const { bingoId, boardId, prize_id, type_of_victory } = payload;
+          const bingoId = Number(payload?.bingoId);
+          const boardId = Number(payload?.boardId);
+          const prize_id = Number(payload?.prize_id);
+          const type_of_victory = payload?.type_of_victory;
+
+          if (isNaN(bingoId) || isNaN(boardId) || isNaN(prize_id) || !type_of_victory) {
+            socket.emit("claim_result", {
+              ok: false,
+              reason: "Datos de reclamo inválidos",
+            });
+            return;
+          }
 
           // ── Fix #4: Rate limiting ──
           const now = Date.now();
@@ -160,23 +176,25 @@ export function registerSocketHandlers(io: Server): void {
                 throw new Error("INVALID_BOARD");
               }
 
-              // ── Fix #3: Referral en UNA sola query con include ──
-              const codeRecord = await tx.codes.findUnique({
-                where: { id: board.code_id, deleted_at: null },
-                include: {
-                  referred_code_codes_referred_codeToreferred_code: {
-                    select: {
-                      campaign_ref: true,
-                      vip: true,
-                      state: true,
-                      country_code: true,
-                      phone_number: true,
-                      master: true,
-                      city: true,
+              // ── Fix #3: Referral en UNA sola query con include (si existe code_id) ──
+              const codeRecord = board.code_id
+                ? await tx.codes.findUnique({
+                    where: { id: board.code_id, deleted_at: null },
+                    include: {
+                      referred_code_codes_referred_codeToreferred_code: {
+                        select: {
+                          campaign_ref: true,
+                          vip: true,
+                          state: true,
+                          country_code: true,
+                          phone_number: true,
+                          master: true,
+                          city: true,
+                        },
+                      },
                     },
-                  },
-                },
-              });
+                  })
+                : null;
 
               const referralData: {
                 winner_code?: string;
@@ -315,3 +333,21 @@ export function registerSocketHandlers(io: Server): void {
     );
   });
 }
+
+/**
+ * Emite la notificación en tiempo real a los jugadores conectados en la sala de bingo
+ * informándoles que el límite máximo de cartones o sus cartones asignados se han actualizado.
+ */
+export function notifyCardboardsUpdated(
+  io: Server,
+  bingoId: number,
+  data?: { maximum_cardboard?: number | null; message?: string }
+): void {
+  io.to(roomName(bingoId)).emit("cardboards_updated", {
+    bingoId,
+    maximum_cardboard: data?.maximum_cardboard ?? null,
+    message: data?.message || "Los cartones del bingo han sido actualizados",
+    timestamp: Date.now(),
+  });
+}
+

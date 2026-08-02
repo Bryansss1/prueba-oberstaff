@@ -98,7 +98,7 @@ model Bingo {
 
 model BingoCardboards {
   id              Int           @id @default(autoincrement())
-  code_id         Int
+  code_id         Int?
   bingo_id        Int
   is_winner       Boolean       @default(false)
   user_id         Int
@@ -108,7 +108,7 @@ model BingoCardboards {
   deleted_at      DateTime?
   prize_id        Int?
   bingo           Bingo         @relation(fields: [bingo_id], references: [id])
-  Codes           Codes         @relation(fields: [code_id], references: [id])
+  Codes           Codes?        @relation(fields: [code_id], references: [id])
   bingo_prizes    bingo_prizes? @relation(fields: [prize_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   user            User          @relation(fields: [user_id], references: [id])
 

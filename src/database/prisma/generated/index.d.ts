@@ -7167,7 +7167,7 @@ export namespace Prisma {
 
   export type BingoCardboardsGroupByOutputType = {
     id: number
-    code_id: number
+    code_id: number | null
     bingo_id: number
     is_winner: boolean
     user_id: number
@@ -7209,7 +7209,7 @@ export namespace Prisma {
     deleted_at?: boolean
     prize_id?: boolean
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
-    Codes?: boolean | CodesDefaultArgs<ExtArgs>
+    Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bingoCardboards"]>
@@ -7226,7 +7226,7 @@ export namespace Prisma {
     deleted_at?: boolean
     prize_id?: boolean
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
-    Codes?: boolean | CodesDefaultArgs<ExtArgs>
+    Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bingoCardboards"]>
@@ -7243,7 +7243,7 @@ export namespace Prisma {
     deleted_at?: boolean
     prize_id?: boolean
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
-    Codes?: boolean | CodesDefaultArgs<ExtArgs>
+    Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bingoCardboards"]>
@@ -7264,19 +7264,19 @@ export namespace Prisma {
   export type BingoCardboardsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code_id" | "bingo_id" | "is_winner" | "user_id" | "bingo_data_json" | "created_at" | "updated_at" | "deleted_at" | "prize_id", ExtArgs["result"]["bingoCardboards"]>
   export type BingoCardboardsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
-    Codes?: boolean | CodesDefaultArgs<ExtArgs>
+    Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type BingoCardboardsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
-    Codes?: boolean | CodesDefaultArgs<ExtArgs>
+    Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
   export type BingoCardboardsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
-    Codes?: boolean | CodesDefaultArgs<ExtArgs>
+    Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -7285,13 +7285,13 @@ export namespace Prisma {
     name: "BingoCardboards"
     objects: {
       bingo: Prisma.$BingoPayload<ExtArgs>
-      Codes: Prisma.$CodesPayload<ExtArgs>
+      Codes: Prisma.$CodesPayload<ExtArgs> | null
       bingo_prizes: Prisma.$bingo_prizesPayload<ExtArgs> | null
       user: Prisma.$UserPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
-      code_id: number
+      code_id: number | null
       bingo_id: number
       is_winner: boolean
       user_id: number
@@ -7695,7 +7695,7 @@ export namespace Prisma {
   export interface Prisma__BingoCardboardsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     bingo<T extends BingoDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BingoDefaultArgs<ExtArgs>>): Prisma__BingoClient<$Result.GetResult<Prisma.$BingoPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    Codes<T extends CodesDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CodesDefaultArgs<ExtArgs>>): Prisma__CodesClient<$Result.GetResult<Prisma.$CodesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    Codes<T extends BingoCardboards$CodesArgs<ExtArgs> = {}>(args?: Subset<T, BingoCardboards$CodesArgs<ExtArgs>>): Prisma__CodesClient<$Result.GetResult<Prisma.$CodesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     bingo_prizes<T extends BingoCardboards$bingo_prizesArgs<ExtArgs> = {}>(args?: Subset<T, BingoCardboards$bingo_prizesArgs<ExtArgs>>): Prisma__bingo_prizesClient<$Result.GetResult<Prisma.$bingo_prizesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
@@ -8130,6 +8130,25 @@ export namespace Prisma {
      * Limit how many BingoCardboards to delete.
      */
     limit?: number
+  }
+
+  /**
+   * BingoCardboards.Codes
+   */
+  export type BingoCardboards$CodesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Codes
+     */
+    select?: CodesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Codes
+     */
+    omit?: CodesOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CodesInclude<ExtArgs> | null
+    where?: CodesWhereInput
   }
 
   /**
@@ -13501,7 +13520,7 @@ export namespace Prisma {
     OR?: BingoCardboardsWhereInput[]
     NOT?: BingoCardboardsWhereInput | BingoCardboardsWhereInput[]
     id?: IntFilter<"BingoCardboards"> | number
-    code_id?: IntFilter<"BingoCardboards"> | number
+    code_id?: IntNullableFilter<"BingoCardboards"> | number | null
     bingo_id?: IntFilter<"BingoCardboards"> | number
     is_winner?: BoolFilter<"BingoCardboards"> | boolean
     user_id?: IntFilter<"BingoCardboards"> | number
@@ -13511,14 +13530,14 @@ export namespace Prisma {
     deleted_at?: DateTimeNullableFilter<"BingoCardboards"> | Date | string | null
     prize_id?: IntNullableFilter<"BingoCardboards"> | number | null
     bingo?: XOR<BingoScalarRelationFilter, BingoWhereInput>
-    Codes?: XOR<CodesScalarRelationFilter, CodesWhereInput>
+    Codes?: XOR<CodesNullableScalarRelationFilter, CodesWhereInput> | null
     bingo_prizes?: XOR<Bingo_prizesNullableScalarRelationFilter, bingo_prizesWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
   export type BingoCardboardsOrderByWithRelationInput = {
     id?: SortOrder
-    code_id?: SortOrder
+    code_id?: SortOrderInput | SortOrder
     bingo_id?: SortOrder
     is_winner?: SortOrder
     user_id?: SortOrder
@@ -13538,7 +13557,7 @@ export namespace Prisma {
     AND?: BingoCardboardsWhereInput | BingoCardboardsWhereInput[]
     OR?: BingoCardboardsWhereInput[]
     NOT?: BingoCardboardsWhereInput | BingoCardboardsWhereInput[]
-    code_id?: IntFilter<"BingoCardboards"> | number
+    code_id?: IntNullableFilter<"BingoCardboards"> | number | null
     bingo_id?: IntFilter<"BingoCardboards"> | number
     is_winner?: BoolFilter<"BingoCardboards"> | boolean
     user_id?: IntFilter<"BingoCardboards"> | number
@@ -13548,14 +13567,14 @@ export namespace Prisma {
     deleted_at?: DateTimeNullableFilter<"BingoCardboards"> | Date | string | null
     prize_id?: IntNullableFilter<"BingoCardboards"> | number | null
     bingo?: XOR<BingoScalarRelationFilter, BingoWhereInput>
-    Codes?: XOR<CodesScalarRelationFilter, CodesWhereInput>
+    Codes?: XOR<CodesNullableScalarRelationFilter, CodesWhereInput> | null
     bingo_prizes?: XOR<Bingo_prizesNullableScalarRelationFilter, bingo_prizesWhereInput> | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
   export type BingoCardboardsOrderByWithAggregationInput = {
     id?: SortOrder
-    code_id?: SortOrder
+    code_id?: SortOrderInput | SortOrder
     bingo_id?: SortOrder
     is_winner?: SortOrder
     user_id?: SortOrder
@@ -13576,7 +13595,7 @@ export namespace Prisma {
     OR?: BingoCardboardsScalarWhereWithAggregatesInput[]
     NOT?: BingoCardboardsScalarWhereWithAggregatesInput | BingoCardboardsScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"BingoCardboards"> | number
-    code_id?: IntWithAggregatesFilter<"BingoCardboards"> | number
+    code_id?: IntNullableWithAggregatesFilter<"BingoCardboards"> | number | null
     bingo_id?: IntWithAggregatesFilter<"BingoCardboards"> | number
     is_winner?: BoolWithAggregatesFilter<"BingoCardboards"> | boolean
     user_id?: IntWithAggregatesFilter<"BingoCardboards"> | number
@@ -14380,14 +14399,14 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     bingo: BingoCreateNestedOneWithoutBingoCardboardsInput
-    Codes: CodesCreateNestedOneWithoutBingoCardboardsInput
+    Codes?: CodesCreateNestedOneWithoutBingoCardboardsInput
     bingo_prizes?: bingo_prizesCreateNestedOneWithoutBingo_cardboardsInput
     user: UserCreateNestedOneWithoutBingoCardboardsInput
   }
 
   export type BingoCardboardsUncheckedCreateInput = {
     id?: number
-    code_id: number
+    code_id?: number | null
     bingo_id: number
     is_winner?: boolean
     user_id: number
@@ -14405,14 +14424,14 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo?: BingoUpdateOneRequiredWithoutBingoCardboardsNestedInput
-    Codes?: CodesUpdateOneRequiredWithoutBingoCardboardsNestedInput
+    Codes?: CodesUpdateOneWithoutBingoCardboardsNestedInput
     bingo_prizes?: bingo_prizesUpdateOneWithoutBingo_cardboardsNestedInput
     user?: UserUpdateOneRequiredWithoutBingoCardboardsNestedInput
   }
 
   export type BingoCardboardsUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
-    code_id?: IntFieldUpdateOperationsInput | number
+    code_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_id?: IntFieldUpdateOperationsInput | number
     is_winner?: BoolFieldUpdateOperationsInput | boolean
     user_id?: IntFieldUpdateOperationsInput | number
@@ -14425,7 +14444,7 @@ export namespace Prisma {
 
   export type BingoCardboardsCreateManyInput = {
     id?: number
-    code_id: number
+    code_id?: number | null
     bingo_id: number
     is_winner?: boolean
     user_id: number
@@ -14446,7 +14465,7 @@ export namespace Prisma {
 
   export type BingoCardboardsUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
-    code_id?: IntFieldUpdateOperationsInput | number
+    code_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_id?: IntFieldUpdateOperationsInput | number
     is_winner?: BoolFieldUpdateOperationsInput | boolean
     user_id?: IntFieldUpdateOperationsInput | number
@@ -15463,9 +15482,9 @@ export namespace Prisma {
     isNot?: BingoWhereInput
   }
 
-  export type CodesScalarRelationFilter = {
-    is?: CodesWhereInput
-    isNot?: CodesWhereInput
+  export type CodesNullableScalarRelationFilter = {
+    is?: CodesWhereInput | null
+    isNot?: CodesWhereInput | null
   }
 
   export type Bingo_prizesNullableScalarRelationFilter = {
@@ -15622,11 +15641,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBingoPrizeFilter<$PrismaModel>
     _max?: NestedEnumBingoPrizeFilter<$PrismaModel>
-  }
-
-  export type CodesNullableScalarRelationFilter = {
-    is?: CodesWhereInput | null
-    isNot?: CodesWhereInput | null
   }
 
   export type source_codesCountOrderByAggregateInput = {
@@ -16148,10 +16162,12 @@ export namespace Prisma {
     update?: XOR<XOR<BingoUpdateToOneWithWhereWithoutBingoCardboardsInput, BingoUpdateWithoutBingoCardboardsInput>, BingoUncheckedUpdateWithoutBingoCardboardsInput>
   }
 
-  export type CodesUpdateOneRequiredWithoutBingoCardboardsNestedInput = {
+  export type CodesUpdateOneWithoutBingoCardboardsNestedInput = {
     create?: XOR<CodesCreateWithoutBingoCardboardsInput, CodesUncheckedCreateWithoutBingoCardboardsInput>
     connectOrCreate?: CodesCreateOrConnectWithoutBingoCardboardsInput
     upsert?: CodesUpsertWithoutBingoCardboardsInput
+    disconnect?: CodesWhereInput | boolean
+    delete?: CodesWhereInput | boolean
     connect?: CodesWhereUniqueInput
     update?: XOR<XOR<CodesUpdateToOneWithWhereWithoutBingoCardboardsInput, CodesUpdateWithoutBingoCardboardsInput>, CodesUncheckedUpdateWithoutBingoCardboardsInput>
   }
@@ -16703,13 +16719,13 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     bingo: BingoCreateNestedOneWithoutBingoCardboardsInput
-    Codes: CodesCreateNestedOneWithoutBingoCardboardsInput
+    Codes?: CodesCreateNestedOneWithoutBingoCardboardsInput
     bingo_prizes?: bingo_prizesCreateNestedOneWithoutBingo_cardboardsInput
   }
 
   export type BingoCardboardsUncheckedCreateWithoutUserInput = {
     id?: number
-    code_id: number
+    code_id?: number | null
     bingo_id: number
     is_winner?: boolean
     bingo_data_json: JsonNullValueInput | InputJsonValue
@@ -16830,7 +16846,7 @@ export namespace Prisma {
     OR?: BingoCardboardsScalarWhereInput[]
     NOT?: BingoCardboardsScalarWhereInput | BingoCardboardsScalarWhereInput[]
     id?: IntFilter<"BingoCardboards"> | number
-    code_id?: IntFilter<"BingoCardboards"> | number
+    code_id?: IntNullableFilter<"BingoCardboards"> | number | null
     bingo_id?: IntFilter<"BingoCardboards"> | number
     is_winner?: BoolFilter<"BingoCardboards"> | boolean
     user_id?: IntFilter<"BingoCardboards"> | number
@@ -17302,14 +17318,14 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     deleted_at?: Date | string | null
-    Codes: CodesCreateNestedOneWithoutBingoCardboardsInput
+    Codes?: CodesCreateNestedOneWithoutBingoCardboardsInput
     bingo_prizes?: bingo_prizesCreateNestedOneWithoutBingo_cardboardsInput
     user: UserCreateNestedOneWithoutBingoCardboardsInput
   }
 
   export type BingoCardboardsUncheckedCreateWithoutBingoInput = {
     id?: number
-    code_id: number
+    code_id?: number | null
     is_winner?: boolean
     user_id: number
     bingo_data_json: JsonNullValueInput | InputJsonValue
@@ -17754,13 +17770,13 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     bingo: BingoCreateNestedOneWithoutBingoCardboardsInput
-    Codes: CodesCreateNestedOneWithoutBingoCardboardsInput
+    Codes?: CodesCreateNestedOneWithoutBingoCardboardsInput
     user: UserCreateNestedOneWithoutBingoCardboardsInput
   }
 
   export type BingoCardboardsUncheckedCreateWithoutBingo_prizesInput = {
     id?: number
-    code_id: number
+    code_id?: number | null
     bingo_id: number
     is_winner?: boolean
     user_id: number
@@ -17855,7 +17871,7 @@ export namespace Prisma {
 
   export type BingoCardboardsCreateManyUserInput = {
     id?: number
-    code_id: number
+    code_id?: number | null
     bingo_id: number
     is_winner?: boolean
     bingo_data_json: JsonNullValueInput | InputJsonValue
@@ -17902,13 +17918,13 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo?: BingoUpdateOneRequiredWithoutBingoCardboardsNestedInput
-    Codes?: CodesUpdateOneRequiredWithoutBingoCardboardsNestedInput
+    Codes?: CodesUpdateOneWithoutBingoCardboardsNestedInput
     bingo_prizes?: bingo_prizesUpdateOneWithoutBingo_cardboardsNestedInput
   }
 
   export type BingoCardboardsUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    code_id?: IntFieldUpdateOperationsInput | number
+    code_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_id?: IntFieldUpdateOperationsInput | number
     is_winner?: BoolFieldUpdateOperationsInput | boolean
     bingo_data_json?: JsonNullValueInput | InputJsonValue
@@ -17920,7 +17936,7 @@ export namespace Prisma {
 
   export type BingoCardboardsUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    code_id?: IntFieldUpdateOperationsInput | number
+    code_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_id?: IntFieldUpdateOperationsInput | number
     is_winner?: BoolFieldUpdateOperationsInput | boolean
     bingo_data_json?: JsonNullValueInput | InputJsonValue
@@ -18069,7 +18085,7 @@ export namespace Prisma {
 
   export type BingoCardboardsCreateManyBingoInput = {
     id?: number
-    code_id: number
+    code_id?: number | null
     is_winner?: boolean
     user_id: number
     bingo_data_json: JsonNullValueInput | InputJsonValue
@@ -18085,14 +18101,14 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    Codes?: CodesUpdateOneRequiredWithoutBingoCardboardsNestedInput
+    Codes?: CodesUpdateOneWithoutBingoCardboardsNestedInput
     bingo_prizes?: bingo_prizesUpdateOneWithoutBingo_cardboardsNestedInput
     user?: UserUpdateOneRequiredWithoutBingoCardboardsNestedInput
   }
 
   export type BingoCardboardsUncheckedUpdateWithoutBingoInput = {
     id?: IntFieldUpdateOperationsInput | number
-    code_id?: IntFieldUpdateOperationsInput | number
+    code_id?: NullableIntFieldUpdateOperationsInput | number | null
     is_winner?: BoolFieldUpdateOperationsInput | boolean
     user_id?: IntFieldUpdateOperationsInput | number
     bingo_data_json?: JsonNullValueInput | InputJsonValue
@@ -18104,7 +18120,7 @@ export namespace Prisma {
 
   export type BingoCardboardsUncheckedUpdateManyWithoutBingoInput = {
     id?: IntFieldUpdateOperationsInput | number
-    code_id?: IntFieldUpdateOperationsInput | number
+    code_id?: NullableIntFieldUpdateOperationsInput | number | null
     is_winner?: BoolFieldUpdateOperationsInput | boolean
     user_id?: IntFieldUpdateOperationsInput | number
     bingo_data_json?: JsonNullValueInput | InputJsonValue
@@ -18116,7 +18132,7 @@ export namespace Prisma {
 
   export type BingoCardboardsCreateManyBingo_prizesInput = {
     id?: number
-    code_id: number
+    code_id?: number | null
     bingo_id: number
     is_winner?: boolean
     user_id: number
@@ -18133,13 +18149,13 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     bingo?: BingoUpdateOneRequiredWithoutBingoCardboardsNestedInput
-    Codes?: CodesUpdateOneRequiredWithoutBingoCardboardsNestedInput
+    Codes?: CodesUpdateOneWithoutBingoCardboardsNestedInput
     user?: UserUpdateOneRequiredWithoutBingoCardboardsNestedInput
   }
 
   export type BingoCardboardsUncheckedUpdateWithoutBingo_prizesInput = {
     id?: IntFieldUpdateOperationsInput | number
-    code_id?: IntFieldUpdateOperationsInput | number
+    code_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_id?: IntFieldUpdateOperationsInput | number
     is_winner?: BoolFieldUpdateOperationsInput | boolean
     user_id?: IntFieldUpdateOperationsInput | number
@@ -18151,7 +18167,7 @@ export namespace Prisma {
 
   export type BingoCardboardsUncheckedUpdateManyWithoutBingo_prizesInput = {
     id?: IntFieldUpdateOperationsInput | number
-    code_id?: IntFieldUpdateOperationsInput | number
+    code_id?: NullableIntFieldUpdateOperationsInput | number | null
     bingo_id?: IntFieldUpdateOperationsInput | number
     is_winner?: BoolFieldUpdateOperationsInput | boolean
     user_id?: IntFieldUpdateOperationsInput | number

@@ -13,17 +13,26 @@ export function createSocketServer(httpServer: http.Server): Server {
   // Middleware de autenticación JWT para Socket.IO
   io.use((socket, next) => {
     try {
-      const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(" ")[1];
+      const token =
+        socket.handshake.auth.token ||
+        socket.handshake.headers.authorization?.split(" ")[1] ||
+        (socket.handshake.query?.token as string);
 
       if (!token) {
         return next(new Error("Authentication error: No token provided"));
       }
 
       const decoded = jwt.verify(token, Config.SECRET_KEY as string) as any;
-      
+      const rawUserId = decoded.id ?? decoded.userId ?? decoded.user_id ?? decoded.sub;
+      const userId = Number(rawUserId);
+
+      if (!rawUserId || isNaN(userId)) {
+        return next(new Error("Authentication error: User ID missing in token"));
+      }
+
       // Adjuntar información del usuario al socket
       socket.data.user = {
-        id: decoded.id || decoded.userId,
+        id: userId,
         email: decoded.email,
         ...decoded,
       };

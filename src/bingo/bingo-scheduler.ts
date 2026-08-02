@@ -438,9 +438,25 @@ export async function startBingoScheduler(io: Server): Promise<void> {
   // Cron 1: Refrescar parámetros cada 2 minutos
   cron.schedule("*/2 * * * *", async () => {
     const hasChanged = await refreshParametersCache();
-    // Si los parámetros cambiaron, actualizar bingos pendientes
+    // Si los parámetros cambiaron, notificar a los clientes conectados
     if (hasChanged) {
-      // await updatePendingBingosFromParameters();
+      const { getCurrentParameters } = await import("../config/parameters.js");
+      const { notifyCardboardsUpdated } = await import("./socket-handlers.js");
+      const params = await getCurrentParameters();
+
+      // Buscar el bingo activo o pendiente más reciente
+      const currentBingo = await prisma.bingo.findFirst({
+        where: { is_finished: false, deleted_at: null },
+        orderBy: { id: "desc" },
+        select: { id: true },
+      });
+
+      if (currentBingo) {
+        notifyCardboardsUpdated(io, currentBingo.id, {
+          maximum_cardboard: params?.maximum_cardboard,
+          message: "Parámetros del bingo actualizados",
+        });
+      }
     }
   });
 
