@@ -14,14 +14,21 @@ export function isMarked(num: number): boolean {
  * Convierte el payload del cartón en una matriz 5x5
  */
 export function toMatrix(boardPayload: any): number[][] {
+  if (!boardPayload || typeof boardPayload !== "object") return [];
   const size = boardPayload.size;
+  if (typeof size !== "number" || size <= 0) return [];
+  if (!Array.isArray(boardPayload.columns)) return [];
+
   const matrix: number[][] = Array.from({ length: size }, () =>
     Array(size).fill(0)
   );
 
   boardPayload.columns.forEach((col: any, colIdx: number) => {
+    if (!col || !Array.isArray(col.numbers)) return;
     col.numbers.forEach((num: number, rowIdx: number) => {
-      matrix[rowIdx][colIdx] = num;
+      if (rowIdx < size && colIdx < size) {
+        matrix[rowIdx][colIdx] = num;
+      }
     });
   });
 
@@ -57,17 +64,14 @@ export function areMarkedNumbersPlayed(
 /**
  * Verifica si un patrón de victoria es válido en el cartón
  */
-export async function verifyVictory(
+export function verifyVictory(
   type: VictoryType,
   boardPayload: any
-): Promise<boolean> {
-  console.log("Board payload:", boardPayload.columns["0"].numbers);
-
+): boolean {
   const matrix = toMatrix(boardPayload);
+  if (matrix.length === 0) return false;
+  
   const size = boardPayload.size;
-
-  console.log("Verifying victory type:", type);
-  console.log("Board matrix:", matrix);
 
   switch (type) {
     case "CARTON_LLENO":

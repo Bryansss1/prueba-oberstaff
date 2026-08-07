@@ -32,6 +32,11 @@ export async function finishBingo(
   console.log(`⏰ Hora de finalización: ${new Date().toLocaleString()}`);
   console.log(`${"=".repeat(60)}\n`);
 
+  if (state.feederInterval) {
+    clearInterval(state.feederInterval);
+    state.feederInterval = undefined;
+  }
+
   io.to(roomName(bingoId)).emit("bingo_finished", { reason });
 }
 
@@ -74,7 +79,15 @@ export async function pushNumber(
 export function createNumberFeeder(
   bingoId: number,
   io: Server
-): NodeJS.Timeout {
+): NodeJS.Timeout | null {
+  const state = activeBingos.get(bingoId);
+  if (!state || !state.is_started) return null;
+  
+  if (state.feederInterval) {
+    console.warn(`[BINGO ${bingoId}] Feeder ya existe. Evitando duplicado.`);
+    return state.feederInterval;
+  }
+
   const pool = Array.from({ length: 75 }, (_, i) => i + 1);
   const drawn = new Set<number>();
   let accumulatedMs = 0;
@@ -163,5 +176,6 @@ export function createNumberFeeder(
     await pushNumber(bingoId, candidate!, io);
   }, 5000);
 
+  state.feederInterval = interval;
   return interval;
 }

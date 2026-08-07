@@ -102,6 +102,17 @@ export function registerSocketHandlers(io: Server): void {
             return;
           }
 
+          const isPrizeAlreadyClaimed = state.winners.some(
+            (w) => w.prize_id === prize_id
+          );
+          if (isPrizeAlreadyClaimed) {
+            socket.emit("claim_result", {
+              ok: false,
+              reason: "Este premio ya fue reclamado",
+            });
+            return;
+          }
+
           // ── Lectura inicial del cartón (early rejection, sin lock) ──
           const board = await prisma.bingoCardboards.findUnique({
             where: { id: boardId },
@@ -125,7 +136,7 @@ export function registerSocketHandlers(io: Server): void {
           }
 
           // ── Validaciones de patrón y números (computacionales, sin DB) ──
-          const isValid = await verifyVictory(
+          const isValid = verifyVictory(
             type_of_victory,
             board.bingo_data_json
           );
@@ -258,42 +269,43 @@ export function registerSocketHandlers(io: Server): void {
                 where: { id: boardId },
                 data: { is_winner: true },
               });
+            });
 
-              // Actualizar estado en memoria
-              state.winners.push(winnerEntry);
+            // Actualizar estado en memoria
+            state.winners.push(winnerEntry);
 
-              // Broadcast y respuesta al ganador
-              io.to(roomName(bingoId)).emit("winner_announced", {
-                boardId,
-                prizeId: prize.prize_id,
-                prizeName: prize.name,
-                type_of_victory,
-                time: Date.now(),
-                winners: state.winners.map(
-                  ({
-                    winner_code: _wc,
-                    referred_campaign_ref: _rcr,
-                    referred_vip: _rv,
-                    referred_state: _rs,
-                    referred_country_code: _rcc,
-                    referred_phone_number: _rpn,
-                    referred_master: _rm,
-                    referred_city: _rci,
-                    ...publicWinner
-                  }) => publicWinner
-                ),
-              });
-              socket.emit("claim_result", {
-                ok: true,
-                winner_code: winnerEntry.winner_code,
-                referred_campaign_ref: winnerEntry.referred_campaign_ref,
-                referred_vip: winnerEntry.referred_vip,
-                referred_state: winnerEntry.referred_state,
-                referred_country_code: winnerEntry.referred_country_code,
-                referred_phone_number: winnerEntry.referred_phone_number,
-                referred_master: winnerEntry.referred_master,
-                referred_city: winnerEntry.referred_city,
-              });
+            // Broadcast y respuesta al ganador
+            io.to(roomName(bingoId)).emit("winner_announced", {
+              boardId,
+              prizeId: prize.prize_id,
+              prizeName: prize.name,
+              type_of_victory,
+              time: Date.now(),
+              winners: state.winners.map(
+                ({
+                  winner_code: _wc,
+                  referred_campaign_ref: _rcr,
+                  referred_vip: _rv,
+                  referred_state: _rs,
+                  referred_country_code: _rcc,
+                  referred_phone_number: _rpn,
+                  referred_master: _rm,
+                  referred_city: _rci,
+                  ...publicWinner
+                }) => publicWinner
+              ),
+            });
+            
+            socket.emit("claim_result", {
+              ok: true,
+              winner_code: winnerEntry.winner_code,
+              referred_campaign_ref: winnerEntry.referred_campaign_ref,
+              referred_vip: winnerEntry.referred_vip,
+              referred_state: winnerEntry.referred_state,
+              referred_country_code: winnerEntry.referred_country_code,
+              referred_phone_number: winnerEntry.referred_phone_number,
+              referred_master: winnerEntry.referred_master,
+              referred_city: winnerEntry.referred_city,
             });
 
             // Fuera de la transacción: verificar si quedan premios
@@ -331,6 +343,11 @@ export function registerSocketHandlers(io: Server): void {
         }
       }
     );
+
+    // Evento: disconnect - Limpiar rate limiting
+    socket.on("disconnect", () => {
+      lastClaimBySocket.delete(socket.id);
+    });
   });
 }
 

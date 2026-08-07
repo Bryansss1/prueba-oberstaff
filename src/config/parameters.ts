@@ -28,8 +28,12 @@ export async function refreshParametersCache(): Promise<boolean> {
       orderBy: { id: "desc" },
     });
 
-    // Detectar si hubo cambios comparando el ID
-    const hasChanged = parameters && parameters.id !== lastParametersId;
+    // Detectar si hubo cambios comparando el contenido JSON
+    let hasChanged = false;
+    if (!cachedParameters && parameters) hasChanged = true;
+    if (cachedParameters && parameters) {
+      hasChanged = JSON.stringify(cachedParameters) !== JSON.stringify(parameters);
+    }
 
     cachedParameters = parameters;
     lastParametersId = parameters?.id ?? null;

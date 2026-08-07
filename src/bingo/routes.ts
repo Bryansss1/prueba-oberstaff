@@ -91,7 +91,13 @@ export function registerBingoRoutes(app: Express, io: Server): void {
         },
       });
 
-      if (st) st.is_started = false;
+      if (st) {
+        st.is_started = false;
+        if (st.feederInterval) {
+          clearInterval(st.feederInterval);
+          st.feederInterval = undefined;
+        }
+      }
 
       // 🛑 LOG: Fin del juego (manual - sin autenticación para pruebas)
       console.log(`\n${"=".repeat(60)}`);

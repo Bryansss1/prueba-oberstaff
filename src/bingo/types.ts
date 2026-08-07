@@ -59,4 +59,5 @@ export type BingoState = {
    * pausado y transferirá todos los cartones.
    */
   was_paused: boolean;
+  feederInterval?: NodeJS.Timeout;
 };

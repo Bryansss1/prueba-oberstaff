@@ -55,10 +55,17 @@ function compareJsonValues(a: any, b: any): boolean {
   }
 }
 
+let isCreatingBingo = false;
+
 /**
  * Crea un nuevo bingo usando los últimos parámetros del sistema
  */
 export async function createBingoFromParameters(options?: { createPaused?: boolean }): Promise<number | null> {
+  if (isCreatingBingo) {
+    console.log("ℹ️  Creación de bingo en progreso (preveniendo duplicados).");
+    return null;
+  }
+  isCreatingBingo = true;
   try {
     const shouldCreatePaused = options?.createPaused ?? false;
     // Si el sistema está pausado (último bingo con is_pause=true), no crear (salvo si forzamos creación pausada).
@@ -128,6 +135,8 @@ export async function createBingoFromParameters(options?: { createPaused?: boole
   } catch (error: any) {
     console.error(`❌ Error al crear bingo desde parámetros:`, error.message);
     return null;
+  } finally {
+    isCreatingBingo = false;
   }
 }
 
