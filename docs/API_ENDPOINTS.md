@@ -56,7 +56,7 @@ curl http://localhost:4000/bingo/123
 
 **Request Body**: Ninguno
 
-**Autenticación**: ⚠️ **SIN AUTENTICACIÓN** (configurado para pruebas)
+**Autenticación**: JWT Bearer requerido. Roles permitidos: **ADMIN** u **OPERADOR** vigentes.
 
 **Respuesta:**
 ```json
@@ -67,7 +67,8 @@ curl http://localhost:4000/bingo/123
 
 **Ejemplo cURL:**
 ```bash
-curl -X POST http://localhost:4000/bingo/123/start
+curl -X POST http://localhost:4000/bingo/123/start \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 **Flujo Interno:**
@@ -90,7 +91,7 @@ curl -X POST http://localhost:4000/bingo/123/start
 
 **Request Body**: Ninguno
 
-**Autenticación**: ⚠️ **SIN AUTENTICACIÓN** (configurado para pruebas)
+**Autenticación**: JWT Bearer requerido. Roles permitidos: **ADMIN** u **OPERADOR** vigentes.
 
 **Respuesta:**
 ```json
@@ -101,7 +102,8 @@ curl -X POST http://localhost:4000/bingo/123/start
 
 **Ejemplo cURL:**
 ```bash
-curl -X POST http://localhost:4000/bingo/123/stop
+curl -X POST http://localhost:4000/bingo/123/stop \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 **Flujo Interno:**
@@ -111,7 +113,7 @@ curl -X POST http://localhost:4000/bingo/123/stop
 
 **Efecto en Clientes:**
 - El timer deja de sortear números
-- Los clientes conectados pueden seguir reclamando premios
+- Los reclamos posteriores se rechazan porque el bingo ya no está activo
 
 ---
 
@@ -129,9 +131,10 @@ async function getBingoState(bingoId) {
 }
 
 // Iniciar bingo
-async function startBingo(bingoId) {
+async function startBingo(bingoId, token) {
   const response = await fetch(`http://localhost:4000/bingo/${bingoId}/start`, {
-    method: 'POST'
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` }
   });
   const data = await response.json();
   console.log('Bingo iniciado:', data);
@@ -139,9 +142,10 @@ async function startBingo(bingoId) {
 }
 
 // Detener bingo
-async function stopBingo(bingoId) {
+async function stopBingo(bingoId, token) {
   const response = await fetch(`http://localhost:4000/bingo/${bingoId}/stop`, {
-    method: 'POST'
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` }
   });
   const data = await response.json();
   console.log('Bingo detenido:', data);
@@ -162,13 +166,19 @@ def get_bingo_state(bingo_id):
     return response.json()
 
 # Iniciar bingo
-def start_bingo(bingo_id):
-    response = requests.post(f'{BASE_URL}/bingo/{bingo_id}/start')
+def start_bingo(bingo_id, token):
+    response = requests.post(
+        f'{BASE_URL}/bingo/{bingo_id}/start',
+        headers={'Authorization': f'Bearer {token}'}
+    )
     return response.json()
 
 # Detener bingo
-def stop_bingo(bingo_id):
-    response = requests.post(f'{BASE_URL}/bingo/{bingo_id}/stop')
+def stop_bingo(bingo_id, token):
+    response = requests.post(
+        f'{BASE_URL}/bingo/{bingo_id}/stop',
+        headers={'Authorization': f'Bearer {token}'}
+    )
     return response.json()
 ```
 
@@ -177,7 +187,7 @@ def stop_bingo(bingo_id):
 ```jsx
 import { useState, useEffect } from 'react';
 
-function BingoAdmin({ bingoId }) {
+function BingoAdmin({ bingoId, token }) {
   const [bingoState, setBingoState] = useState(null);
 
   useEffect(() => {
@@ -192,14 +202,16 @@ function BingoAdmin({ bingoId }) {
 
   const handleStart = async () => {
     await fetch(`http://localhost:4000/bingo/${bingoId}/start`, {
-      method: 'POST'
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` }
     });
     loadBingoState();
   };
 
   const handleStop = async () => {
     await fetch(`http://localhost:4000/bingo/${bingoId}/stop`, {
-      method: 'POST'
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` }
     });
     loadBingoState();
   };
@@ -249,7 +261,10 @@ function BingoAdmin({ bingoId }) {
 
 | Código | Significado | Cuándo ocurre |
 |--------|-------------|---------------|
-| **200** | OK | Operación exitosa (GET, POST stop) |
+| **200** | OK | Operación exitosa |
+| **401** | Unauthorized | JWT ausente, inválido o expirado en start/stop |
+| **403** | Forbidden | El usuario no es ADMIN ni OPERADOR vigente |
+| **409** | Conflict | Intento de iniciar un bingo no disponible |
 | **500** | Error Interno | Error en el servidor (ej: DB desconectada) |
 
 **Nota**: El código actual no implementa validaciones extensas (ej: 404 si el bingo no existe). Las mejoras futuras deberían incluir:
@@ -263,9 +278,8 @@ function BingoAdmin({ bingoId }) {
 
 ### Estado Actual
 
-⚠️ **Los endpoints `/bingo/:id/start` y `/bingo/:id/stop` están desprotegidos** (configurado para pruebas). Cualquiera puede iniciar/detener un bingo.
-
-**Nota**: En producción, se recomienda habilitar autenticación JWT y control de roles.
+✅ Los endpoints `/bingo/:id/start` y `/bingo/:id/stop` requieren `Authorization: Bearer <JWT>`.
+El servidor consulta la base de datos y permite sólo roles **ADMIN** u **OPERADOR** no eliminados.
 
 ### Mejoras Recomendadas
 

@@ -15,8 +15,7 @@ export function createSocketServer(httpServer: http.Server): Server {
     try {
       const token =
         socket.handshake.auth.token ||
-        socket.handshake.headers.authorization?.split(" ")[1] ||
-        (socket.handshake.query?.token as string);
+        socket.handshake.headers.authorization?.split(" ")[1];
 
       if (!token) {
         return next(new Error("Authentication error: No token provided"));

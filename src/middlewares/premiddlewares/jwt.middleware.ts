@@ -46,15 +46,22 @@ export const jwtMiddleware = (
 
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, Config.SECRET_KEY as string) as any;
+    const rawUserId = decoded.id ?? decoded.userId ?? decoded.user_id ?? decoded.sub;
+    const userId = Number(rawUserId);
+
+    if (!rawUserId || !Number.isInteger(userId)) {
+      res.status(failedResponse.status).json(generalErrorObject(failedResponse));
+      return;
+    }
     
     // Adjuntar información del usuario al request
     req.user = {
-      id: decoded.id || decoded.userId,
-      email: decoded.email,
-      role: decoded.role,
-      names: decoded.names,
-      last_names: decoded.last_names,
       ...decoded,
+      id: userId,
+      email: decoded.email ?? "",
+      role: decoded.role ?? "",
+      names: decoded.names ?? "",
+      last_names: decoded.last_names ?? "",
     };
 
     next();

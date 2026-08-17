@@ -9,7 +9,7 @@ import {
 } from "./verification";
 import { finishBingo } from "./number-feeder";
 import { BingoConfig } from "../config/bingo.config";
-import type { VictoryType, WinnerDTO } from "./types";
+import { toPublicWinner, type VictoryType, type WinnerDTO } from "./types";
 
 // ── Fix #4: Rate limiting por socket ──
 const lastClaimBySocket = new Map<string, number>();
@@ -36,7 +36,7 @@ export function registerSocketHandlers(io: Server): void {
           last5: state.numbersPlayed.last5,
           prizes: state.prizes,
           is_started: state.is_started,
-          winners: state.winners,
+          winners: state.winners.map(toPublicWinner),
           game_mode: BingoConfig.gameMode, // REAL | PRUEBA (desde ENV BINGO_MODE)
         });
       } catch (error) {
@@ -116,9 +116,35 @@ export function registerSocketHandlers(io: Server): void {
           // ── Lectura inicial del cartón (early rejection, sin lock) ──
           const board = await prisma.bingoCardboards.findUnique({
             where: { id: boardId },
-            include: { user: true },
+            select: {
+              id: true,
+              is_winner: true,
+              bingo_id: true,
+              user_id: true,
+              code_id: true,
+              bingo_data_json: true,
+              deleted_at: true,
+              user: {
+                select: {
+                  id: true,
+                  email: true,
+                  names: true,
+                  last_names: true,
+                  phone_number: true,
+                  account_owner_dni: true,
+                  account_number: true,
+                  bank_name: true,
+                  dni: true,
+                },
+              },
+            },
           });
-          if (!board || board.is_winner || board.bingo_id !== bingoId) {
+          if (
+            !board ||
+            board.deleted_at ||
+            board.is_winner ||
+            board.bingo_id !== bingoId
+          ) {
             socket.emit("claim_result", {
               ok: false,
               reason: "Cartón inválido o ya ganador",
@@ -170,7 +196,7 @@ export function registerSocketHandlers(io: Server): void {
               const locked: any[] = await tx.$queryRaw`
                 SELECT id, is_winner, bingo_id, user_id
                 FROM bingo_cardboards
-                WHERE id = ${boardId}
+                WHERE id = ${boardId} AND deleted_at IS NULL
                 FOR UPDATE
               `;
 
@@ -185,6 +211,30 @@ export function registerSocketHandlers(io: Server): void {
                 locked[0].user_id !== authenticatedUserId
               ) {
                 throw new Error("INVALID_BOARD");
+              }
+
+              // Serializar reclamos por bingo para que un premio no pueda
+              // adjudicarse dos veces ni se pierda una escritura del JSON.
+              const lockedBingos: { winners: unknown }[] = await tx.$queryRaw`
+                SELECT winners
+                FROM bingo
+                WHERE id = ${bingoId}
+                  AND deleted_at IS NULL
+                  AND is_started = true
+                  AND COALESCE(is_finished, false) = false
+                FOR UPDATE
+              `;
+              if (lockedBingos.length === 0) {
+                throw new Error("BINGO_INACTIVE");
+              }
+
+              const winnersJSON = normalizeWinners(lockedBingos[0].winners);
+              if (
+                winnersJSON.data.some(
+                  (winner) => winner.prize_id === prize.prize_id
+                )
+              ) {
+                throw new Error("PRIZE_ALREADY_CLAIMED");
               }
 
               // ── Fix #3: Referral en UNA sola query con include (si existe code_id) ──
@@ -233,12 +283,6 @@ export function registerSocketHandlers(io: Server): void {
                 }
               }
 
-              // Leer winners actuales dentro de la transacción
-              const bingoRow = await tx.bingo.findUnique({
-                where: { id: bingoId },
-              });
-              const winnersJSON = normalizeWinners(bingoRow?.winners);
-
               // Construir entrada del ganador
               winnerEntry = {
                 user_id: board.user.id,
@@ -264,10 +308,12 @@ export function registerSocketHandlers(io: Server): void {
               await tx.bingo.update({
                 where: { id: bingoId },
                 data: { winners: winnersJSON as any },
+                select: { id: true },
               });
               await tx.bingoCardboards.update({
                 where: { id: boardId },
                 data: { is_winner: true },
+                select: { id: true },
               });
             });
 
@@ -281,19 +327,7 @@ export function registerSocketHandlers(io: Server): void {
               prizeName: prize.name,
               type_of_victory,
               time: Date.now(),
-              winners: state.winners.map(
-                ({
-                  winner_code: _wc,
-                  referred_campaign_ref: _rcr,
-                  referred_vip: _rv,
-                  referred_state: _rs,
-                  referred_country_code: _rcc,
-                  referred_phone_number: _rpn,
-                  referred_master: _rm,
-                  referred_city: _rci,
-                  ...publicWinner
-                }) => publicWinner
-              ),
+              winners: state.winners.map(toPublicWinner),
             });
             
             socket.emit("claim_result", {
@@ -309,11 +343,9 @@ export function registerSocketHandlers(io: Server): void {
             });
 
             // Fuera de la transacción: verificar si quedan premios
-            const bingoRow = await prisma.bingo.findUnique({
-              where: { id: bingoId },
+            const remaining = remainingPrizesCount(state.prizes, {
+              data: state.winners,
             });
-            const winnersJSON = normalizeWinners(bingoRow?.winners);
-            const remaining = remainingPrizesCount(state.prizes, winnersJSON);
             if (remaining <= 0) {
               await finishBingo(bingoId, io, "Sin premios restantes");
             }
@@ -325,9 +357,17 @@ export function registerSocketHandlers(io: Server): void {
               });
               return;
             }
+            if (txErr.message === "PRIZE_ALREADY_CLAIMED") {
+              socket.emit("claim_result", {
+                ok: false,
+                reason: "Este premio ya fue reclamado",
+              });
+              return;
+            }
             if (
               txErr.message === "BOARD_NOT_FOUND" ||
-              txErr.message === "INVALID_BOARD"
+              txErr.message === "INVALID_BOARD" ||
+              txErr.message === "BINGO_INACTIVE"
             ) {
               socket.emit("claim_result", {
                 ok: false,

@@ -42,6 +42,43 @@ export type WinnerDTO = {
   referred_city?: string | null;
 };
 
+/** Datos mínimos que pueden enviarse a toda la sala sin exponer PII del ganador. */
+export type PublicWinnerDTO = Pick<
+  WinnerDTO,
+  | "user_id"
+  | "user_names"
+  | "user_last_names"
+  | "prize_id"
+  | "prize_name"
+  | "prize_description"
+  | "prize_image"
+  | "type_of_victory"
+>;
+
+export function toPublicWinner(winner: WinnerDTO): PublicWinnerDTO {
+  const {
+    user_id,
+    user_names,
+    user_last_names,
+    prize_id,
+    prize_name,
+    prize_description,
+    prize_image,
+    type_of_victory,
+  } = winner;
+
+  return {
+    user_id,
+    user_names,
+    user_last_names,
+    prize_id,
+    prize_name,
+    prize_description,
+    prize_image,
+    type_of_victory,
+  };
+}
+
 export type BingoState = {
   id: number;
   prizes: Prize[];
@@ -60,4 +97,6 @@ export type BingoState = {
    */
   was_paused: boolean;
   feederInterval?: NodeJS.Timeout;
+  /** Evita que dos ticks async del mismo feeder persistan estado simultáneamente. */
+  isFeeding?: boolean;
 };

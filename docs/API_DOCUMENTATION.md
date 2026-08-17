@@ -94,7 +94,7 @@ GET http://localhost:3002/bingo/1
 
 **Endpoint:** `POST /bingo/:id/start`  
 **Autenticación:** ✅ Requerida (JWT)  
-**Autorización:** 🔒 Solo rol **ADMIN**  
+**Autorización:** 🔒 Roles **ADMIN** u **OPERADOR** vigentes en la base de datos
 **Descripción:** Inicia un bingo y comienza la extracción automática de números cada 5 segundos
 
 **Parámetros URL:**
@@ -145,7 +145,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 **Endpoint:** `POST /bingo/:id/stop`  
 **Autenticación:** ✅ Requerida (JWT)  
-**Autorización:** 🔒 Solo rol **ADMIN**  
+**Autorización:** 🔒 Roles **ADMIN** u **OPERADOR** vigentes en la base de datos
 **Descripción:** Detiene un bingo manualmente y notifica a todos los jugadores
 
 **Parámetros URL:**
@@ -307,7 +307,7 @@ socket.emit("claim_bingo", {
   last5: number[],           // Últimos 5 números cantados
   prizes: Prize[],           // Premios disponibles
   is_started: boolean,       // Si el bingo está activo
-  winners: WinnerDTO[]       // Ganadores actuales
+  winners: PublicWinnerDTO[] // Ganadores actuales (sin datos privados)
 }
 ```
 
@@ -403,7 +403,7 @@ socket.on("claim_result", (result) => {
   prizeName: string,
   type_of_victory: VictoryType,
   time: number,              // Timestamp
-  winners: WinnerDTO[]       // Lista actualizada de ganadores
+  winners: PublicWinnerDTO[] // Lista actualizada de ganadores (sin datos privados)
 }
 ```
 
@@ -503,6 +503,11 @@ socket.on("error", (data) => {
 }
 ```
 
+> `WinnerDTO` se persiste internamente. Los eventos públicos `bootstrap` y
+> `winner_announced` exponen `PublicWinnerDTO`, que sólo contiene `user_id`,
+> nombres, apellidos y datos del premio/victoria; nunca contacto, DNI, banco ni
+> datos de referidos.
+
 ---
 
 ## 🎯 Flujo de Uso Completo
@@ -578,8 +583,8 @@ socket.on("bingo_finished", (data) => {
 ## 🔒 Seguridad
 
 **Endpoints Protegidos:**
-- `POST /bingo/:id/start` - Solo usuarios con rol **ADMIN**
-- `POST /bingo/:id/stop` - Solo usuarios con rol **ADMIN**
+- `POST /bingo/:id/start` - Solo usuarios con rol **ADMIN** u **OPERADOR** vigente
+- `POST /bingo/:id/stop` - Solo usuarios con rol **ADMIN** u **OPERADOR** vigente
 
 **Validaciones Socket.IO:**
 - Conexión requiere JWT válido

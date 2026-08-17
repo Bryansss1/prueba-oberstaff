@@ -34,23 +34,22 @@ model User {
 }
 
 model Codes {
-  id                                               Int               @id @default(autoincrement())
-  code                                             String            @unique
-  origin                                           OriginCodes       @default(DISPONIBLE)
-  used_for                                         UsedCodeFor       @default(DISPONIBLE)
+  id                                               Int            @id @default(autoincrement())
+  code                                             String         @unique
+  origin                                           OriginCodes    @default(DISPONIBLE)
+  used_for                                         UsedCodeFor    @default(DISPONIBLE)
   user_id                                          Int
-  is_used                                          Boolean           @default(false)
-  cost                                             Float?            @default(1.0)
-  created_at                                       DateTime          @default(now())
-  updated_at                                       DateTime          @updatedAt
+  is_used                                          Boolean        @default(false)
+  cost                                             Float?         @default(1.0)
+  created_at                                       DateTime       @default(now())
+  updated_at                                       DateTime       @updatedAt
   deleted_at                                       DateTime?
-  used_date                                        DateTime?         @db.Timestamp(6)
+  used_date                                        DateTime?      @db.Timestamp(6)
   referred_code                                    String?
   bingo_re_use                                     Int?           @default(1)
-  BingoCardboards                                  BingoCardboards[]
-  source_codes                                     source_codes      @relation(fields: [code], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  referred_code_codes_referred_codeToreferred_code referred_code?    @relation("codes_referred_codeToreferred_code", fields: [referred_code], references: [referred_code], onDelete: NoAction, onUpdate: NoAction)
-  User                                             User              @relation(fields: [user_id], references: [id])
+  source_codes                                     source_codes   @relation(fields: [code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  referred_code_codes_referred_codeToreferred_code referred_code? @relation("codes_referred_codeToreferred_code", fields: [referred_code], references: [referred_code], onDelete: NoAction, onUpdate: NoAction)
+  User                                             User           @relation(fields: [user_id], references: [id])
 
   @@map("codes")
 }
@@ -68,7 +67,7 @@ model Parameters {
   start_time                 String?
   bingo_re_use               Int?
   maximum_referral_use       Int       @default(6)
-  maximum_cardboard          Int?   @default(0)
+  maximum_cardboard          Int?      @default(0)
   last_modified_by           User?     @relation(fields: [last_modified_by_id], references: [id])
 
   @@map("parameters")
@@ -89,34 +88,33 @@ model Bingo {
   is_finished                Boolean?          @default(false)
   start_time                 String?
   is_pause                   Boolean?          @default(false)
-  maximum_cardboard          Int?           @default(0)
+  maximum_cardboard          Int?              @default(0)
   BingoCardboards            BingoCardboards[]
 
   @@map("bingo")
 }
 
 model BingoCardboards {
-  id              Int           @id @default(autoincrement())
+  id              Int       @id @default(autoincrement())
   code_id         Int?
   bingo_id        Int
-  is_winner       Boolean       @default(false)
+  is_winner       Boolean   @default(false)
   user_id         Int
   bingo_data_json Json
-  created_at      DateTime      @default(now())
-  updated_at      DateTime      @updatedAt
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
   deleted_at      DateTime?
   prize_id        Int?
-  bingo           Bingo         @relation(fields: [bingo_id], references: [id])
-  Codes           Codes?        @relation(fields: [code_id], references: [id])
-  bingo_prizes    bingo_prizes? @relation(fields: [prize_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user            User          @relation(fields: [user_id], references: [id])
+  collection_code String?
+  bingo           Bingo     @relation(fields: [bingo_id], references: [id])
+  user            User      @relation(fields: [user_id], references: [id])
 
   @@map("bingo_cardboards")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model live_sessions {
-  id         Int        @id @default(autoincrement())
+  id         Int           @id @default(autoincrement())
   created_at DateTime      @default(now()) @db.Timestamptz(6)
   updated_at DateTime?     @default(now()) @db.Timestamp(6)
   deleted_at DateTime?     @db.Timestamp(6)
@@ -127,32 +125,31 @@ model live_sessions {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model source_codes {
-  id           Int    @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   created_at   DateTime  @default(now()) @db.Timestamptz(6)
   code         String    @unique
   is_available Boolean?
   updated_at   DateTime? @default(now()) @db.Timestamp(6)
   deleted_at   DateTime? @db.Timestamp(6)
-  bingo_re_use Int?   @default(1)
+  bingo_re_use Int?      @default(1)
   was_printed  Boolean?  @default(false)
   codes        Codes?
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model bingo_prizes {
-  id               Int            @id @default(autoincrement())
-  created_at       DateTime          @default(now()) @db.Timestamptz(6)
-  prize            String?
-  status           status?           @default(ACTIVO)
-  prize_image      String?
-  quantity         Int?
-  description      String?
-  bingo_cardboards BingoCardboards[]
+  id          Int      @id @default(autoincrement())
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  prize       String?
+  status      status?  @default(ACTIVO)
+  prize_image String?
+  quantity    Int?
+  description String?
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model referred_code {
-  id                                       Int  @id @default(autoincrement())
+  id                                       Int     @id @default(autoincrement())
   referred_code                            String  @unique
   campaign_ref                             String
   vip                                      String
@@ -163,6 +160,21 @@ model referred_code {
   master                                   String?
   city                                     String?
   codes_codes_referred_codeToreferred_code Codes[] @relation("codes_referred_codeToreferred_code")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model notices {
+  id           Int          @id @default(autoincrement())
+  created_at   DateTime     @default(now()) @db.Timestamptz(6)
+  deleted_at   DateTime?    @db.Timestamp(6)
+  updated_at   DateTime?    @default(now()) @db.Timestamp(6)
+  name         String
+  description  String?
+  event_type   notice_event @default(login)
+  key          String       @unique
+  content_text String?
+  notice_type  notice_type?
+  scheduled_at DateTime?    @db.Timestamptz(6)
 }
 
 enum Role {
@@ -220,4 +232,17 @@ enum estado_victoria_75 {
   PERIMETRO
   VENTANA
   LINEA_EXTERIOR
+}
+
+enum notice_event {
+  login
+  finish_bingo
+  schedule
+  manual
+}
+
+enum notice_type {
+  image
+  video
+  article
 }

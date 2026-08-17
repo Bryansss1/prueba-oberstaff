@@ -57,6 +57,15 @@ export async function getActiveParticipantsCount(
 export async function loadBingo(bingoId: number): Promise<void> {
   const b = await prisma.bingo.findUnique({
     where: { id: bingoId },
+    select: {
+      id: true,
+      is_started: true,
+      bingo_prizes: true,
+      numbers_played: true,
+      winners: true,
+      min_number_of_participants: true,
+      is_pause: true,
+    },
   });
 
   if (!b) {
@@ -90,7 +99,20 @@ export async function loadBingo(bingoId: number): Promise<void> {
     );
   }
 
-  const state: BingoState = {
+  if (existing) {
+    // Conservar la misma referencia: el feeder activo usa este objeto para
+    // controlar ticks en curso e intervalo. Reemplazarlo pierde ese control.
+    existing.is_started = b.is_started;
+    existing.prizes = prizes;
+    existing.numbersPlayed = numbersPlayed;
+    existing.winners = winners;
+    existing.min_number_of_participants = b.min_number_of_participants || 0;
+    existing.is_pause = freshIsPause;
+    existing.was_paused = wasPaused || freshIsPause;
+    return;
+  }
+
+  activeBingos.set(bingoId, {
     id: b.id,
     is_started: b.is_started,
     prizes,
@@ -98,8 +120,6 @@ export async function loadBingo(bingoId: number): Promise<void> {
     winners,
     min_number_of_participants: b.min_number_of_participants || 0,
     is_pause: freshIsPause,
-    was_paused: wasPaused || freshIsPause,
-  };
-
-  activeBingos.set(bingoId, state);
+    was_paused: freshIsPause,
+  });
 }

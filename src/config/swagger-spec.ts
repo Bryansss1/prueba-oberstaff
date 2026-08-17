@@ -14,7 +14,7 @@ Esta API también utiliza Socket.IO para comunicación en tiempo real.
 Ver sección "WebSocket Events" para más detalles sobre los eventos disponibles.
 
 ## Autenticación
-Los endpoints de prueba (start/stop) no requieren autenticación.
+Los endpoints \`start\` y \`stop\` requieren un JWT Bearer de un usuario con rol \`ADMIN\` u \`OPERADOR\` vigente.
 Los eventos de Socket.IO requieren autenticación JWT en la conexión.`,
       contact: {
         name: "Bingo API Support",
@@ -102,7 +102,8 @@ Los eventos de Socket.IO requieren autenticación JWT en la conexión.`,
         post: {
           tags: ["Bingo"],
           summary: "Iniciar bingo",
-          description: "Inicia un bingo y comienza la extracción automática de números cada 5 segundos. **Sin autenticación requerida (para pruebas)**.",
+          description: "Inicia un bingo y comienza la extracción automática de números cada 5 segundos. Requiere rol ADMIN u OPERADOR.",
+          security: [{ bearerAuth: [] }],
           parameters: [
             {
               name: "id",
@@ -142,6 +143,9 @@ Los eventos de Socket.IO requieren autenticación JWT en la conexión.`,
                 },
               },
             },
+            "401": { description: "JWT ausente, inválido o expirado" },
+            "403": { description: "El usuario no tiene rol ADMIN u OPERADOR vigente" },
+            "409": { description: "El bingo está finalizado, pausado, eliminado o ya fue iniciado" },
           },
         },
       },
@@ -149,7 +153,8 @@ Los eventos de Socket.IO requieren autenticación JWT en la conexión.`,
         post: {
           tags: ["Bingo"],
           summary: "Detener bingo",
-          description: "Detiene un bingo manualmente y notifica a todos los jugadores. Marca el bingo como finalizado. **Sin autenticación requerida (para pruebas)**.",
+          description: "Detiene un bingo manualmente y notifica a todos los jugadores. Marca el bingo como finalizado. Requiere rol ADMIN u OPERADOR.",
+          security: [{ bearerAuth: [] }],
           parameters: [
             {
               name: "id",
@@ -189,6 +194,8 @@ Los eventos de Socket.IO requieren autenticación JWT en la conexión.`,
                 },
               },
             },
+            "401": { description: "JWT ausente, inválido o expirado" },
+            "403": { description: "El usuario no tiene rol ADMIN u OPERADOR vigente" },
           },
         },
       },
@@ -449,6 +456,13 @@ socket.on('bingo_finished', (data) => {
       },
     },
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
       schemas: {
         BingoStateResponse: {
           type: "object",
@@ -606,6 +620,20 @@ socket.on('bingo_finished', (data) => {
             },
           },
         },
+        PublicWinnerDTO: {
+          type: "object",
+          description: "Datos públicos del ganador. No incluye contacto, datos bancarios ni referidos.",
+          properties: {
+            user_id: { type: "integer", description: "ID del usuario ganador" },
+            user_names: { type: "string", description: "Nombres del usuario" },
+            user_last_names: { type: "string", description: "Apellidos del usuario" },
+            prize_id: { type: "integer", description: "ID del premio ganado" },
+            prize_name: { type: "string", description: "Nombre del premio" },
+            prize_description: { type: "string", description: "Descripción del premio" },
+            prize_image: { type: "string", format: "uri", description: "URL de la imagen del premio" },
+            type_of_victory: { $ref: "#/components/schemas/VictoryType" },
+          },
+        },
         SuccessResponse: {
           type: "object",
           properties: {
@@ -690,7 +718,7 @@ socket.on('bingo_finished', (data) => {
             winners: {
               type: "array",
               items: {
-                $ref: "#/components/schemas/WinnerDTO",
+                $ref: "#/components/schemas/PublicWinnerDTO",
               },
               description: "Lista de ganadores actuales",
             },
@@ -752,7 +780,7 @@ socket.on('bingo_finished', (data) => {
             winners: {
               type: "array",
               items: {
-                $ref: "#/components/schemas/WinnerDTO",
+                $ref: "#/components/schemas/PublicWinnerDTO",
               },
               description: "Lista actualizada de todos los ganadores",
             },

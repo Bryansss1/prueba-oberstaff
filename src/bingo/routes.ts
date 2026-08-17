@@ -5,6 +5,10 @@ import { prisma } from "../config/prisma";
 import { activeBingos, loadBingo, roomName } from "./state";
 import { createNumberFeeder } from "./number-feeder";
 import { BingoConfig } from "../config/bingo.config";
+import {
+  bingoOperatorMiddleware,
+  jwtMiddleware,
+} from "../middlewares/premiddlewares";
 
 /**
  * Registra las rutas REST API del bingo
@@ -29,18 +33,31 @@ export function registerBingoRoutes(app: Express, io: Server): void {
     }
   });
 
-  // POST /bingo/:id/start - Iniciar bingo (SIN AUTENTICACIÓN - Para pruebas)
-  app.post("/bingo/:id/start", async (req, res) => {
+  // POST /bingo/:id/start - Iniciar bingo (ADMIN u OPERADOR)
+  app.post("/bingo/:id/start", jwtMiddleware, bingoOperatorMiddleware, async (req, res) => {
     try {
       const id = Number(req.params.id);
       await loadBingo(id);
       const st = activeBingos.get(id)!;
 
       if (!st.is_started) {
-        await prisma.bingo.update({
-          where: { id },
+        const result = await prisma.bingo.updateMany({
+          where: {
+            id,
+            deleted_at: null,
+            is_started: false,
+            is_finished: { not: true },
+            is_pause: { not: true },
+          },
           data: { is_started: true },
         });
+
+        if (result.count === 0) {
+          res.status(409).json({
+            error: "El bingo no está disponible para iniciar",
+          });
+          return;
+        }
         st.is_started = true;
 
         // Importar módulos necesarios para logging
@@ -52,12 +69,12 @@ export function registerBingoRoutes(app: Express, io: Server): void {
         const minRequired = st.min_number_of_participants || 0;
         const now = moment().tz(BingoConfig.autoStart.timezone);
 
-        // 👨‍💼 LOG: Inicio manual (sin autenticación para pruebas)
+        // 👨‍💼 LOG: Inicio manual autorizado
         console.log(`\n${"=".repeat(60)}`);
         console.log(
-          `[BINGO ${id}] 👨‍💼 INICIO MANUAL (PRUEBA - Sin autenticación)`
+          `[BINGO ${id}] 👨‍💼 INICIO MANUAL AUTORIZADO`
         );
-        console.log(`👤 Iniciado por: Usuario de prueba`);
+        console.log(`👤 Iniciado por: usuario ${req.user?.id}`);
         console.log(
           `👥 Participantes actuales: ${participants}${participants < minRequired ? ` (mínimo: ${minRequired}) ⚠️` : `/${minRequired}`}`
         );
@@ -76,8 +93,8 @@ export function registerBingoRoutes(app: Express, io: Server): void {
     }
   });
 
-  // POST /bingo/:id/stop - Detener bingo (SIN AUTENTICACIÓN - Para pruebas)
-  app.post("/bingo/:id/stop", async (req, res) => {
+  // POST /bingo/:id/stop - Detener bingo (ADMIN u OPERADOR)
+  app.post("/bingo/:id/stop", jwtMiddleware, bingoOperatorMiddleware, async (req, res) => {
     try {
       const id = Number(req.params.id);
       const st = activeBingos.get(id);
@@ -99,12 +116,12 @@ export function registerBingoRoutes(app: Express, io: Server): void {
         }
       }
 
-      // 🛑 LOG: Fin del juego (manual - sin autenticación para pruebas)
+        // 🛑 LOG: Fin del juego manual autorizado
       console.log(`\n${"=".repeat(60)}`);
       console.log(
-        `[BINGO ${id}] 🛑 JUEGO DETENIDO MANUALMENTE (PRUEBA - Sin autenticación)`
+          `[BINGO ${id}] 🛑 JUEGO DETENIDO MANUALMENTE (AUTORIZADO)`
       );
-      console.log(`👤 Detenido por: Usuario de prueba`);
+        console.log(`👤 Detenido por: usuario ${req.user?.id}`);
       console.log(
         `🎱 Números cantados: ${st?.numbersPlayed.sequence.length || 0}/75`
       );

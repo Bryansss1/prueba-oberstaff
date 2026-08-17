@@ -57,6 +57,9 @@ export async function pushNumber(
   await prisma.bingo.update({
     where: { id: bingoId },
     data: { numbers_played: state.numbersPlayed as any },
+    // El resultado no se usa: evitar devolver todos los campos escalares,
+    // incluidos los JSON potencialmente grandes, en cada número cantado.
+    select: { id: true },
   });
 
   // 📊 LOG: Número jugado
@@ -98,6 +101,14 @@ export function createNumberFeeder(
       clearInterval(interval);
       return;
     }
+
+    if (state.isFeeding) {
+      console.warn(`[BINGO ${bingoId}] Tick omitido: el sorteo anterior sigue en curso.`);
+      return;
+    }
+    state.isFeeding = true;
+
+    try {
 
     // 🔄 Inicializar `drawn` desde la secuencia persistida en el primer tick.
     // Necesario para el recovery post-restart: si el proceso se cayó con 50
@@ -174,6 +185,11 @@ export function createNumberFeeder(
     }
     drawn.add(candidate!);
     await pushNumber(bingoId, candidate!, io);
+    } catch (error) {
+      console.error(`[BINGO ${bingoId}] Error en feeder:`, error);
+    } finally {
+      state.isFeeding = false;
+    }
   }, 5000);
 
   state.feederInterval = interval;

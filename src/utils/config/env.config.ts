@@ -4,8 +4,13 @@ import { Express } from "express";
 dotenv.config();
 
 const createConfig = () => {
+  const secretKey = process.env.SECRET_KEY;
+  if (!secretKey) {
+    throw new Error("SECRET_KEY es obligatoria");
+  }
+
   const envs = {
-    SECRET_KEY: process.env.SECRET_KEY || "palabra_secreta",
+    SECRET_KEY: secretKey,
     DATABASE_URL: process.env.DATABASE_URL || "",
     PORT: Number(process.env.PORT) || 4000,
     VERSION: process.env.VERSION || "v1",
