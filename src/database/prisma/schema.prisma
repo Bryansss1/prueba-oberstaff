@@ -7,6 +7,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================================================
+// REGLA DE ORO — IDs y numéricos SIEMPRE en `Int`, NUNCA `BigInt`
+// ----------------------------------------------------------------------------
+// Aunque la columna real en la BD (Supabase) sea `bigint` (las tablas creadas
+// desde el dashboard de Supabase salen con `bigint` por defecto), en este
+// schema se declaran TODOS como `Int`.
+//
+// POR QUÉ:
+//   - `BigInt` rompe `JSON.stringify` (las respuestas `NextResponse.json`
+//     lanzan "Do not know how to serialize a BigInt").
+//   - `BigInt` rompe comparaciones/aritmética con `number` en los services
+//     (ej. `maximum_usage >= count`, `maximum_cardboard - count`).
+//   - En la práctica los IDs/cantidades de este negocio nunca superan el
+//     rango de int4 (2.147.483.647), así que `Int` funciona correctamente.
+//
+// CONSECUENCIA (importante):
+//   - NO usar `prisma db pull` a ciegas: introspecciona el `bigint` real y lo
+//     volvería `BigInt`, además de eliminar relaciones "virtuales" sin FK
+//     (ej. BingoCardboards.Codes / bingo_prizes).
+//   - Las tablas nuevas se agregan A MANO en este archivo, con `Int`.
+// ============================================================================
+
 model User {
   id                 Int               @id @default(autoincrement())
   names              String
@@ -34,22 +56,23 @@ model User {
 }
 
 model Codes {
-  id                                               Int            @id @default(autoincrement())
-  code                                             String         @unique
-  origin                                           OriginCodes    @default(DISPONIBLE)
-  used_for                                         UsedCodeFor    @default(DISPONIBLE)
+  id                                               Int               @id @default(autoincrement())
+  code                                             String            @unique
+  origin                                           OriginCodes       @default(DISPONIBLE)
+  used_for                                         UsedCodeFor       @default(DISPONIBLE)
   user_id                                          Int
-  is_used                                          Boolean        @default(false)
-  cost                                             Float?         @default(1.0)
-  created_at                                       DateTime       @default(now())
-  updated_at                                       DateTime       @updatedAt
+  is_used                                          Boolean           @default(false)
+  cost                                             Float?            @default(1.0)
+  created_at                                       DateTime          @default(now())
+  updated_at                                       DateTime          @updatedAt
   deleted_at                                       DateTime?
-  used_date                                        DateTime?      @db.Timestamp(6)
+  used_date                                        DateTime?         @db.Timestamp(6)
   referred_code                                    String?
-  bingo_re_use                                     Int?           @default(1)
-  source_codes                                     source_codes   @relation(fields: [code], references: [code], onDelete: NoAction, onUpdate: NoAction)
-  referred_code_codes_referred_codeToreferred_code referred_code? @relation("codes_referred_codeToreferred_code", fields: [referred_code], references: [referred_code], onDelete: NoAction, onUpdate: NoAction)
-  User                                             User           @relation(fields: [user_id], references: [id])
+  bingo_re_use                                     Int?              @default(1)
+  BingoCardboards                                  BingoCardboards[]
+  source_codes                                     source_codes      @relation(fields: [code], references: [code], onDelete: NoAction, onUpdate: NoAction)
+  referred_code_codes_referred_codeToreferred_code referred_code?    @relation("codes_referred_codeToreferred_code", fields: [referred_code], references: [referred_code], onDelete: NoAction, onUpdate: NoAction)
+  User                                             User              @relation(fields: [user_id], references: [id])
 
   @@map("codes")
 }
@@ -95,19 +118,21 @@ model Bingo {
 }
 
 model BingoCardboards {
-  id              Int       @id @default(autoincrement())
+  id              Int           @id @default(autoincrement())
   code_id         Int?
   bingo_id        Int
-  is_winner       Boolean   @default(false)
+  is_winner       Boolean       @default(false)
   user_id         Int
   bingo_data_json Json
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
   deleted_at      DateTime?
   prize_id        Int?
   collection_code String?
-  bingo           Bingo     @relation(fields: [bingo_id], references: [id])
-  user            User      @relation(fields: [user_id], references: [id])
+  bingo           Bingo         @relation(fields: [bingo_id], references: [id])
+  Codes           Codes?        @relation(fields: [code_id], references: [id])
+  bingo_prizes    bingo_prizes? @relation(fields: [prize_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user            User          @relation(fields: [user_id], references: [id])
 
   @@map("bingo_cardboards")
 }
@@ -138,13 +163,14 @@ model source_codes {
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model bingo_prizes {
-  id          Int      @id @default(autoincrement())
-  created_at  DateTime @default(now()) @db.Timestamptz(6)
-  prize       String?
-  status      status?  @default(ACTIVO)
-  prize_image String?
-  quantity    Int?
-  description String?
+  id               Int               @id @default(autoincrement())
+  created_at       DateTime          @default(now()) @db.Timestamptz(6)
+  prize            String?
+  status           status?           @default(ACTIVO)
+  prize_image      String?
+  quantity         Int?
+  description      String?
+  bingo_cardboards BingoCardboards[]
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -168,13 +194,13 @@ model notices {
   created_at   DateTime     @default(now()) @db.Timestamptz(6)
   deleted_at   DateTime?    @db.Timestamp(6)
   updated_at   DateTime?    @default(now()) @db.Timestamp(6)
+  scheduled_at DateTime?    @db.Timestamptz(6)
   name         String
   description  String?
   event_type   notice_event @default(login)
   key          String       @unique
   content_text String?
   notice_type  notice_type?
-  scheduled_at DateTime?    @db.Timestamptz(6)
 }
 
 enum Role {
