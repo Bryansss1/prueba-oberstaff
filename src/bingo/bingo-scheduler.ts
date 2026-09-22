@@ -1,5 +1,5 @@
 // Scheduler para inicio automático de bingos
-import cron from "node-cron";
+import cron, { type ScheduledTask } from "node-cron";
 import moment from "moment-timezone";
 import { Server } from "socket.io";
 import { prisma } from "../config/prisma";
@@ -19,6 +19,74 @@ import {
 import { getActiveParticipantsCount, loadBingo, activeBingos } from "./state";
 import { createNumberFeeder } from "./number-feeder";
 //
+
+const schedulerTasks: ScheduledTask[] = [];
+type BingoSchedulerStatus =
+  | "idle"
+  | "starting"
+  | "ready"
+  | "disabled"
+  | "error"
+  | "stopping"
+  | "stopped";
+
+let schedulerStatus: BingoSchedulerStatus = "idle";
+
+export function getBingoSchedulerStatus(): BingoSchedulerStatus {
+  return schedulerStatus;
+}
+
+export function markBingoSchedulerError(): void {
+  schedulerStatus = "error";
+}
+
+export function stopBingoScheduler(): void {
+  schedulerStatus = "stopping";
+  while (schedulerTasks.length > 0) {
+    schedulerTasks.pop()?.stop();
+  }
+  schedulerStatus = "stopped";
+  console.log("🛑 Scheduler de bingos detenido");
+}
+
+export async function recoverActiveBingos(io: Server): Promise<number> {
+  const inProgressBingos = await prisma.bingo.findMany({
+    where: {
+      is_started: true,
+      is_finished: false,
+      deleted_at: null,
+    },
+    select: { id: true, is_pause: true },
+  });
+
+  for (const b of inProgressBingos) {
+    try {
+      await loadBingo(b.id);
+      const state = activeBingos.get(b.id);
+      if (state && state.is_started) {
+        createNumberFeeder(b.id, io);
+        console.log(
+          `[BINGO ${b.id}] 🔄 Feeder reanudado tras restart${
+            b.is_pause ? " (pausado)" : ""
+          }`
+        );
+      }
+    } catch (error: any) {
+      console.error(
+        `[BINGO ${b.id}] ❌ Error en recovery del feeder:`,
+        error.message
+      );
+    }
+  }
+
+  if (inProgressBingos.length > 0) {
+    console.log(
+      `🔄 Recovery completado: ${inProgressBingos.length} feeder(s) reanudado(s)\n`
+    );
+  }
+
+  return inProgressBingos.length;
+}
 
 /**
  * Verifica si es hora de iniciar bingos según la configuración
@@ -383,60 +451,23 @@ async function checkAndStartPendingBingos(io: Server): Promise<void> {
  * Inicia el scheduler de bingos automáticos
  */
 export async function startBingoScheduler(io: Server): Promise<void> {
-  if (!BingoConfig.autoStart.enabled) {
-    console.log("⚠️  Auto-start de bingos DESHABILITADO en configuración");
-    return;
-  }
+  schedulerStatus = "starting";
 
   // Refresh inicial de parámetros
   await refreshParametersCache();
 
-  // 🔄 Recovery: reanudar feeders de bingos en progreso (incluyendo pausados).
-  // Sin esto, un server restart dejaría "stuck" cualquier bingo que ya
-  // estaba iniciado: el feeder moriría con el proceso y nadie lo relanzaría
-  // (los crons solo miran bingos pending). Los pausados también se recuperan
-  // — su feeder arranca, ve is_pause=true en el primer tick, y queda inerte
-  // hasta que el operador despause. Los números ya cantados se preservan
-  // porque el feeder inicializa su `drawn` Set desde state.numbersPlayed.
-  const inProgressBingos = await prisma.bingo.findMany({
-    where: {
-      is_started: true,
-      is_finished: false,
-      deleted_at: null,
-    },
-    select: { id: true, is_pause: true },
-  });
+  await recoverActiveBingos(io);
 
-  for (const b of inProgressBingos) {
-    try {
-      await loadBingo(b.id);
-      const state = activeBingos.get(b.id);
-      if (state && state.is_started) {
-        createNumberFeeder(b.id, io);
-        if (b.is_pause) {
-          console.log(
-            `[BINGO ${b.id}] 🔄 Feeder reanudado tras restart (⏸️ pausado, inerte hasta despausar)`
-          );
-        } else {
-          console.log(`[BINGO ${b.id}] 🔄 Feeder reanudado tras restart`);
-        }
-      }
-    } catch (error: any) {
-      console.error(
-        `[BINGO ${b.id}] ❌ Error en recovery del feeder:`,
-        error.message
-      );
-    }
-  }
-
-  if (inProgressBingos.length > 0) {
+  if (!BingoConfig.autoStart.enabled) {
+    schedulerStatus = "disabled";
     console.log(
-      `🔄 Recovery completado: ${inProgressBingos.length} feeder(s) reanudado(s)\n`
+      "⚠️  Auto-start de bingos DESHABILITADO; recovery de feeders permanece activo"
     );
+    return;
   }
 
   // Cron 1: Refrescar parámetros cada 2 minutos
-  cron.schedule("*/2 * * * *", async () => {
+  schedulerTasks.push(cron.schedule("*/2 * * * *", async () => {
     const hasChanged = await refreshParametersCache();
     // Si los parámetros cambiaron, notificar a los clientes conectados
     if (hasChanged) {
@@ -458,25 +489,25 @@ export async function startBingoScheduler(io: Server): Promise<void> {
         });
       }
     }
-  });
+  }));
 
   // Cron 2: Verificar inicio de bingos cada minuto
-  cron.schedule("* * * * *", async () => {
+  schedulerTasks.push(cron.schedule("* * * * *", async () => {
     await checkAndStartPendingBingos(io);
-  });
+  }));
 
   // Cron 3: Gestión de bingos (crear nuevo cuando termine uno, actualizar pendientes) cada 1 minuto
-  cron.schedule("* * * * *", async () => {
+  schedulerTasks.push(cron.schedule("* * * * *", async () => {
     // Verificar y crear nuevo bingo si hay finalizados
     await checkAndCreateNewBingo();
     // Actualizar bingos pendientes con últimos parámetros (deshabilitado por bugs, el nuevo bingo toma los parámetros frescos)
     // await updatePendingBingosFromParameters();
-  });
+  }));
 
   // Cron 4: Procesar bingos expirados (que no alcanzaron mínimo de participantes) cada 2 minutos
-  cron.schedule("*/2 * * * *", async () => {
+  schedulerTasks.push(cron.schedule("*/2 * * * *", async () => {
     await processExpiredBingos();
-  });
+  }));
 
   // Obtener información del último bingo pendiente para logs iniciales
   const lastPendingBingo = await prisma.bingo.findFirst({
@@ -519,4 +550,5 @@ export async function startBingoScheduler(io: Server): Promise<void> {
   );
   console.log("📌 Comportamiento: Usa hora del último bingo pendiente creado");
   console.log(`${logMessage}\n`);
+  schedulerStatus = "ready";
 }

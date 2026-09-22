@@ -4,6 +4,11 @@ import { prisma } from "../config/prisma";
 import { BingoConfig } from "../config/bingo.config";
 import { activeBingos, roomName } from "./state";
 
+let activeFeederOperations = 0;
+
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
 /** Tiempo de espera en modo REAL tras cantar los 75 números (5 minutos) */
 const REAL_MODE_FINISH_DELAY_MS = 5 * 60 * 1000;
 
@@ -38,6 +43,36 @@ export async function finishBingo(
   }
 
   io.to(roomName(bingoId)).emit("bingo_finished", { reason });
+}
+
+export function stopNumberFeeder(bingoId: number): void {
+  const state = activeBingos.get(bingoId);
+  if (!state?.feederInterval) return;
+
+  clearInterval(state.feederInterval);
+  state.feederInterval = undefined;
+}
+
+export function stopAllNumberFeeders(): void {
+  for (const bingoId of activeBingos.keys()) {
+    stopNumberFeeder(bingoId);
+  }
+}
+
+export async function waitForNumberFeedersToDrain(
+  timeoutMs = 5000
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+
+  while (activeFeederOperations > 0 && Date.now() < deadline) {
+    await sleep(50);
+  }
+
+  if (activeFeederOperations > 0) {
+    console.warn(
+      `⚠️  ${activeFeederOperations} operación(es) de feeder no drenaron antes del timeout`
+    );
+  }
 }
 
 /**
@@ -107,6 +142,7 @@ export function createNumberFeeder(
       return;
     }
     state.isFeeding = true;
+    activeFeederOperations += 1;
 
     try {
 
@@ -189,6 +225,7 @@ export function createNumberFeeder(
       console.error(`[BINGO ${bingoId}] Error en feeder:`, error);
     } finally {
       state.isFeeding = false;
+      activeFeederOperations -= 1;
     }
   }, 5000);
 

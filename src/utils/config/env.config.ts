@@ -9,13 +9,19 @@ const createConfig = () => {
     throw new Error("SECRET_KEY es obligatoria");
   }
 
+  const socketPath = process.env.SOCKET_PATH || "/socket.io/";
+  const normalizedSocketPath =
+    socketPath.trim() === "/"
+      ? "/"
+      : `/${socketPath.trim().replace(/^\/+|\/+$/g, "")}/`;
+
   const envs = {
     SECRET_KEY: secretKey,
     DATABASE_URL: process.env.DATABASE_URL || "",
     PORT: Number(process.env.PORT) || 4000,
     VERSION: process.env.VERSION || "v1",
     URL: process.env.URL || "localhost:3000",
-    SOCKET_PATH: process.env.SOCKET_PATH || "/socket.io/",
+    SOCKET_PATH: normalizedSocketPath,
   };
 
   const onAppEnv = (app: Express) => {

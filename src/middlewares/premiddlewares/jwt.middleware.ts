@@ -1,9 +1,13 @@
 // Middleware JWT mejorado que extrae información del usuario
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 import { generalErrorObject } from "../../utils/errors/general/general.error";
 import HttpStatusCode from "http-status-codes";
 import { Config } from "../../utils/config/env.config";
+import {
+  extractBearerToken,
+  resolveLegacyPrincipal,
+  type LegacyPrincipal,
+} from "../../auth/legacy-principal";
 
 // Extender Express Request para incluir user
 declare global {
@@ -44,25 +48,17 @@ export const jwtMiddleware = (
       return;
     }
 
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, Config.SECRET_KEY as string) as any;
-    const rawUserId = decoded.id ?? decoded.userId ?? decoded.user_id ?? decoded.sub;
-    const userId = Number(rawUserId);
-
-    if (!rawUserId || !Number.isInteger(userId)) {
+    const token = extractBearerToken(authHeader);
+    if (!token) {
       res.status(failedResponse.status).json(generalErrorObject(failedResponse));
       return;
     }
     
-    // Adjuntar información del usuario al request
-    req.user = {
-      ...decoded,
-      id: userId,
-      email: decoded.email ?? "",
-      role: decoded.role ?? "",
-      names: decoded.names ?? "",
-      last_names: decoded.last_names ?? "",
-    };
+    const principal: LegacyPrincipal = resolveLegacyPrincipal(
+      token,
+      Config.SECRET_KEY
+    );
+    req.user = principal;
 
     next();
   } catch (error: any) {
