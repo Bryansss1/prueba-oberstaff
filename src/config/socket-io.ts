@@ -53,7 +53,7 @@ export function createSocketServer(httpServer: http.Server): Server {
       };
 
       next();
-    } catch (error) {
+    } catch {
       next(new Error("Authentication error: Invalid token"));
     }
   });

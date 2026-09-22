@@ -10,18 +10,16 @@ import {
 } from "../../auth/legacy-principal";
 
 // Extender Express Request para incluir user
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: number;
-        email: string;
-        role: string;
-        names: string;
-        last_names: string;
-        [key: string]: any;
-      };
-    }
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: {
+      id: number;
+      email: string;
+      role: string;
+      names: string;
+      last_names: string;
+      [key: string]: unknown;
+    };
   }
 }
 
@@ -61,8 +59,11 @@ export const jwtMiddleware = (
     req.user = principal;
 
     next();
-  } catch (error: any) {
-    console.log("error jwt middleware:", error.message);
+  } catch (error: unknown) {
+    console.log(
+      "error jwt middleware:",
+      error instanceof Error ? error.message : String(error),
+    );
     res.status(failedResponse.status).json(generalErrorObject(failedResponse));
   }
 };
