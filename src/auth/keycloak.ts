@@ -1,11 +1,12 @@
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
 
 export type KeycloakTokenPayload = JWTPayload & {
-  sub: string;
   email?: string;
   email_verified?: boolean;
   azp?: string;
 };
+
+export type VerifiedKeycloakPayload = KeycloakTokenPayload & { sub: string };
 
 type JwksResolver = ReturnType<typeof createRemoteJWKSet>;
 
@@ -47,7 +48,7 @@ function getJwks(uri: string): JwksResolver {
  */
 export async function verifyKeycloakToken(
   token: string,
-): Promise<KeycloakTokenPayload> {
+): Promise<VerifiedKeycloakPayload> {
   const { enabled, issuer, clientId, jwksUri: resolvedJwksUri } =
     getKeycloakConfig();
 
@@ -58,24 +59,22 @@ export async function verifyKeycloakToken(
     throw new Error("KEYCLOAK_ISSUER no está configurado");
   }
 
-  const { payload } = await jwtVerify<KeycloakTokenPayload>(
-    token,
-    getJwks(resolvedJwksUri),
-    {
-      issuer,
-      algorithms: ["RS256"],
-    },
-  );
+  const { payload } = await jwtVerify(token, getJwks(resolvedJwksUri), {
+    issuer,
+    algorithms: ["RS256"],
+  });
 
-  if (!payload.sub) {
+  const keycloakPayload = payload as KeycloakTokenPayload;
+
+  if (!keycloakPayload.sub) {
     throw new Error("El token no contiene sub");
   }
-  if (payload.azp !== clientId) {
+  if (keycloakPayload.azp !== clientId) {
     throw new Error("El token pertenece a otro cliente");
   }
-  if (payload.email_verified !== true) {
+  if (keycloakPayload.email_verified !== true) {
     throw new Error("El correo del token no está verificado");
   }
 
-  return payload;
+  return keycloakPayload as VerifiedKeycloakPayload;
 }
