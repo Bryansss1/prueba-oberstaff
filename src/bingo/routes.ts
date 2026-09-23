@@ -37,8 +37,17 @@ export function registerBingoRoutes(app: Express, io: Server): void {
   app.post("/bingo/:id/start", jwtMiddleware, bingoOperatorMiddleware, async (req, res) => {
     try {
       const id = Number(req.params.id);
+      if (!Number.isInteger(id) || id <= 0) {
+        res.status(400).json({ error: "bingoId inválido" });
+        return;
+      }
       await loadBingo(id);
-      const st = activeBingos.get(id)!;
+      const st = activeBingos.get(id);
+
+      if (!st) {
+        res.status(404).json({ error: "Bingo no encontrado" });
+        return;
+      }
 
       if (!st.is_started) {
         const result = await prisma.bingo.updateMany({
@@ -97,16 +106,31 @@ export function registerBingoRoutes(app: Express, io: Server): void {
   app.post("/bingo/:id/stop", jwtMiddleware, bingoOperatorMiddleware, async (req, res) => {
     try {
       const id = Number(req.params.id);
+      if (!Number.isInteger(id) || id <= 0) {
+        res.status(400).json({ error: "bingoId inválido" });
+        return;
+      }
       const st = activeBingos.get(id);
 
-      await prisma.bingo.update({
-        where: { id },
+      // updateMany con guardas: `update` tiraba P2025 (500) si el bingo no
+      // existía, y no respetaba soft-delete ni el estado del juego.
+      const result = await prisma.bingo.updateMany({
+        where: {
+          id,
+          deleted_at: null,
+          is_finished: { not: true },
+        },
         data: {
           is_started: false,
           is_finished: true,
           is_pause: false,
         },
       });
+
+      if (result.count === 0) {
+        res.status(409).json({ error: "El bingo no está activo o no existe" });
+        return;
+      }
 
       if (st) {
         st.is_started = false;

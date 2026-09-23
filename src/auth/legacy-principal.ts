@@ -30,7 +30,8 @@ export function resolveLegacyPrincipal(
   token: string,
   secret: string
 ): LegacyPrincipal {
-  const decoded = jwt.verify(token, secret);
+  // Algoritmo explícito: nunca aceptar `none` ni confusión HS/RS.
+  const decoded = jwt.verify(token, secret, { algorithms: ["HS256"] });
 
   if (!decoded || typeof decoded !== "object") {
     throw new Error("JWT payload is invalid");
