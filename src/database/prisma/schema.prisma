@@ -48,6 +48,7 @@ model User {
   change_password    Boolean?          @default(false)
   is_verified        Boolean?          @default(false)
   dni                String?           @unique
+  keycloak_sub       String?           @unique
   BingoCardboards    BingoCardboards[]
   Codes              Codes[]
   Parameters         Parameters[]

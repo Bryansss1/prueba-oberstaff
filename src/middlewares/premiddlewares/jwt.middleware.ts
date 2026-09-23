@@ -2,12 +2,8 @@
 import { Request, Response, NextFunction } from "express";
 import { generalErrorObject } from "../../utils/errors/general/general.error";
 import HttpStatusCode from "http-status-codes";
-import { Config } from "../../utils/config/env.config";
-import {
-  extractBearerToken,
-  resolveLegacyPrincipal,
-  type LegacyPrincipal,
-} from "../../auth/legacy-principal";
+import { extractBearerToken } from "../../auth/legacy-principal";
+import { resolvePrincipal } from "../../auth/principal";
 
 // Extender Express Request para incluir user
 declare module "express-serve-static-core" {
@@ -23,7 +19,7 @@ declare module "express-serve-static-core" {
   }
 }
 
-export const jwtMiddleware = (
+export const jwtMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -52,11 +48,9 @@ export const jwtMiddleware = (
       return;
     }
     
-    const principal: LegacyPrincipal = resolveLegacyPrincipal(
-      token,
-      Config.SECRET_KEY
-    );
-    req.user = principal;
+    // Acepta JWT legacy y tokens Keycloak. Los datos operativos (rol incluido)
+    // se leen de la BD en cada request.
+    req.user = await resolvePrincipal(token);
 
     next();
   } catch (error: unknown) {
