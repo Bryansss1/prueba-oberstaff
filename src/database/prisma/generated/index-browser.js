@@ -139,7 +139,8 @@ exports.Prisma.UserScalarFieldEnum = {
   code_verification: 'code_verification',
   change_password: 'change_password',
   is_verified: 'is_verified',
-  dni: 'dni'
+  dni: 'dni',
+  keycloak_sub: 'keycloak_sub'
 };
 
 exports.Prisma.CodesScalarFieldEnum = {
@@ -202,7 +203,9 @@ exports.Prisma.BingoCardboardsScalarFieldEnum = {
   created_at: 'created_at',
   updated_at: 'updated_at',
   deleted_at: 'deleted_at',
-  prize_id: 'prize_id'
+  prize_id: 'prize_id',
+  collection_code: 'collection_code',
+  collection_data: 'collection_data'
 };
 
 exports.Prisma.Live_sessionsScalarFieldEnum = {
@@ -247,6 +250,20 @@ exports.Prisma.Referred_codeScalarFieldEnum = {
   maximum_usage: 'maximum_usage',
   master: 'master',
   city: 'city'
+};
+
+exports.Prisma.NoticesScalarFieldEnum = {
+  id: 'id',
+  created_at: 'created_at',
+  deleted_at: 'deleted_at',
+  updated_at: 'updated_at',
+  scheduled_at: 'scheduled_at',
+  name: 'name',
+  description: 'description',
+  event_type: 'event_type',
+  key: 'key',
+  content_text: 'content_text',
+  notice_type: 'notice_type'
 };
 
 exports.Prisma.SortOrder = {
@@ -312,6 +329,19 @@ exports.status = exports.$Enums.status = {
   INACTIVO: 'INACTIVO'
 };
 
+exports.notice_event = exports.$Enums.notice_event = {
+  login: 'login',
+  finish_bingo: 'finish_bingo',
+  schedule: 'schedule',
+  manual: 'manual'
+};
+
+exports.notice_type = exports.$Enums.notice_type = {
+  image: 'image',
+  video: 'video',
+  article: 'article'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Codes: 'Codes',
@@ -321,7 +351,8 @@ exports.Prisma.ModelName = {
   live_sessions: 'live_sessions',
   source_codes: 'source_codes',
   bingo_prizes: 'bingo_prizes',
-  referred_code: 'referred_code'
+  referred_code: 'referred_code',
+  notices: 'notices'
 };
 
 /**

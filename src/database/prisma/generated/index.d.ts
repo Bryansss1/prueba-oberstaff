@@ -58,6 +58,11 @@ export type bingo_prizes = $Result.DefaultSelection<Prisma.$bingo_prizesPayload>
  * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
  */
 export type referred_code = $Result.DefaultSelection<Prisma.$referred_codePayload>
+/**
+ * Model notices
+ * This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+ */
+export type notices = $Result.DefaultSelection<Prisma.$noticesPayload>
 
 /**
  * Enums
@@ -143,6 +148,25 @@ export const estado_victoria_75: {
 
 export type estado_victoria_75 = (typeof estado_victoria_75)[keyof typeof estado_victoria_75]
 
+
+export const notice_event: {
+  login: 'login',
+  finish_bingo: 'finish_bingo',
+  schedule: 'schedule',
+  manual: 'manual'
+};
+
+export type notice_event = (typeof notice_event)[keyof typeof notice_event]
+
+
+export const notice_type: {
+  image: 'image',
+  video: 'video',
+  article: 'article'
+};
+
+export type notice_type = (typeof notice_type)[keyof typeof notice_type]
+
 }
 
 export type Role = $Enums.Role
@@ -176,6 +200,14 @@ export const bingo_victories: typeof $Enums.bingo_victories
 export type estado_victoria_75 = $Enums.estado_victoria_75
 
 export const estado_victoria_75: typeof $Enums.estado_victoria_75
+
+export type notice_event = $Enums.notice_event
+
+export const notice_event: typeof $Enums.notice_event
+
+export type notice_type = $Enums.notice_type
+
+export const notice_type: typeof $Enums.notice_type
 
 /**
  * ##  Prisma Client ʲˢ
@@ -384,6 +416,16 @@ export class PrismaClient<
     * ```
     */
   get referred_code(): Prisma.referred_codeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.notices`: Exposes CRUD operations for the **notices** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notices
+    * const notices = await prisma.notices.findMany()
+    * ```
+    */
+  get notices(): Prisma.noticesDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -833,7 +875,8 @@ export namespace Prisma {
     live_sessions: 'live_sessions',
     source_codes: 'source_codes',
     bingo_prizes: 'bingo_prizes',
-    referred_code: 'referred_code'
+    referred_code: 'referred_code',
+    notices: 'notices'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -852,7 +895,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "codes" | "parameters" | "bingo" | "bingoCardboards" | "live_sessions" | "source_codes" | "bingo_prizes" | "referred_code"
+      modelProps: "user" | "codes" | "parameters" | "bingo" | "bingoCardboards" | "live_sessions" | "source_codes" | "bingo_prizes" | "referred_code" | "notices"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1522,6 +1565,80 @@ export namespace Prisma {
           }
         }
       }
+      notices: {
+        payload: Prisma.$noticesPayload<ExtArgs>
+        fields: Prisma.noticesFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.noticesFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.noticesFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>
+          }
+          findFirst: {
+            args: Prisma.noticesFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.noticesFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>
+          }
+          findMany: {
+            args: Prisma.noticesFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>[]
+          }
+          create: {
+            args: Prisma.noticesCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>
+          }
+          createMany: {
+            args: Prisma.noticesCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.noticesCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>[]
+          }
+          delete: {
+            args: Prisma.noticesDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>
+          }
+          update: {
+            args: Prisma.noticesUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>
+          }
+          deleteMany: {
+            args: Prisma.noticesDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.noticesUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.noticesUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>[]
+          }
+          upsert: {
+            args: Prisma.noticesUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$noticesPayload>
+          }
+          aggregate: {
+            args: Prisma.NoticesAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNotices>
+          }
+          groupBy: {
+            args: Prisma.noticesGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NoticesGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.noticesCountArgs<ExtArgs>
+            result: $Utils.Optional<NoticesCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1627,6 +1744,7 @@ export namespace Prisma {
     source_codes?: source_codesOmit
     bingo_prizes?: bingo_prizesOmit
     referred_code?: referred_codeOmit
+    notices?: noticesOmit
   }
 
   /* Types for Logging */
@@ -1918,6 +2036,7 @@ export namespace Prisma {
     change_password: boolean | null
     is_verified: boolean | null
     dni: string | null
+    keycloak_sub: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1939,6 +2058,7 @@ export namespace Prisma {
     change_password: boolean | null
     is_verified: boolean | null
     dni: string | null
+    keycloak_sub: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1960,6 +2080,7 @@ export namespace Prisma {
     change_password: number
     is_verified: number
     dni: number
+    keycloak_sub: number
     _all: number
   }
 
@@ -1991,6 +2112,7 @@ export namespace Prisma {
     change_password?: true
     is_verified?: true
     dni?: true
+    keycloak_sub?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -2012,6 +2134,7 @@ export namespace Prisma {
     change_password?: true
     is_verified?: true
     dni?: true
+    keycloak_sub?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -2033,6 +2156,7 @@ export namespace Prisma {
     change_password?: true
     is_verified?: true
     dni?: true
+    keycloak_sub?: true
     _all?: true
   }
 
@@ -2141,6 +2265,7 @@ export namespace Prisma {
     change_password: boolean | null
     is_verified: boolean | null
     dni: string | null
+    keycloak_sub: string | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -2181,6 +2306,7 @@ export namespace Prisma {
     change_password?: boolean
     is_verified?: boolean
     dni?: boolean
+    keycloak_sub?: boolean
     BingoCardboards?: boolean | User$BingoCardboardsArgs<ExtArgs>
     Codes?: boolean | User$CodesArgs<ExtArgs>
     Parameters?: boolean | User$ParametersArgs<ExtArgs>
@@ -2206,6 +2332,7 @@ export namespace Prisma {
     change_password?: boolean
     is_verified?: boolean
     dni?: boolean
+    keycloak_sub?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2227,6 +2354,7 @@ export namespace Prisma {
     change_password?: boolean
     is_verified?: boolean
     dni?: boolean
+    keycloak_sub?: boolean
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2248,9 +2376,10 @@ export namespace Prisma {
     change_password?: boolean
     is_verified?: boolean
     dni?: boolean
+    keycloak_sub?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "names" | "last_names" | "email" | "password" | "role" | "phone_number" | "account_owner_name" | "account_owner_dni" | "account_number" | "bank_name" | "created_at" | "updated_at" | "deleted_at" | "code_verification" | "change_password" | "is_verified" | "dni", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "names" | "last_names" | "email" | "password" | "role" | "phone_number" | "account_owner_name" | "account_owner_dni" | "account_number" | "bank_name" | "created_at" | "updated_at" | "deleted_at" | "code_verification" | "change_password" | "is_verified" | "dni" | "keycloak_sub", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     BingoCardboards?: boolean | User$BingoCardboardsArgs<ExtArgs>
     Codes?: boolean | User$CodesArgs<ExtArgs>
@@ -2286,6 +2415,7 @@ export namespace Prisma {
       change_password: boolean | null
       is_verified: boolean | null
       dni: string | null
+      keycloak_sub: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -2730,6 +2860,7 @@ export namespace Prisma {
     readonly change_password: FieldRef<"User", 'Boolean'>
     readonly is_verified: FieldRef<"User", 'Boolean'>
     readonly dni: FieldRef<"User", 'String'>
+    readonly keycloak_sub: FieldRef<"User", 'String'>
   }
     
 
@@ -6996,6 +7127,7 @@ export namespace Prisma {
     updated_at: Date | null
     deleted_at: Date | null
     prize_id: number | null
+    collection_code: string | null
   }
 
   export type BingoCardboardsMaxAggregateOutputType = {
@@ -7008,6 +7140,7 @@ export namespace Prisma {
     updated_at: Date | null
     deleted_at: Date | null
     prize_id: number | null
+    collection_code: string | null
   }
 
   export type BingoCardboardsCountAggregateOutputType = {
@@ -7021,6 +7154,8 @@ export namespace Prisma {
     updated_at: number
     deleted_at: number
     prize_id: number
+    collection_code: number
+    collection_data: number
     _all: number
   }
 
@@ -7051,6 +7186,7 @@ export namespace Prisma {
     updated_at?: true
     deleted_at?: true
     prize_id?: true
+    collection_code?: true
   }
 
   export type BingoCardboardsMaxAggregateInputType = {
@@ -7063,6 +7199,7 @@ export namespace Prisma {
     updated_at?: true
     deleted_at?: true
     prize_id?: true
+    collection_code?: true
   }
 
   export type BingoCardboardsCountAggregateInputType = {
@@ -7076,6 +7213,8 @@ export namespace Prisma {
     updated_at?: true
     deleted_at?: true
     prize_id?: true
+    collection_code?: true
+    collection_data?: true
     _all?: true
   }
 
@@ -7176,6 +7315,8 @@ export namespace Prisma {
     updated_at: Date
     deleted_at: Date | null
     prize_id: number | null
+    collection_code: string | null
+    collection_data: JsonValue | null
     _count: BingoCardboardsCountAggregateOutputType | null
     _avg: BingoCardboardsAvgAggregateOutputType | null
     _sum: BingoCardboardsSumAggregateOutputType | null
@@ -7208,6 +7349,8 @@ export namespace Prisma {
     updated_at?: boolean
     deleted_at?: boolean
     prize_id?: boolean
+    collection_code?: boolean
+    collection_data?: boolean
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
     Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
@@ -7225,6 +7368,8 @@ export namespace Prisma {
     updated_at?: boolean
     deleted_at?: boolean
     prize_id?: boolean
+    collection_code?: boolean
+    collection_data?: boolean
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
     Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
@@ -7242,6 +7387,8 @@ export namespace Prisma {
     updated_at?: boolean
     deleted_at?: boolean
     prize_id?: boolean
+    collection_code?: boolean
+    collection_data?: boolean
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
     Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
     bingo_prizes?: boolean | BingoCardboards$bingo_prizesArgs<ExtArgs>
@@ -7259,9 +7406,11 @@ export namespace Prisma {
     updated_at?: boolean
     deleted_at?: boolean
     prize_id?: boolean
+    collection_code?: boolean
+    collection_data?: boolean
   }
 
-  export type BingoCardboardsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code_id" | "bingo_id" | "is_winner" | "user_id" | "bingo_data_json" | "created_at" | "updated_at" | "deleted_at" | "prize_id", ExtArgs["result"]["bingoCardboards"]>
+  export type BingoCardboardsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "code_id" | "bingo_id" | "is_winner" | "user_id" | "bingo_data_json" | "created_at" | "updated_at" | "deleted_at" | "prize_id" | "collection_code" | "collection_data", ExtArgs["result"]["bingoCardboards"]>
   export type BingoCardboardsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     bingo?: boolean | BingoDefaultArgs<ExtArgs>
     Codes?: boolean | BingoCardboards$CodesArgs<ExtArgs>
@@ -7300,6 +7449,8 @@ export namespace Prisma {
       updated_at: Date
       deleted_at: Date | null
       prize_id: number | null
+      collection_code: string | null
+      collection_data: Prisma.JsonValue | null
     }, ExtArgs["result"]["bingoCardboards"]>
     composites: {}
   }
@@ -7737,6 +7888,8 @@ export namespace Prisma {
     readonly updated_at: FieldRef<"BingoCardboards", 'DateTime'>
     readonly deleted_at: FieldRef<"BingoCardboards", 'DateTime'>
     readonly prize_id: FieldRef<"BingoCardboards", 'Int'>
+    readonly collection_code: FieldRef<"BingoCardboards", 'String'>
+    readonly collection_data: FieldRef<"BingoCardboards", 'Json'>
   }
     
 
@@ -12692,6 +12845,1113 @@ export namespace Prisma {
 
 
   /**
+   * Model notices
+   */
+
+  export type AggregateNotices = {
+    _count: NoticesCountAggregateOutputType | null
+    _avg: NoticesAvgAggregateOutputType | null
+    _sum: NoticesSumAggregateOutputType | null
+    _min: NoticesMinAggregateOutputType | null
+    _max: NoticesMaxAggregateOutputType | null
+  }
+
+  export type NoticesAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type NoticesSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type NoticesMinAggregateOutputType = {
+    id: number | null
+    created_at: Date | null
+    deleted_at: Date | null
+    updated_at: Date | null
+    scheduled_at: Date | null
+    name: string | null
+    description: string | null
+    event_type: $Enums.notice_event | null
+    key: string | null
+    content_text: string | null
+    notice_type: $Enums.notice_type | null
+  }
+
+  export type NoticesMaxAggregateOutputType = {
+    id: number | null
+    created_at: Date | null
+    deleted_at: Date | null
+    updated_at: Date | null
+    scheduled_at: Date | null
+    name: string | null
+    description: string | null
+    event_type: $Enums.notice_event | null
+    key: string | null
+    content_text: string | null
+    notice_type: $Enums.notice_type | null
+  }
+
+  export type NoticesCountAggregateOutputType = {
+    id: number
+    created_at: number
+    deleted_at: number
+    updated_at: number
+    scheduled_at: number
+    name: number
+    description: number
+    event_type: number
+    key: number
+    content_text: number
+    notice_type: number
+    _all: number
+  }
+
+
+  export type NoticesAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type NoticesSumAggregateInputType = {
+    id?: true
+  }
+
+  export type NoticesMinAggregateInputType = {
+    id?: true
+    created_at?: true
+    deleted_at?: true
+    updated_at?: true
+    scheduled_at?: true
+    name?: true
+    description?: true
+    event_type?: true
+    key?: true
+    content_text?: true
+    notice_type?: true
+  }
+
+  export type NoticesMaxAggregateInputType = {
+    id?: true
+    created_at?: true
+    deleted_at?: true
+    updated_at?: true
+    scheduled_at?: true
+    name?: true
+    description?: true
+    event_type?: true
+    key?: true
+    content_text?: true
+    notice_type?: true
+  }
+
+  export type NoticesCountAggregateInputType = {
+    id?: true
+    created_at?: true
+    deleted_at?: true
+    updated_at?: true
+    scheduled_at?: true
+    name?: true
+    description?: true
+    event_type?: true
+    key?: true
+    content_text?: true
+    notice_type?: true
+    _all?: true
+  }
+
+  export type NoticesAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which notices to aggregate.
+     */
+    where?: noticesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of notices to fetch.
+     */
+    orderBy?: noticesOrderByWithRelationInput | noticesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: noticesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` notices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` notices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned notices
+    **/
+    _count?: true | NoticesCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NoticesAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NoticesSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NoticesMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NoticesMaxAggregateInputType
+  }
+
+  export type GetNoticesAggregateType<T extends NoticesAggregateArgs> = {
+        [P in keyof T & keyof AggregateNotices]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNotices[P]>
+      : GetScalarType<T[P], AggregateNotices[P]>
+  }
+
+
+
+
+  export type noticesGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: noticesWhereInput
+    orderBy?: noticesOrderByWithAggregationInput | noticesOrderByWithAggregationInput[]
+    by: NoticesScalarFieldEnum[] | NoticesScalarFieldEnum
+    having?: noticesScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NoticesCountAggregateInputType | true
+    _avg?: NoticesAvgAggregateInputType
+    _sum?: NoticesSumAggregateInputType
+    _min?: NoticesMinAggregateInputType
+    _max?: NoticesMaxAggregateInputType
+  }
+
+  export type NoticesGroupByOutputType = {
+    id: number
+    created_at: Date
+    deleted_at: Date | null
+    updated_at: Date | null
+    scheduled_at: Date | null
+    name: string
+    description: string | null
+    event_type: $Enums.notice_event
+    key: string
+    content_text: string | null
+    notice_type: $Enums.notice_type | null
+    _count: NoticesCountAggregateOutputType | null
+    _avg: NoticesAvgAggregateOutputType | null
+    _sum: NoticesSumAggregateOutputType | null
+    _min: NoticesMinAggregateOutputType | null
+    _max: NoticesMaxAggregateOutputType | null
+  }
+
+  type GetNoticesGroupByPayload<T extends noticesGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NoticesGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NoticesGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NoticesGroupByOutputType[P]>
+            : GetScalarType<T[P], NoticesGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type noticesSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    created_at?: boolean
+    deleted_at?: boolean
+    updated_at?: boolean
+    scheduled_at?: boolean
+    name?: boolean
+    description?: boolean
+    event_type?: boolean
+    key?: boolean
+    content_text?: boolean
+    notice_type?: boolean
+  }, ExtArgs["result"]["notices"]>
+
+  export type noticesSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    created_at?: boolean
+    deleted_at?: boolean
+    updated_at?: boolean
+    scheduled_at?: boolean
+    name?: boolean
+    description?: boolean
+    event_type?: boolean
+    key?: boolean
+    content_text?: boolean
+    notice_type?: boolean
+  }, ExtArgs["result"]["notices"]>
+
+  export type noticesSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    created_at?: boolean
+    deleted_at?: boolean
+    updated_at?: boolean
+    scheduled_at?: boolean
+    name?: boolean
+    description?: boolean
+    event_type?: boolean
+    key?: boolean
+    content_text?: boolean
+    notice_type?: boolean
+  }, ExtArgs["result"]["notices"]>
+
+  export type noticesSelectScalar = {
+    id?: boolean
+    created_at?: boolean
+    deleted_at?: boolean
+    updated_at?: boolean
+    scheduled_at?: boolean
+    name?: boolean
+    description?: boolean
+    event_type?: boolean
+    key?: boolean
+    content_text?: boolean
+    notice_type?: boolean
+  }
+
+  export type noticesOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "created_at" | "deleted_at" | "updated_at" | "scheduled_at" | "name" | "description" | "event_type" | "key" | "content_text" | "notice_type", ExtArgs["result"]["notices"]>
+
+  export type $noticesPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "notices"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      created_at: Date
+      deleted_at: Date | null
+      updated_at: Date | null
+      scheduled_at: Date | null
+      name: string
+      description: string | null
+      event_type: $Enums.notice_event
+      key: string
+      content_text: string | null
+      notice_type: $Enums.notice_type | null
+    }, ExtArgs["result"]["notices"]>
+    composites: {}
+  }
+
+  type noticesGetPayload<S extends boolean | null | undefined | noticesDefaultArgs> = $Result.GetResult<Prisma.$noticesPayload, S>
+
+  type noticesCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<noticesFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NoticesCountAggregateInputType | true
+    }
+
+  export interface noticesDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['notices'], meta: { name: 'notices' } }
+    /**
+     * Find zero or one Notices that matches the filter.
+     * @param {noticesFindUniqueArgs} args - Arguments to find a Notices
+     * @example
+     * // Get one Notices
+     * const notices = await prisma.notices.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends noticesFindUniqueArgs>(args: SelectSubset<T, noticesFindUniqueArgs<ExtArgs>>): Prisma__noticesClient<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Notices that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {noticesFindUniqueOrThrowArgs} args - Arguments to find a Notices
+     * @example
+     * // Get one Notices
+     * const notices = await prisma.notices.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends noticesFindUniqueOrThrowArgs>(args: SelectSubset<T, noticesFindUniqueOrThrowArgs<ExtArgs>>): Prisma__noticesClient<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {noticesFindFirstArgs} args - Arguments to find a Notices
+     * @example
+     * // Get one Notices
+     * const notices = await prisma.notices.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends noticesFindFirstArgs>(args?: SelectSubset<T, noticesFindFirstArgs<ExtArgs>>): Prisma__noticesClient<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Notices that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {noticesFindFirstOrThrowArgs} args - Arguments to find a Notices
+     * @example
+     * // Get one Notices
+     * const notices = await prisma.notices.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends noticesFindFirstOrThrowArgs>(args?: SelectSubset<T, noticesFindFirstOrThrowArgs<ExtArgs>>): Prisma__noticesClient<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Notices that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {noticesFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Notices
+     * const notices = await prisma.notices.findMany()
+     * 
+     * // Get first 10 Notices
+     * const notices = await prisma.notices.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const noticesWithIdOnly = await prisma.notices.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends noticesFindManyArgs>(args?: SelectSubset<T, noticesFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Notices.
+     * @param {noticesCreateArgs} args - Arguments to create a Notices.
+     * @example
+     * // Create one Notices
+     * const Notices = await prisma.notices.create({
+     *   data: {
+     *     // ... data to create a Notices
+     *   }
+     * })
+     * 
+     */
+    create<T extends noticesCreateArgs>(args: SelectSubset<T, noticesCreateArgs<ExtArgs>>): Prisma__noticesClient<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Notices.
+     * @param {noticesCreateManyArgs} args - Arguments to create many Notices.
+     * @example
+     * // Create many Notices
+     * const notices = await prisma.notices.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends noticesCreateManyArgs>(args?: SelectSubset<T, noticesCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Notices and returns the data saved in the database.
+     * @param {noticesCreateManyAndReturnArgs} args - Arguments to create many Notices.
+     * @example
+     * // Create many Notices
+     * const notices = await prisma.notices.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Notices and only return the `id`
+     * const noticesWithIdOnly = await prisma.notices.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends noticesCreateManyAndReturnArgs>(args?: SelectSubset<T, noticesCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Notices.
+     * @param {noticesDeleteArgs} args - Arguments to delete one Notices.
+     * @example
+     * // Delete one Notices
+     * const Notices = await prisma.notices.delete({
+     *   where: {
+     *     // ... filter to delete one Notices
+     *   }
+     * })
+     * 
+     */
+    delete<T extends noticesDeleteArgs>(args: SelectSubset<T, noticesDeleteArgs<ExtArgs>>): Prisma__noticesClient<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Notices.
+     * @param {noticesUpdateArgs} args - Arguments to update one Notices.
+     * @example
+     * // Update one Notices
+     * const notices = await prisma.notices.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends noticesUpdateArgs>(args: SelectSubset<T, noticesUpdateArgs<ExtArgs>>): Prisma__noticesClient<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Notices.
+     * @param {noticesDeleteManyArgs} args - Arguments to filter Notices to delete.
+     * @example
+     * // Delete a few Notices
+     * const { count } = await prisma.notices.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends noticesDeleteManyArgs>(args?: SelectSubset<T, noticesDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {noticesUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Notices
+     * const notices = await prisma.notices.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends noticesUpdateManyArgs>(args: SelectSubset<T, noticesUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Notices and returns the data updated in the database.
+     * @param {noticesUpdateManyAndReturnArgs} args - Arguments to update many Notices.
+     * @example
+     * // Update many Notices
+     * const notices = await prisma.notices.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Notices and only return the `id`
+     * const noticesWithIdOnly = await prisma.notices.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends noticesUpdateManyAndReturnArgs>(args: SelectSubset<T, noticesUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Notices.
+     * @param {noticesUpsertArgs} args - Arguments to update or create a Notices.
+     * @example
+     * // Update or create a Notices
+     * const notices = await prisma.notices.upsert({
+     *   create: {
+     *     // ... data to create a Notices
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Notices we want to update
+     *   }
+     * })
+     */
+    upsert<T extends noticesUpsertArgs>(args: SelectSubset<T, noticesUpsertArgs<ExtArgs>>): Prisma__noticesClient<$Result.GetResult<Prisma.$noticesPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Notices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {noticesCountArgs} args - Arguments to filter Notices to count.
+     * @example
+     * // Count the number of Notices
+     * const count = await prisma.notices.count({
+     *   where: {
+     *     // ... the filter for the Notices we want to count
+     *   }
+     * })
+    **/
+    count<T extends noticesCountArgs>(
+      args?: Subset<T, noticesCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NoticesCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Notices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NoticesAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NoticesAggregateArgs>(args: Subset<T, NoticesAggregateArgs>): Prisma.PrismaPromise<GetNoticesAggregateType<T>>
+
+    /**
+     * Group by Notices.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {noticesGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends noticesGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: noticesGroupByArgs['orderBy'] }
+        : { orderBy?: noticesGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, noticesGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNoticesGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the notices model
+   */
+  readonly fields: noticesFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for notices.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__noticesClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the notices model
+   */
+  interface noticesFieldRefs {
+    readonly id: FieldRef<"notices", 'Int'>
+    readonly created_at: FieldRef<"notices", 'DateTime'>
+    readonly deleted_at: FieldRef<"notices", 'DateTime'>
+    readonly updated_at: FieldRef<"notices", 'DateTime'>
+    readonly scheduled_at: FieldRef<"notices", 'DateTime'>
+    readonly name: FieldRef<"notices", 'String'>
+    readonly description: FieldRef<"notices", 'String'>
+    readonly event_type: FieldRef<"notices", 'notice_event'>
+    readonly key: FieldRef<"notices", 'String'>
+    readonly content_text: FieldRef<"notices", 'String'>
+    readonly notice_type: FieldRef<"notices", 'notice_type'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * notices findUnique
+   */
+  export type noticesFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * Filter, which notices to fetch.
+     */
+    where: noticesWhereUniqueInput
+  }
+
+  /**
+   * notices findUniqueOrThrow
+   */
+  export type noticesFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * Filter, which notices to fetch.
+     */
+    where: noticesWhereUniqueInput
+  }
+
+  /**
+   * notices findFirst
+   */
+  export type noticesFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * Filter, which notices to fetch.
+     */
+    where?: noticesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of notices to fetch.
+     */
+    orderBy?: noticesOrderByWithRelationInput | noticesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for notices.
+     */
+    cursor?: noticesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` notices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` notices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of notices.
+     */
+    distinct?: NoticesScalarFieldEnum | NoticesScalarFieldEnum[]
+  }
+
+  /**
+   * notices findFirstOrThrow
+   */
+  export type noticesFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * Filter, which notices to fetch.
+     */
+    where?: noticesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of notices to fetch.
+     */
+    orderBy?: noticesOrderByWithRelationInput | noticesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for notices.
+     */
+    cursor?: noticesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` notices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` notices.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of notices.
+     */
+    distinct?: NoticesScalarFieldEnum | NoticesScalarFieldEnum[]
+  }
+
+  /**
+   * notices findMany
+   */
+  export type noticesFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * Filter, which notices to fetch.
+     */
+    where?: noticesWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of notices to fetch.
+     */
+    orderBy?: noticesOrderByWithRelationInput | noticesOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing notices.
+     */
+    cursor?: noticesWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` notices from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` notices.
+     */
+    skip?: number
+    distinct?: NoticesScalarFieldEnum | NoticesScalarFieldEnum[]
+  }
+
+  /**
+   * notices create
+   */
+  export type noticesCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * The data needed to create a notices.
+     */
+    data: XOR<noticesCreateInput, noticesUncheckedCreateInput>
+  }
+
+  /**
+   * notices createMany
+   */
+  export type noticesCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many notices.
+     */
+    data: noticesCreateManyInput | noticesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * notices createManyAndReturn
+   */
+  export type noticesCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * The data used to create many notices.
+     */
+    data: noticesCreateManyInput | noticesCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * notices update
+   */
+  export type noticesUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * The data needed to update a notices.
+     */
+    data: XOR<noticesUpdateInput, noticesUncheckedUpdateInput>
+    /**
+     * Choose, which notices to update.
+     */
+    where: noticesWhereUniqueInput
+  }
+
+  /**
+   * notices updateMany
+   */
+  export type noticesUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update notices.
+     */
+    data: XOR<noticesUpdateManyMutationInput, noticesUncheckedUpdateManyInput>
+    /**
+     * Filter which notices to update
+     */
+    where?: noticesWhereInput
+    /**
+     * Limit how many notices to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * notices updateManyAndReturn
+   */
+  export type noticesUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * The data used to update notices.
+     */
+    data: XOR<noticesUpdateManyMutationInput, noticesUncheckedUpdateManyInput>
+    /**
+     * Filter which notices to update
+     */
+    where?: noticesWhereInput
+    /**
+     * Limit how many notices to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * notices upsert
+   */
+  export type noticesUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * The filter to search for the notices to update in case it exists.
+     */
+    where: noticesWhereUniqueInput
+    /**
+     * In case the notices found by the `where` argument doesn't exist, create a new notices with this data.
+     */
+    create: XOR<noticesCreateInput, noticesUncheckedCreateInput>
+    /**
+     * In case the notices was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<noticesUpdateInput, noticesUncheckedUpdateInput>
+  }
+
+  /**
+   * notices delete
+   */
+  export type noticesDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+    /**
+     * Filter which notices to delete.
+     */
+    where: noticesWhereUniqueInput
+  }
+
+  /**
+   * notices deleteMany
+   */
+  export type noticesDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which notices to delete
+     */
+    where?: noticesWhereInput
+    /**
+     * Limit how many notices to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * notices without action
+   */
+  export type noticesDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the notices
+     */
+    select?: noticesSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the notices
+     */
+    omit?: noticesOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -12723,7 +13983,8 @@ export namespace Prisma {
     code_verification: 'code_verification',
     change_password: 'change_password',
     is_verified: 'is_verified',
-    dni: 'dni'
+    dni: 'dni',
+    keycloak_sub: 'keycloak_sub'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -12798,7 +14059,9 @@ export namespace Prisma {
     created_at: 'created_at',
     updated_at: 'updated_at',
     deleted_at: 'deleted_at',
-    prize_id: 'prize_id'
+    prize_id: 'prize_id',
+    collection_code: 'collection_code',
+    collection_data: 'collection_data'
   };
 
   export type BingoCardboardsScalarFieldEnum = (typeof BingoCardboardsScalarFieldEnum)[keyof typeof BingoCardboardsScalarFieldEnum]
@@ -12858,6 +14121,23 @@ export namespace Prisma {
   };
 
   export type Referred_codeScalarFieldEnum = (typeof Referred_codeScalarFieldEnum)[keyof typeof Referred_codeScalarFieldEnum]
+
+
+  export const NoticesScalarFieldEnum: {
+    id: 'id',
+    created_at: 'created_at',
+    deleted_at: 'deleted_at',
+    updated_at: 'updated_at',
+    scheduled_at: 'scheduled_at',
+    name: 'name',
+    description: 'description',
+    event_type: 'event_type',
+    key: 'key',
+    content_text: 'content_text',
+    notice_type: 'notice_type'
+  };
+
+  export type NoticesScalarFieldEnum = (typeof NoticesScalarFieldEnum)[keyof typeof NoticesScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -13072,6 +14352,34 @@ export namespace Prisma {
    */
   export type ListEnumstatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'status[]'>
     
+
+
+  /**
+   * Reference to a field of type 'notice_event'
+   */
+  export type Enumnotice_eventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'notice_event'>
+    
+
+
+  /**
+   * Reference to a field of type 'notice_event[]'
+   */
+  export type ListEnumnotice_eventFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'notice_event[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'notice_type'
+   */
+  export type Enumnotice_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'notice_type'>
+    
+
+
+  /**
+   * Reference to a field of type 'notice_type[]'
+   */
+  export type ListEnumnotice_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'notice_type[]'>
+    
   /**
    * Deep Input Types
    */
@@ -13099,6 +14407,7 @@ export namespace Prisma {
     change_password?: BoolNullableFilter<"User"> | boolean | null
     is_verified?: BoolNullableFilter<"User"> | boolean | null
     dni?: StringNullableFilter<"User"> | string | null
+    keycloak_sub?: StringNullableFilter<"User"> | string | null
     BingoCardboards?: BingoCardboardsListRelationFilter
     Codes?: CodesListRelationFilter
     Parameters?: ParametersListRelationFilter
@@ -13123,6 +14432,7 @@ export namespace Prisma {
     change_password?: SortOrderInput | SortOrder
     is_verified?: SortOrderInput | SortOrder
     dni?: SortOrderInput | SortOrder
+    keycloak_sub?: SortOrderInput | SortOrder
     BingoCardboards?: BingoCardboardsOrderByRelationAggregateInput
     Codes?: CodesOrderByRelationAggregateInput
     Parameters?: ParametersOrderByRelationAggregateInput
@@ -13133,6 +14443,7 @@ export namespace Prisma {
     email?: string
     phone_number?: string
     dni?: string
+    keycloak_sub?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
@@ -13153,7 +14464,7 @@ export namespace Prisma {
     BingoCardboards?: BingoCardboardsListRelationFilter
     Codes?: CodesListRelationFilter
     Parameters?: ParametersListRelationFilter
-  }, "id" | "email" | "phone_number" | "dni">
+  }, "id" | "email" | "phone_number" | "dni" | "keycloak_sub">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
@@ -13174,6 +14485,7 @@ export namespace Prisma {
     change_password?: SortOrderInput | SortOrder
     is_verified?: SortOrderInput | SortOrder
     dni?: SortOrderInput | SortOrder
+    keycloak_sub?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -13203,6 +14515,7 @@ export namespace Prisma {
     change_password?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
     is_verified?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
     dni?: StringNullableWithAggregatesFilter<"User"> | string | null
+    keycloak_sub?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type CodesWhereInput = {
@@ -13529,6 +14842,8 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"BingoCardboards"> | Date | string
     deleted_at?: DateTimeNullableFilter<"BingoCardboards"> | Date | string | null
     prize_id?: IntNullableFilter<"BingoCardboards"> | number | null
+    collection_code?: StringNullableFilter<"BingoCardboards"> | string | null
+    collection_data?: JsonNullableFilter<"BingoCardboards">
     bingo?: XOR<BingoScalarRelationFilter, BingoWhereInput>
     Codes?: XOR<CodesNullableScalarRelationFilter, CodesWhereInput> | null
     bingo_prizes?: XOR<Bingo_prizesNullableScalarRelationFilter, bingo_prizesWhereInput> | null
@@ -13546,6 +14861,8 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrderInput | SortOrder
     prize_id?: SortOrderInput | SortOrder
+    collection_code?: SortOrderInput | SortOrder
+    collection_data?: SortOrderInput | SortOrder
     bingo?: BingoOrderByWithRelationInput
     Codes?: CodesOrderByWithRelationInput
     bingo_prizes?: bingo_prizesOrderByWithRelationInput
@@ -13566,6 +14883,8 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"BingoCardboards"> | Date | string
     deleted_at?: DateTimeNullableFilter<"BingoCardboards"> | Date | string | null
     prize_id?: IntNullableFilter<"BingoCardboards"> | number | null
+    collection_code?: StringNullableFilter<"BingoCardboards"> | string | null
+    collection_data?: JsonNullableFilter<"BingoCardboards">
     bingo?: XOR<BingoScalarRelationFilter, BingoWhereInput>
     Codes?: XOR<CodesNullableScalarRelationFilter, CodesWhereInput> | null
     bingo_prizes?: XOR<Bingo_prizesNullableScalarRelationFilter, bingo_prizesWhereInput> | null
@@ -13583,6 +14902,8 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrderInput | SortOrder
     prize_id?: SortOrderInput | SortOrder
+    collection_code?: SortOrderInput | SortOrder
+    collection_data?: SortOrderInput | SortOrder
     _count?: BingoCardboardsCountOrderByAggregateInput
     _avg?: BingoCardboardsAvgOrderByAggregateInput
     _max?: BingoCardboardsMaxOrderByAggregateInput
@@ -13604,6 +14925,8 @@ export namespace Prisma {
     updated_at?: DateTimeWithAggregatesFilter<"BingoCardboards"> | Date | string
     deleted_at?: DateTimeNullableWithAggregatesFilter<"BingoCardboards"> | Date | string | null
     prize_id?: IntNullableWithAggregatesFilter<"BingoCardboards"> | number | null
+    collection_code?: StringNullableWithAggregatesFilter<"BingoCardboards"> | string | null
+    collection_data?: JsonNullableWithAggregatesFilter<"BingoCardboards">
   }
 
   export type live_sessionsWhereInput = {
@@ -13891,6 +15214,90 @@ export namespace Prisma {
     city?: StringNullableWithAggregatesFilter<"referred_code"> | string | null
   }
 
+  export type noticesWhereInput = {
+    AND?: noticesWhereInput | noticesWhereInput[]
+    OR?: noticesWhereInput[]
+    NOT?: noticesWhereInput | noticesWhereInput[]
+    id?: IntFilter<"notices"> | number
+    created_at?: DateTimeFilter<"notices"> | Date | string
+    deleted_at?: DateTimeNullableFilter<"notices"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"notices"> | Date | string | null
+    scheduled_at?: DateTimeNullableFilter<"notices"> | Date | string | null
+    name?: StringFilter<"notices"> | string
+    description?: StringNullableFilter<"notices"> | string | null
+    event_type?: Enumnotice_eventFilter<"notices"> | $Enums.notice_event
+    key?: StringFilter<"notices"> | string
+    content_text?: StringNullableFilter<"notices"> | string | null
+    notice_type?: Enumnotice_typeNullableFilter<"notices"> | $Enums.notice_type | null
+  }
+
+  export type noticesOrderByWithRelationInput = {
+    id?: SortOrder
+    created_at?: SortOrder
+    deleted_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    scheduled_at?: SortOrderInput | SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    event_type?: SortOrder
+    key?: SortOrder
+    content_text?: SortOrderInput | SortOrder
+    notice_type?: SortOrderInput | SortOrder
+  }
+
+  export type noticesWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    key?: string
+    AND?: noticesWhereInput | noticesWhereInput[]
+    OR?: noticesWhereInput[]
+    NOT?: noticesWhereInput | noticesWhereInput[]
+    created_at?: DateTimeFilter<"notices"> | Date | string
+    deleted_at?: DateTimeNullableFilter<"notices"> | Date | string | null
+    updated_at?: DateTimeNullableFilter<"notices"> | Date | string | null
+    scheduled_at?: DateTimeNullableFilter<"notices"> | Date | string | null
+    name?: StringFilter<"notices"> | string
+    description?: StringNullableFilter<"notices"> | string | null
+    event_type?: Enumnotice_eventFilter<"notices"> | $Enums.notice_event
+    content_text?: StringNullableFilter<"notices"> | string | null
+    notice_type?: Enumnotice_typeNullableFilter<"notices"> | $Enums.notice_type | null
+  }, "id" | "key">
+
+  export type noticesOrderByWithAggregationInput = {
+    id?: SortOrder
+    created_at?: SortOrder
+    deleted_at?: SortOrderInput | SortOrder
+    updated_at?: SortOrderInput | SortOrder
+    scheduled_at?: SortOrderInput | SortOrder
+    name?: SortOrder
+    description?: SortOrderInput | SortOrder
+    event_type?: SortOrder
+    key?: SortOrder
+    content_text?: SortOrderInput | SortOrder
+    notice_type?: SortOrderInput | SortOrder
+    _count?: noticesCountOrderByAggregateInput
+    _avg?: noticesAvgOrderByAggregateInput
+    _max?: noticesMaxOrderByAggregateInput
+    _min?: noticesMinOrderByAggregateInput
+    _sum?: noticesSumOrderByAggregateInput
+  }
+
+  export type noticesScalarWhereWithAggregatesInput = {
+    AND?: noticesScalarWhereWithAggregatesInput | noticesScalarWhereWithAggregatesInput[]
+    OR?: noticesScalarWhereWithAggregatesInput[]
+    NOT?: noticesScalarWhereWithAggregatesInput | noticesScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"notices"> | number
+    created_at?: DateTimeWithAggregatesFilter<"notices"> | Date | string
+    deleted_at?: DateTimeNullableWithAggregatesFilter<"notices"> | Date | string | null
+    updated_at?: DateTimeNullableWithAggregatesFilter<"notices"> | Date | string | null
+    scheduled_at?: DateTimeNullableWithAggregatesFilter<"notices"> | Date | string | null
+    name?: StringWithAggregatesFilter<"notices"> | string
+    description?: StringNullableWithAggregatesFilter<"notices"> | string | null
+    event_type?: Enumnotice_eventWithAggregatesFilter<"notices"> | $Enums.notice_event
+    key?: StringWithAggregatesFilter<"notices"> | string
+    content_text?: StringNullableWithAggregatesFilter<"notices"> | string | null
+    notice_type?: Enumnotice_typeNullableWithAggregatesFilter<"notices"> | $Enums.notice_type | null
+  }
+
   export type UserCreateInput = {
     names: string
     last_names: string
@@ -13909,6 +15316,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
     BingoCardboards?: BingoCardboardsCreateNestedManyWithoutUserInput
     Codes?: CodesCreateNestedManyWithoutUserInput
     Parameters?: ParametersCreateNestedManyWithoutLast_modified_byInput
@@ -13933,6 +15341,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
     BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutUserInput
     Codes?: CodesUncheckedCreateNestedManyWithoutUserInput
     Parameters?: ParametersUncheckedCreateNestedManyWithoutLast_modified_byInput
@@ -13956,6 +15365,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
     BingoCardboards?: BingoCardboardsUpdateManyWithoutUserNestedInput
     Codes?: CodesUpdateManyWithoutUserNestedInput
     Parameters?: ParametersUpdateManyWithoutLast_modified_byNestedInput
@@ -13980,6 +15390,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
     BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutUserNestedInput
     Codes?: CodesUncheckedUpdateManyWithoutUserNestedInput
     Parameters?: ParametersUncheckedUpdateManyWithoutLast_modified_byNestedInput
@@ -14004,6 +15415,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -14024,6 +15436,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -14045,6 +15458,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type CodesCreateInput = {
@@ -14398,6 +15812,8 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     deleted_at?: Date | string | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     bingo: BingoCreateNestedOneWithoutBingoCardboardsInput
     Codes?: CodesCreateNestedOneWithoutBingoCardboardsInput
     bingo_prizes?: bingo_prizesCreateNestedOneWithoutBingo_cardboardsInput
@@ -14415,6 +15831,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     prize_id?: number | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUpdateInput = {
@@ -14423,6 +15841,8 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     bingo?: BingoUpdateOneRequiredWithoutBingoCardboardsNestedInput
     Codes?: CodesUpdateOneWithoutBingoCardboardsNestedInput
     bingo_prizes?: bingo_prizesUpdateOneWithoutBingo_cardboardsNestedInput
@@ -14440,6 +15860,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     prize_id?: NullableIntFieldUpdateOperationsInput | number | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsCreateManyInput = {
@@ -14453,6 +15875,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     prize_id?: number | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUpdateManyMutationInput = {
@@ -14461,6 +15885,8 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUncheckedUpdateManyInput = {
@@ -14474,6 +15900,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     prize_id?: NullableIntFieldUpdateOperationsInput | number | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type live_sessionsCreateInput = {
@@ -14784,6 +16212,101 @@ export namespace Prisma {
     city?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type noticesCreateInput = {
+    created_at?: Date | string
+    deleted_at?: Date | string | null
+    updated_at?: Date | string | null
+    scheduled_at?: Date | string | null
+    name: string
+    description?: string | null
+    event_type?: $Enums.notice_event
+    key: string
+    content_text?: string | null
+    notice_type?: $Enums.notice_type | null
+  }
+
+  export type noticesUncheckedCreateInput = {
+    id?: number
+    created_at?: Date | string
+    deleted_at?: Date | string | null
+    updated_at?: Date | string | null
+    scheduled_at?: Date | string | null
+    name: string
+    description?: string | null
+    event_type?: $Enums.notice_event
+    key: string
+    content_text?: string | null
+    notice_type?: $Enums.notice_type | null
+  }
+
+  export type noticesUpdateInput = {
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduled_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: Enumnotice_eventFieldUpdateOperationsInput | $Enums.notice_event
+    key?: StringFieldUpdateOperationsInput | string
+    content_text?: NullableStringFieldUpdateOperationsInput | string | null
+    notice_type?: NullableEnumnotice_typeFieldUpdateOperationsInput | $Enums.notice_type | null
+  }
+
+  export type noticesUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduled_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: Enumnotice_eventFieldUpdateOperationsInput | $Enums.notice_event
+    key?: StringFieldUpdateOperationsInput | string
+    content_text?: NullableStringFieldUpdateOperationsInput | string | null
+    notice_type?: NullableEnumnotice_typeFieldUpdateOperationsInput | $Enums.notice_type | null
+  }
+
+  export type noticesCreateManyInput = {
+    id?: number
+    created_at?: Date | string
+    deleted_at?: Date | string | null
+    updated_at?: Date | string | null
+    scheduled_at?: Date | string | null
+    name: string
+    description?: string | null
+    event_type?: $Enums.notice_event
+    key: string
+    content_text?: string | null
+    notice_type?: $Enums.notice_type | null
+  }
+
+  export type noticesUpdateManyMutationInput = {
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduled_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: Enumnotice_eventFieldUpdateOperationsInput | $Enums.notice_event
+    key?: StringFieldUpdateOperationsInput | string
+    content_text?: NullableStringFieldUpdateOperationsInput | string | null
+    notice_type?: NullableEnumnotice_typeFieldUpdateOperationsInput | $Enums.notice_type | null
+  }
+
+  export type noticesUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    scheduled_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    event_type?: Enumnotice_eventFieldUpdateOperationsInput | $Enums.notice_event
+    key?: StringFieldUpdateOperationsInput | string
+    content_text?: NullableStringFieldUpdateOperationsInput | string | null
+    notice_type?: NullableEnumnotice_typeFieldUpdateOperationsInput | $Enums.notice_type | null
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -14913,6 +16436,7 @@ export namespace Prisma {
     change_password?: SortOrder
     is_verified?: SortOrder
     dni?: SortOrder
+    keycloak_sub?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -14938,6 +16462,7 @@ export namespace Prisma {
     change_password?: SortOrder
     is_verified?: SortOrder
     dni?: SortOrder
+    keycloak_sub?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -14959,6 +16484,7 @@ export namespace Prisma {
     change_password?: SortOrder
     is_verified?: SortOrder
     dni?: SortOrder
+    keycloak_sub?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -15503,6 +17029,8 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrder
     prize_id?: SortOrder
+    collection_code?: SortOrder
+    collection_data?: SortOrder
   }
 
   export type BingoCardboardsAvgOrderByAggregateInput = {
@@ -15523,6 +17051,7 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrder
     prize_id?: SortOrder
+    collection_code?: SortOrder
   }
 
   export type BingoCardboardsMinOrderByAggregateInput = {
@@ -15535,6 +17064,7 @@ export namespace Prisma {
     updated_at?: SortOrder
     deleted_at?: SortOrder
     prize_id?: SortOrder
+    collection_code?: SortOrder
   }
 
   export type BingoCardboardsSumOrderByAggregateInput = {
@@ -15790,6 +17320,90 @@ export namespace Prisma {
   export type referred_codeSumOrderByAggregateInput = {
     id?: SortOrder
     maximum_usage?: SortOrder
+  }
+
+  export type Enumnotice_eventFilter<$PrismaModel = never> = {
+    equals?: $Enums.notice_event | Enumnotice_eventFieldRefInput<$PrismaModel>
+    in?: $Enums.notice_event[] | ListEnumnotice_eventFieldRefInput<$PrismaModel>
+    notIn?: $Enums.notice_event[] | ListEnumnotice_eventFieldRefInput<$PrismaModel>
+    not?: NestedEnumnotice_eventFilter<$PrismaModel> | $Enums.notice_event
+  }
+
+  export type Enumnotice_typeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.notice_type | Enumnotice_typeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.notice_type[] | ListEnumnotice_typeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.notice_type[] | ListEnumnotice_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumnotice_typeNullableFilter<$PrismaModel> | $Enums.notice_type | null
+  }
+
+  export type noticesCountOrderByAggregateInput = {
+    id?: SortOrder
+    created_at?: SortOrder
+    deleted_at?: SortOrder
+    updated_at?: SortOrder
+    scheduled_at?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    event_type?: SortOrder
+    key?: SortOrder
+    content_text?: SortOrder
+    notice_type?: SortOrder
+  }
+
+  export type noticesAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type noticesMaxOrderByAggregateInput = {
+    id?: SortOrder
+    created_at?: SortOrder
+    deleted_at?: SortOrder
+    updated_at?: SortOrder
+    scheduled_at?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    event_type?: SortOrder
+    key?: SortOrder
+    content_text?: SortOrder
+    notice_type?: SortOrder
+  }
+
+  export type noticesMinOrderByAggregateInput = {
+    id?: SortOrder
+    created_at?: SortOrder
+    deleted_at?: SortOrder
+    updated_at?: SortOrder
+    scheduled_at?: SortOrder
+    name?: SortOrder
+    description?: SortOrder
+    event_type?: SortOrder
+    key?: SortOrder
+    content_text?: SortOrder
+    notice_type?: SortOrder
+  }
+
+  export type noticesSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type Enumnotice_eventWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.notice_event | Enumnotice_eventFieldRefInput<$PrismaModel>
+    in?: $Enums.notice_event[] | ListEnumnotice_eventFieldRefInput<$PrismaModel>
+    notIn?: $Enums.notice_event[] | ListEnumnotice_eventFieldRefInput<$PrismaModel>
+    not?: NestedEnumnotice_eventWithAggregatesFilter<$PrismaModel> | $Enums.notice_event
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumnotice_eventFilter<$PrismaModel>
+    _max?: NestedEnumnotice_eventFilter<$PrismaModel>
+  }
+
+  export type Enumnotice_typeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.notice_type | Enumnotice_typeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.notice_type[] | ListEnumnotice_typeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.notice_type[] | ListEnumnotice_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumnotice_typeNullableWithAggregatesFilter<$PrismaModel> | $Enums.notice_type | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumnotice_typeNullableFilter<$PrismaModel>
+    _max?: NestedEnumnotice_typeNullableFilter<$PrismaModel>
   }
 
   export type BingoCardboardsCreateNestedManyWithoutUserInput = {
@@ -16318,6 +17932,14 @@ export namespace Prisma {
     deleteMany?: CodesScalarWhereInput | CodesScalarWhereInput[]
   }
 
+  export type Enumnotice_eventFieldUpdateOperationsInput = {
+    set?: $Enums.notice_event
+  }
+
+  export type NullableEnumnotice_typeFieldUpdateOperationsInput = {
+    set?: $Enums.notice_type | null
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -16712,12 +18334,48 @@ export namespace Prisma {
     _max?: NestedEnumstatusNullableFilter<$PrismaModel>
   }
 
+  export type NestedEnumnotice_eventFilter<$PrismaModel = never> = {
+    equals?: $Enums.notice_event | Enumnotice_eventFieldRefInput<$PrismaModel>
+    in?: $Enums.notice_event[] | ListEnumnotice_eventFieldRefInput<$PrismaModel>
+    notIn?: $Enums.notice_event[] | ListEnumnotice_eventFieldRefInput<$PrismaModel>
+    not?: NestedEnumnotice_eventFilter<$PrismaModel> | $Enums.notice_event
+  }
+
+  export type NestedEnumnotice_typeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.notice_type | Enumnotice_typeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.notice_type[] | ListEnumnotice_typeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.notice_type[] | ListEnumnotice_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumnotice_typeNullableFilter<$PrismaModel> | $Enums.notice_type | null
+  }
+
+  export type NestedEnumnotice_eventWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.notice_event | Enumnotice_eventFieldRefInput<$PrismaModel>
+    in?: $Enums.notice_event[] | ListEnumnotice_eventFieldRefInput<$PrismaModel>
+    notIn?: $Enums.notice_event[] | ListEnumnotice_eventFieldRefInput<$PrismaModel>
+    not?: NestedEnumnotice_eventWithAggregatesFilter<$PrismaModel> | $Enums.notice_event
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumnotice_eventFilter<$PrismaModel>
+    _max?: NestedEnumnotice_eventFilter<$PrismaModel>
+  }
+
+  export type NestedEnumnotice_typeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.notice_type | Enumnotice_typeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.notice_type[] | ListEnumnotice_typeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.notice_type[] | ListEnumnotice_typeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumnotice_typeNullableWithAggregatesFilter<$PrismaModel> | $Enums.notice_type | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumnotice_typeNullableFilter<$PrismaModel>
+    _max?: NestedEnumnotice_typeNullableFilter<$PrismaModel>
+  }
+
   export type BingoCardboardsCreateWithoutUserInput = {
     is_winner?: boolean
     bingo_data_json: JsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
     deleted_at?: Date | string | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     bingo: BingoCreateNestedOneWithoutBingoCardboardsInput
     Codes?: CodesCreateNestedOneWithoutBingoCardboardsInput
     bingo_prizes?: bingo_prizesCreateNestedOneWithoutBingo_cardboardsInput
@@ -16733,6 +18391,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     prize_id?: number | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsCreateOrConnectWithoutUserInput = {
@@ -16855,6 +18515,8 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"BingoCardboards"> | Date | string
     deleted_at?: DateTimeNullableFilter<"BingoCardboards"> | Date | string | null
     prize_id?: IntNullableFilter<"BingoCardboards"> | number | null
+    collection_code?: StringNullableFilter<"BingoCardboards"> | string | null
+    collection_data?: JsonNullableFilter<"BingoCardboards">
   }
 
   export type CodesUpsertWithWhereUniqueWithoutUserInput = {
@@ -16933,6 +18595,8 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     deleted_at?: Date | string | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     bingo: BingoCreateNestedOneWithoutBingoCardboardsInput
     bingo_prizes?: bingo_prizesCreateNestedOneWithoutBingo_cardboardsInput
     user: UserCreateNestedOneWithoutBingoCardboardsInput
@@ -16948,6 +18612,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     prize_id?: number | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsCreateOrConnectWithoutCodesInput = {
@@ -17034,6 +18700,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
     BingoCardboards?: BingoCardboardsCreateNestedManyWithoutUserInput
     Parameters?: ParametersCreateNestedManyWithoutLast_modified_byInput
   }
@@ -17057,6 +18724,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
     BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutUserInput
     Parameters?: ParametersUncheckedCreateNestedManyWithoutLast_modified_byInput
   }
@@ -17179,6 +18847,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
     BingoCardboards?: BingoCardboardsUpdateManyWithoutUserNestedInput
     Parameters?: ParametersUpdateManyWithoutLast_modified_byNestedInput
   }
@@ -17202,6 +18871,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
     BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutUserNestedInput
     Parameters?: ParametersUncheckedUpdateManyWithoutLast_modified_byNestedInput
   }
@@ -17224,6 +18894,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
     BingoCardboards?: BingoCardboardsCreateNestedManyWithoutUserInput
     Codes?: CodesCreateNestedManyWithoutUserInput
   }
@@ -17247,6 +18918,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
     BingoCardboards?: BingoCardboardsUncheckedCreateNestedManyWithoutUserInput
     Codes?: CodesUncheckedCreateNestedManyWithoutUserInput
   }
@@ -17285,6 +18957,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
     BingoCardboards?: BingoCardboardsUpdateManyWithoutUserNestedInput
     Codes?: CodesUpdateManyWithoutUserNestedInput
   }
@@ -17308,6 +18981,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
     BingoCardboards?: BingoCardboardsUncheckedUpdateManyWithoutUserNestedInput
     Codes?: CodesUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -17318,6 +18992,8 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     deleted_at?: Date | string | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     Codes?: CodesCreateNestedOneWithoutBingoCardboardsInput
     bingo_prizes?: bingo_prizesCreateNestedOneWithoutBingo_cardboardsInput
     user: UserCreateNestedOneWithoutBingoCardboardsInput
@@ -17333,6 +19009,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     prize_id?: number | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsCreateOrConnectWithoutBingoInput = {
@@ -17479,6 +19157,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
     Codes?: CodesCreateNestedManyWithoutUserInput
     Parameters?: ParametersCreateNestedManyWithoutLast_modified_byInput
   }
@@ -17502,6 +19181,7 @@ export namespace Prisma {
     change_password?: boolean | null
     is_verified?: boolean | null
     dni?: string | null
+    keycloak_sub?: string | null
     Codes?: CodesUncheckedCreateNestedManyWithoutUserInput
     Parameters?: ParametersUncheckedCreateNestedManyWithoutLast_modified_byInput
   }
@@ -17658,6 +19338,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
     Codes?: CodesUpdateManyWithoutUserNestedInput
     Parameters?: ParametersUpdateManyWithoutLast_modified_byNestedInput
   }
@@ -17681,6 +19362,7 @@ export namespace Prisma {
     change_password?: NullableBoolFieldUpdateOperationsInput | boolean | null
     is_verified?: NullableBoolFieldUpdateOperationsInput | boolean | null
     dni?: NullableStringFieldUpdateOperationsInput | string | null
+    keycloak_sub?: NullableStringFieldUpdateOperationsInput | string | null
     Codes?: CodesUncheckedUpdateManyWithoutUserNestedInput
     Parameters?: ParametersUncheckedUpdateManyWithoutLast_modified_byNestedInput
   }
@@ -17769,6 +19451,8 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     deleted_at?: Date | string | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     bingo: BingoCreateNestedOneWithoutBingoCardboardsInput
     Codes?: CodesCreateNestedOneWithoutBingoCardboardsInput
     user: UserCreateNestedOneWithoutBingoCardboardsInput
@@ -17784,6 +19468,8 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     deleted_at?: Date | string | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsCreateOrConnectWithoutBingo_prizesInput = {
@@ -17879,6 +19565,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     prize_id?: number | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CodesCreateManyUserInput = {
@@ -17917,6 +19605,8 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     bingo?: BingoUpdateOneRequiredWithoutBingoCardboardsNestedInput
     Codes?: CodesUpdateOneWithoutBingoCardboardsNestedInput
     bingo_prizes?: bingo_prizesUpdateOneWithoutBingo_cardboardsNestedInput
@@ -17932,6 +19622,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     prize_id?: NullableIntFieldUpdateOperationsInput | number | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUncheckedUpdateManyWithoutUserInput = {
@@ -17944,6 +19636,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     prize_id?: NullableIntFieldUpdateOperationsInput | number | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CodesUpdateWithoutUserInput = {
@@ -18046,6 +19740,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     prize_id?: number | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUpdateWithoutCodesInput = {
@@ -18054,6 +19750,8 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     bingo?: BingoUpdateOneRequiredWithoutBingoCardboardsNestedInput
     bingo_prizes?: bingo_prizesUpdateOneWithoutBingo_cardboardsNestedInput
     user?: UserUpdateOneRequiredWithoutBingoCardboardsNestedInput
@@ -18069,6 +19767,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     prize_id?: NullableIntFieldUpdateOperationsInput | number | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUncheckedUpdateManyWithoutCodesInput = {
@@ -18081,6 +19781,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     prize_id?: NullableIntFieldUpdateOperationsInput | number | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsCreateManyBingoInput = {
@@ -18093,6 +19795,8 @@ export namespace Prisma {
     updated_at?: Date | string
     deleted_at?: Date | string | null
     prize_id?: number | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUpdateWithoutBingoInput = {
@@ -18101,6 +19805,8 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     Codes?: CodesUpdateOneWithoutBingoCardboardsNestedInput
     bingo_prizes?: bingo_prizesUpdateOneWithoutBingo_cardboardsNestedInput
     user?: UserUpdateOneRequiredWithoutBingoCardboardsNestedInput
@@ -18116,6 +19822,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     prize_id?: NullableIntFieldUpdateOperationsInput | number | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUncheckedUpdateManyWithoutBingoInput = {
@@ -18128,6 +19836,8 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     prize_id?: NullableIntFieldUpdateOperationsInput | number | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsCreateManyBingo_prizesInput = {
@@ -18140,6 +19850,8 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     deleted_at?: Date | string | null
+    collection_code?: string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUpdateWithoutBingo_prizesInput = {
@@ -18148,6 +19860,8 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
     bingo?: BingoUpdateOneRequiredWithoutBingoCardboardsNestedInput
     Codes?: CodesUpdateOneWithoutBingoCardboardsNestedInput
     user?: UserUpdateOneRequiredWithoutBingoCardboardsNestedInput
@@ -18163,6 +19877,8 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type BingoCardboardsUncheckedUpdateManyWithoutBingo_prizesInput = {
@@ -18175,6 +19891,8 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    collection_code?: NullableStringFieldUpdateOperationsInput | string | null
+    collection_data?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type CodesCreateManyReferred_code_codes_referred_codeToreferred_codeInput = {

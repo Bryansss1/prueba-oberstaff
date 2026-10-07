@@ -130,6 +130,7 @@ model BingoCardboards {
   deleted_at      DateTime?
   prize_id        Int?
   collection_code String?
+  collection_data Json?
   bingo           Bingo         @relation(fields: [bingo_id], references: [id])
   Codes           Codes?        @relation(fields: [code_id], references: [id])
   bingo_prizes    bingo_prizes? @relation(fields: [prize_id], references: [id], onDelete: NoAction, onUpdate: NoAction)

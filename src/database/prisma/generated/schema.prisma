@@ -8,6 +8,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ============================================================================
+// REGLA DE ORO — IDs y numéricos SIEMPRE en `Int`, NUNCA `BigInt`
+// ----------------------------------------------------------------------------
+// Aunque la columna real en la BD (Supabase) sea `bigint` (las tablas creadas
+// desde el dashboard de Supabase salen con `bigint` por defecto), en este
+// schema se declaran TODOS como `Int`.
+//
+// POR QUÉ:
+//   - `BigInt` rompe `JSON.stringify` (las respuestas `NextResponse.json`
+//     lanzan "Do not know how to serialize a BigInt").
+//   - `BigInt` rompe comparaciones/aritmética con `number` en los services
+//     (ej. `maximum_usage >= count`, `maximum_cardboard - count`).
+//   - En la práctica los IDs/cantidades de este negocio nunca superan el
+//     rango de int4 (2.147.483.647), así que `Int` funciona correctamente.
+//
+// CONSECUENCIA (importante):
+//   - NO usar `prisma db pull` a ciegas: introspecciona el `bigint` real y lo
+//     volvería `BigInt`, además de eliminar relaciones "virtuales" sin FK
+//     (ej. BingoCardboards.Codes / bingo_prizes).
+//   - Las tablas nuevas se agregan A MANO en este archivo, con `Int`.
+// ============================================================================
+
 model User {
   id                 Int               @id @default(autoincrement())
   names              String
@@ -27,6 +49,7 @@ model User {
   change_password    Boolean?          @default(false)
   is_verified        Boolean?          @default(false)
   dni                String?           @unique
+  keycloak_sub       String?           @unique
   BingoCardboards    BingoCardboards[]
   Codes              Codes[]
   Parameters         Parameters[]
@@ -107,6 +130,8 @@ model BingoCardboards {
   updated_at      DateTime      @updatedAt
   deleted_at      DateTime?
   prize_id        Int?
+  collection_code String?
+  collection_data Json?
   bingo           Bingo         @relation(fields: [bingo_id], references: [id])
   Codes           Codes?        @relation(fields: [code_id], references: [id])
   bingo_prizes    bingo_prizes? @relation(fields: [prize_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
@@ -166,6 +191,21 @@ model referred_code {
   codes_codes_referred_codeToreferred_code Codes[] @relation("codes_referred_codeToreferred_code")
 }
 
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model notices {
+  id           Int          @id @default(autoincrement())
+  created_at   DateTime     @default(now()) @db.Timestamptz(6)
+  deleted_at   DateTime?    @db.Timestamp(6)
+  updated_at   DateTime?    @default(now()) @db.Timestamp(6)
+  scheduled_at DateTime?    @db.Timestamptz(6)
+  name         String
+  description  String?
+  event_type   notice_event @default(login)
+  key          String       @unique
+  content_text String?
+  notice_type  notice_type?
+}
+
 enum Role {
   ADMIN
   USER
@@ -221,4 +261,17 @@ enum estado_victoria_75 {
   PERIMETRO
   VENTANA
   LINEA_EXTERIOR
+}
+
+enum notice_event {
+  login
+  finish_bingo
+  schedule
+  manual
+}
+
+enum notice_type {
+  image
+  video
+  article
 }
